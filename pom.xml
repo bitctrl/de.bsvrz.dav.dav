@@ -16,7 +16,7 @@
         <project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
         <kernsoftware.version>3.6.5</kernsoftware.version>
-        <distributionspaket.status>BETA</distributionspaket.status>
+        <distributionspaket.status>FREI</distributionspaket.status>
 <!--
         <distributionspaket.standDatum>${maven.build.timestamp}</distributionspaket.standDatum>
 -->
@@ -150,7 +150,7 @@
                                 <manifest>
                                     <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                     <addClasspath>true</addClasspath>
-                                    <mainClass>it.archetype.segment.sweinheit.swkomponente.swmodul.Applikation</mainClass>
+                                    <mainClass>de.bsvrz.dav.dav.main.Transmitter</mainClass>
                                     <classpathLayoutType>custom</classpathLayoutType>
                                     <customClasspathLayout>../${artifact.artifactId}/${artifact.artifactId}-runtime.${artifact.extension}</customClasspathLayout>
                                 </manifest>
@@ -313,7 +313,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
@@ -321,6 +320,7 @@
                 <configuration>
                     <threshold>High</threshold>
                     <includeTests>true</includeTests>
+                    <failOnError>false</failOnError>
                 </configuration>
                 <executions>
                     <execution>
@@ -330,7 +330,6 @@
                     </execution>
                 </executions>
             </plugin>
--->
         </plugins>
     </build>
 
