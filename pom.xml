@@ -140,7 +140,7 @@
                         </goals>
                         <configuration>
                             <useDefaultManifestFile>false</useDefaultManifestFile>
-                            <classifier>runtime-jar</classifier>
+                            <classifier>runtime</classifier>
                             <excludes>
                                 <exclude>**/*</exclude>
                             </excludes>
