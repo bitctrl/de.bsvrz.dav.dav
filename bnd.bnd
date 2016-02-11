@@ -1,0 +1,12 @@
+-exportcontents: \
+    de.bsvrz.dav.daf \
+    de.bsvrz.dav.daf.communication.accessControl \
+    de.bsvrz.dav.daf.communication.appProtocol \
+    de.bsvrz.dav.daf.communication.davProtocol \
+    de.bsvrz.dav.daf.communication.tcpCommunication \
+    de.bsvrz.dav.daf.main \
+    de.bsvrz.dav.daf.subscriptions \
+    de.bsvrz.dav.daf.util.accessControl
+-sources: true
+
+Bundle-Name: Datenverteiler
