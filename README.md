@@ -1,5 +1,5 @@
-Datenverteiler [![Build Status](https://travis-ci.org/datenverteiler/de.bsvrz.dav.dav.svg?branch=develop)](https://travis-ci.org/datenverteiler/de.bsvrz.dav.dav)
-==============
+Datenverteiler v${project.version} [![Build Status](https://travis-ci.org/datenverteiler/de.bsvrz.dav.dav.svg?branch=develop)](https://travis-ci.org/datenverteiler/de.bsvrz.dav.dav)
+======================
 
 
 Bauen und Veröffentlichen
