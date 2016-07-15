@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -47,13 +53,13 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	private static final Debug _debug = Debug.getLogger();
 
 	/**
-	 * Interval zwischen 2 Betriebsmeldungen wegen fehlenden Parametern. Außerdem die Zeit, die mindestens vergangen sein muss, bis ein fehlender
-	 * Parameterdatensatz gemeldet wird. Bei der Anpassung der Zeit muss möglicherweise der Wortlaut der Betriebsmeldung geändert werden.
+	 * Interval zwischen 2 Betriebsmeldungen wegen fehlenden Parametern. AuÃŸerdem die Zeit, die mindestens vergangen sein muss, bis ein fehlender
+	 * Parameterdatensatz gemeldet wird. Bei der Anpassung der Zeit muss mÃ¶glicherweise der Wortlaut der Betriebsmeldung geÃ¤ndert werden.
 	 */
 	public static final int MessageSenderInterval = 60 * 1000;
 
 	/**
-	 * Spezielles Long, dass das Töten des Threads bewirkt.
+	 * Spezielles Long, dass das TÃ¶ten des Threads bewirkt.
 	 */
 	@SuppressWarnings("UnnecessaryBoxing")
 	private static final Long POISON = new Long(0);
@@ -76,10 +82,10 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	/** Ob das neue Datenmodell (siehe {@link de.bsvrz.dav.dav.util.accessControl.ExtendedUserInfo}) benutzt wird */
 	private final boolean _isUsingNewDataModel;
 
-	/** Callback, der aufgerufen wird, wenn sich die Rechte eines Benutzers ändern */
+	/** Callback, der aufgerufen wird, wenn sich die Rechte eines Benutzers Ã¤ndern */
 	private final UserRightsChangeHandler _userRightsChangeHandler;
 
-	/** Ob implizite Benutzerverwaltung durchgeführt wird, oder Benutzer mit addUser erstellt werden müssen */
+	/** Ob implizite Benutzerverwaltung durchgefÃ¼hrt wird, oder Benutzer mit addUser erstellt werden mÃ¼ssen */
 	private final boolean _useImplicitUserManagement;
 
 	private final Object _updateLock = new Object();
@@ -95,9 +101,9 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	 * Erstellt eine neue Instanz des AccessControlManagers mit impliziter Benutzerverwaltung
 	 *
 	 * @param connection              Verbindung zum Datenverteiler
-	 * @param userRightsChangeHandler Klasse, die über Änderungen an den Benutzerrechten informiert werden soll. Das ist im allgemeinen der {@link
-	 *                                de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager}, der bei sich ändernden Rechten eventuell ungültig gewordene Anmeldungen
-	 *                                deaktiviert, kann aber für Testfälle und andere Anwendungen auch ein anderes (möglicherweise deutlich kleineres) Objekt
+	 * @param userRightsChangeHandler Klasse, die Ã¼ber Ã„nderungen an den Benutzerrechten informiert werden soll. Das ist im allgemeinen der {@link
+	 *                                de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager}, der bei sich Ã¤ndernden Rechten eventuell ungÃ¼ltig gewordene Anmeldungen
+	 *                                deaktiviert, kann aber fÃ¼r TestfÃ¤lle und andere Anwendungen auch ein anderes (mÃ¶glicherweise deutlich kleineres) Objekt
 	 *                                sein.
 	 * @param useNewDataModel         Sollen die neuen Zugriffsrechte benutzt werden?
 	 */
@@ -110,11 +116,11 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	 * Erstellt eine neue Instanz des AccessControlManagers
 	 *
 	 * @param connection                Verbindung zum Datenverteiler
-	 * @param userRightsChangeHandler   Klasse, die über Änderungen an den Benutzerrechten informiert werden soll. Das ist im allgemeinen der {@link
-	 *                                  de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager}, der bei sich ändernden Rechten eventuell ungültig gewordene Anmeldungen
-	 *                                  deaktiviert, kann aber für Testfälle und andere Anwendungen auch ein anderes (möglicherweise deutlich kleineres) Objekt
+	 * @param userRightsChangeHandler   Klasse, die Ã¼ber Ã„nderungen an den Benutzerrechten informiert werden soll. Das ist im allgemeinen der {@link
+	 *                                  de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager}, der bei sich Ã¤ndernden Rechten eventuell ungÃ¼ltig gewordene Anmeldungen
+	 *                                  deaktiviert, kann aber fÃ¼r TestfÃ¤lle und andere Anwendungen auch ein anderes (mÃ¶glicherweise deutlich kleineres) Objekt
 	 *                                  sein.
-	 * @param useImplicitUserManagement Wenn false, werden nur Benutzer berücksichtigt, die mit addUser und removeUser in diese Klasse eingefügt werden.<br> Wenn
+	 * @param useImplicitUserManagement Wenn false, werden nur Benutzer berÃ¼cksichtigt, die mit addUser und removeUser in diese Klasse eingefÃ¼gt werden.<br> Wenn
 	 *                                  true sind addUser und removeUser ohne Funktion und getUser ermittelt beliebige Benutzer, solange diese existieren.
 	 * @param useNewDataModel           Sollen die neuen Zugriffsrechte benutzt werden?
 	 */
@@ -126,9 +132,9 @@ public final class AccessControlManager implements RegionManager, Closeable {
 		_connection = connection;
 		_userRightsChangeHandler = userRightsChangeHandler;
 		_useImplicitUserManagement = useImplicitUserManagement;
-		if(useNewDataModel && _connection.getDataModel().getObject("atl.aktivitätObjekteNeu") == null) {
+		if(useNewDataModel && _connection.getDataModel().getObject("atl.aktivitÃ¤tObjekteNeu") == null) {
 			_debug.error(
-					"Das neue Datenmodell der Zugriffsrechte-Prüfung sollte verwendet werden, wurde aber nicht gefunden. Stattdessen wird das alte Datenmodell benutzt."
+					"Das neue Datenmodell der Zugriffsrechte-PrÃ¼fung sollte verwendet werden, wurde aber nicht gefunden. Stattdessen wird das alte Datenmodell benutzt."
 			);
 			_isUsingNewDataModel = false;
 		}
@@ -150,7 +156,7 @@ public final class AccessControlManager implements RegionManager, Closeable {
 						_userRightsChangeHandler.handleUserRightsChanged(userId);
 					}
 					catch(Exception e) {
-						_debug.error("Fehler beim Ändern von Benutzerrechten", e);
+						_debug.error("Fehler beim Ã„ndern von Benutzerrechten", e);
 					}
 				}
 			}
@@ -160,7 +166,7 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	private void createParameterTimer() {
-		_parameterTimer = new Timer("Warnung über fehlende Parameter", true);
+		_parameterTimer = new Timer("Warnung Ã¼ber fehlende Parameter", true);
 		_parameterTimer.schedule(
 				new TimerTask() {
 					@Override
@@ -206,22 +212,22 @@ public final class AccessControlManager implements RegionManager, Closeable {
 		if(_oldObjectsWithMissingParameters == null || _oldObjectsWithMissingParameters.size() == 0) {
 			if(objectsWithMissingParameters.size() == 0) return;
 			state = MessageState.NEW_MESSAGE;
-			message = "Der Rechteprüfung fehlen Parameterdaten:\n" + formatMap(objectsWithMissingParameters);
+			message = "Der RechteprÃ¼fung fehlen Parameterdaten:\n" + formatMap(objectsWithMissingParameters);
 		}
 		else {
 			if(objectsWithMissingParameters.size() == 0) {
 				state = MessageState.GOOD_MESSAGE;
-				message = "Alle derzeit berücksichtigten Objekte besitzen jetzt Parameter.";
+				message = "Alle derzeit berÃ¼cksichtigten Objekte besitzen jetzt Parameter.";
 			}
 			else {
 				state = MessageState.REPEAT_MESSAGE;
-				message = "Der Rechteprüfung fehlen Parameterdaten:\n" + formatMap(
+				message = "Der RechteprÃ¼fung fehlen Parameterdaten:\n" + formatMap(
 						objectsWithMissingParameters
 				);
 			}
 		}
 
-		sender.sendMessage("Zugriffsrechte", MessageType.SYSTEM_DOMAIN, "Rechteprüfung", MessageGrade.WARNING, state, message);
+		sender.sendMessage("Zugriffsrechte", MessageType.SYSTEM_DOMAIN, "RechteprÃ¼fung", MessageGrade.WARNING, state, message);
 		_debug.warning(message);
 		_oldObjectsWithMissingParameters = objectsWithMissingParameters;
 	}
@@ -267,7 +273,7 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Fügt eine Benutzerinformation zu der Benutzertabelle hinzu, wenn der Datenverteiler die Benutzerrechte prüfen soll. Existiert der Benutzer bereits, wird
+	 * FÃ¼gt eine Benutzerinformation zu der Benutzertabelle hinzu, wenn der Datenverteiler die Benutzerrechte prÃ¼fen soll. Existiert der Benutzer bereits, wird
 	 * lediglich die interne Referenz inkrementiert.
 	 *
 	 * @param userId BenutzerID
@@ -296,7 +302,7 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Erstellt je nach Datenmodell-Version ein neues BenutzerInfo-Objekt das Abfragen auf die Berechtigungen eines Benutzers ermöglicht.
+	 * Erstellt je nach Datenmodell-Version ein neues BenutzerInfo-Objekt das Abfragen auf die Berechtigungen eines Benutzers ermÃ¶glicht.
 	 *
 	 * @param userID benutzer-ID
 	 *
@@ -313,7 +319,7 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Fragt ab, ob das neue Datenmodell benutzt wird. Das neue Datenmodell enthält eine neue Struktur der Region und Rollen-Objekten und ermöglicht Beschränkungen
+	 * Fragt ab, ob das neue Datenmodell benutzt wird. Das neue Datenmodell enthÃ¤lt eine neue Struktur der Region und Rollen-Objekten und ermÃ¶glicht BeschrÃ¤nkungen
 	 * bei der Erstellung von dynamischen Objekten.
 	 *
 	 * @return True wenn das neue Modell benutzt wird, sonst false
@@ -331,19 +337,19 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	 * @param trace  Komplette Hierarchie vom Benutzer zum problematischen Objekt.
 	 */
 	protected void notifyInfiniteRecursion(final DataLoader node, final DataLoader parent, final List<DataLoader> trace) {
-		String msg = "Ungültige Rekursion in den Systemobjekten. Die problematische Vererbung wird deaktiviert bis das Problem behoben wird.\n"
+		String msg = "UngÃ¼ltige Rekursion in den Systemobjekten. Die problematische Vererbung wird deaktiviert bis das Problem behoben wird.\n"
 		             + "Objekt referenziert sich selbst: " + node + "\n" + "Vererbungskette: " + trace;
-		MessageSender.getInstance().sendMessage("Zugriffsrechte", MessageType.SYSTEM_DOMAIN, "Rechteprüfung", MessageGrade.WARNING, MessageState.MESSAGE, msg);
+		MessageSender.getInstance().sendMessage("Zugriffsrechte", MessageType.SYSTEM_DOMAIN, "RechteprÃ¼fung", MessageGrade.WARNING, MessageState.MESSAGE, msg);
 		_debug.warning(msg);
 		parent.deactivateInvalidChild(node);
 	}
 
 	/**
-	 * Gibt die AuthenticationClass-Klasse zurück die zu dem angeforderten Systemobjekt gehört.
+	 * Gibt die AuthenticationClass-Klasse zurÃ¼ck die zu dem angeforderten Systemobjekt gehÃ¶rt.
 	 *
-	 * @param systemObject Systemobjekt, das eine Berechtigungsklasse repräsentiert
+	 * @param systemObject Systemobjekt, das eine Berechtigungsklasse reprÃ¤sentiert
 	 *
-	 * @return AuthenticationClass-Klasse die Abfragen auf eine Berechtigungsklasse ermöglicht
+	 * @return AuthenticationClass-Klasse die Abfragen auf eine Berechtigungsklasse ermÃ¶glicht
 	 */
 	AccessControlUnit getAuthenticationClass(final SystemObject systemObject) {
 		synchronized(_authenticationClassHashMap) {
@@ -358,11 +364,11 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Gibt die Region-Klasse zurück die zu dem angeforderten Systemobjekt gehört.
+	 * Gibt die Region-Klasse zurÃ¼ck die zu dem angeforderten Systemobjekt gehÃ¶rt.
 	 *
-	 * @param systemObject Systemobjekt, das eine Region repräsentiert
+	 * @param systemObject Systemobjekt, das eine Region reprÃ¤sentiert
 	 *
-	 * @return Region-Klasse die Abfragen auf eine Region ermöglicht
+	 * @return Region-Klasse die Abfragen auf eine Region ermÃ¶glicht
 	 */
 	@Override
 	public Region getRegion(final SystemObject systemObject) {
@@ -378,11 +384,11 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Gibt die Role-Klasse zurück die zu dem angeforderten Systemobjekt gehört.
+	 * Gibt die Role-Klasse zurÃ¼ck die zu dem angeforderten Systemobjekt gehÃ¶rt.
 	 *
-	 * @param systemObject Systemobjekt, das eine Rolle repräsentiert
+	 * @param systemObject Systemobjekt, das eine Rolle reprÃ¤sentiert
 	 *
-	 * @return Role-Klasse die Abfragen auf eine Rolle ermöglicht
+	 * @return Role-Klasse die Abfragen auf eine Rolle ermÃ¶glicht
 	 */
 	Role getRole(final SystemObject systemObject) {
 		synchronized(_roleHashMap) {
@@ -397,7 +403,7 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Gibt das gespeicherte BenutzerObjekt mit der angegebenen ID zurück
+	 * Gibt das gespeicherte BenutzerObjekt mit der angegebenen ID zurÃ¼ck
 	 *
 	 * @param userId Angegebene BenutzerId
 	 *
@@ -420,11 +426,11 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Prüft ob ein Objekt wie eine Rolle oder eine Region von einem übergeordnetem Objekt wie einem Benutzer
+	 * PrÃ¼ft ob ein Objekt wie eine Rolle oder eine Region von einem Ã¼bergeordnetem Objekt wie einem Benutzer
 	 * oder einer Berechtigungsklasse referenziert wird.
 	 *
-	 * @param parent        Mögliches Vaterobjekt
-	 * @param possibleChild Möglichen Kindobjekt
+	 * @param parent        MÃ¶gliches Vaterobjekt
+	 * @param possibleChild MÃ¶glichen Kindobjekt
 	 *
 	 * @return True wenn das possibleChild ein Kind von parent ist.
 	 */
@@ -434,7 +440,7 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Löscht einen Benutzer aus der Benutzertabelle, wenn der Datenverteiler die Benutzerrechte prüfen soll. Wenn die interne Referenz eines Benutzers 0 ist, dann
+	 * LÃ¶scht einen Benutzer aus der Benutzertabelle, wenn der Datenverteiler die Benutzerrechte prÃ¼fen soll. Wenn die interne Referenz eines Benutzers 0 ist, dann
 	 * wird die Benutzerinformation aus der Tabelle entfernt.
 	 *
 	 * @param userId BenutzerID
@@ -458,11 +464,11 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Wird aufgerufen un dem AccessControlManager zu informieren, dass ein verwaltetes Objekt sich geändert hat. Der AccessControlManager wird daraufhin nach
+	 * Wird aufgerufen un dem AccessControlManager zu informieren, dass ein verwaltetes Objekt sich geÃ¤ndert hat. Der AccessControlManager wird daraufhin nach
 	 * Benutzer-Objekten suchen, die dieses Objekt verwenden und an den {@link de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager} eine Benachrichtigung senden, dass
-	 * sich die Rechte des Benutzers geändert haben und eventuelle vorhandene Anmeldungen entfernt werden müssen.
+	 * sich die Rechte des Benutzers geÃ¤ndert haben und eventuelle vorhandene Anmeldungen entfernt werden mÃ¼ssen.
 	 *
-	 * @param object Objekt das sich geändert hat
+	 * @param object Objekt das sich geÃ¤ndert hat
 	 */
 	@Override
 	public void objectChanged(final DataLoader object) {
@@ -483,15 +489,15 @@ public final class AccessControlManager implements RegionManager, Closeable {
 		}
 
 		// Im Falle das _userRightsChangeHandler der ConnectionsManager ist, synchronisiert dieser auf sich selber.
-		// Daher darf der folgende Code nicht im _userMapLock stehen, sonst wäre das als verschachteltes Locking sehr
-		// DeadLock-anfällig.
+		// Daher darf der folgende Code nicht im _userMapLock stehen, sonst wÃ¤re das als verschachteltes Locking sehr
+		// DeadLock-anfÃ¤llig.
 
-		// Der Fall dass zwischenzeitlich die aktuellen Benutzer geändert worden sind, ist irrelevant
+		// Der Fall dass zwischenzeitlich die aktuellen Benutzer geÃ¤ndert worden sind, ist irrelevant
 		// da der Parameterdatenempfang asynchron stattfindet und daher sowieso keine festen Aussagen bzgl.
-		// der Reihenfolge der kritischen Aufrufe von addUser()/getUser()/removeUser() etc. und objectChanged() gemacht werden können.
-		// Benutzer, die während der Auführung dieser Zeilen angelegt werden besitzen bereits die neuen Parameterdaten
-		// und sind daher unkritisch. Benutzer die währenddessen gelöscht werden sind sowieso unerheblich,
-		// da diese sowieso gezwungen sind alle Anmeldungen zu entfernen und eine Aktualisierung wg. geänderter Rechte sinnlos wäre
+		// der Reihenfolge der kritischen Aufrufe von addUser()/getUser()/removeUser() etc. und objectChanged() gemacht werden kÃ¶nnen.
+		// Benutzer, die wÃ¤hrend der AufÃ¼hrung dieser Zeilen angelegt werden besitzen bereits die neuen Parameterdaten
+		// und sind daher unkritisch. Benutzer die wÃ¤hrenddessen gelÃ¶scht werden sind sowieso unerheblich,
+		// da diese sowieso gezwungen sind alle Anmeldungen zu entfernen und eine Aktualisierung wg. geÃ¤nderter Rechte sinnlos wÃ¤re
 		for(Long affectedUserId : affectedUserIds) {
 			notifyUserRightsChangedAsync(affectedUserId);
 		}
@@ -503,23 +509,23 @@ public final class AccessControlManager implements RegionManager, Closeable {
 	}
 
 	/**
-	 * Wird aufgerufen un dem AccessControlManager zu informieren, dass ein Benutzer sich geändert hat. Der AccessControlManager wird daraufhin die referenzierten
-	 * Kindobjekte (Rollen, Regionen etc.) auf Rekursion überprüfen und an den {@link de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager} eine Benachrichtigung senden,
-	 * dass sich die Rechte des Benutzers geändert haben und eventuelle vorhandene Anmeldungen entfernt werden müssen.
+	 * Wird aufgerufen un dem AccessControlManager zu informieren, dass ein Benutzer sich geÃ¤ndert hat. Der AccessControlManager wird daraufhin die referenzierten
+	 * Kindobjekte (Rollen, Regionen etc.) auf Rekursion Ã¼berprÃ¼fen und an den {@link de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager} eine Benachrichtigung senden,
+	 * dass sich die Rechte des Benutzers geÃ¤ndert haben und eventuelle vorhandene Anmeldungen entfernt werden mÃ¼ssen.
 	 *
-	 * @param userInfo Benutzerobjekt, das sich geändert hat
+	 * @param userInfo Benutzerobjekt, das sich geÃ¤ndert hat
 	 */
 	void userChanged(final UserInfoInternal userInfo) {
 		if(userInfo instanceof DataLoader) {
 			final DataLoader userAsDataLoader = (DataLoader)userInfo;
-			enumerateChildren(userAsDataLoader); // Prüft auf Rekursion
+			enumerateChildren(userAsDataLoader); // PrÃ¼ft auf Rekursion
 			long userId = userInfo.getUserId();
 			notifyUserRightsChangedAsync(userId); // Nachricht an ConnectionsManager
 		}
 	}
 
 	/**
-	 * Gibt alle Kindelemente eines Objekts zurück
+	 * Gibt alle Kindelemente eines Objekts zurÃ¼ck
 	 *
 	 * @param node Objekt das nach Kindelementen gefragt wird
 	 *

@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -15,8 +15,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -30,10 +36,10 @@ import java.net.ConnectException;
 import java.net.Socket;
 
 /**
- * Klasse zum Löschen von vergessenen Lockdatei
+ * Klasse zum LÃ¶schen von vergessenen Lockdatei
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public class RemoveLockFiles {
 
@@ -56,17 +62,17 @@ public class RemoveLockFiles {
 
 		if(davPort != 0 && isServerRunning("127.0.0.1", davPort)) {
 			// Verbindung zu einem vorher gestarteten Datenverteiler konnte aufgebaut werden.
-			// Also dürfen die Lock-Dateien nicht gelöscht werden und der Datenverteiler wird beendet.
-			throw new Exception("Es läuft bereits ein Datenverteiler auf der Portnummer " + davPort + " auf diesem Rechner.");
+			// Also dÃ¼rfen die Lock-Dateien nicht gelÃ¶scht werden und der Datenverteiler wird beendet.
+			throw new Exception("Es lÃ¤uft bereits ein Datenverteiler auf der Portnummer " + davPort + " auf diesem Rechner.");
 		}
 		if(arsDirectory!= null && arsPort != 0 && isServerRunning("127.0.0.1", arsPort)) {
 			// Verbindung zu einem vorher gestarteten Datenverteiler konnte aufgebaut werden.
-			// Also dürfen die Lock-Dateien nicht gelöscht werden und der Datenverteiler wird beendet.
-			throw new Exception("Es läuft bereits ein Archivsystem auf der Portnummer " + arsPort + " auf diesem Rechner.");
+			// Also dÃ¼rfen die Lock-Dateien nicht gelÃ¶scht werden und der Datenverteiler wird beendet.
+			throw new Exception("Es lÃ¤uft bereits ein Archivsystem auf der Portnummer " + arsPort + " auf diesem Rechner.");
 		}
 
 		if(configDirectory != null) {
-			_debug.info("Lock-Dateien der Konfiguration werden gelöscht");
+			_debug.info("Lock-Dateien der Konfiguration werden gelÃ¶scht");
 			File[] lockFiles = configDirectory.listFiles(
 					new FilenameFilter() {
 						@Override
@@ -76,18 +82,18 @@ public class RemoveLockFiles {
 					}
 			);
 			for(File lockFile : lockFiles) {
-				// Zur Sicherheit werden nur leere Dateien gelöscht
+				// Zur Sicherheit werden nur leere Dateien gelÃ¶scht
 				if(lockFile.isFile() && lockFile.length() == 0) {
-					_debug.warning("- Lock-Datei " + lockFile.getCanonicalPath() + " wird gelöscht");
+					_debug.warning("- Lock-Datei " + lockFile.getCanonicalPath() + " wird gelÃ¶scht");
 					lockFile.delete();
 				}
 			}
 		}
 		if(arsDirectory != null) {
-			_debug.info("Lock-Datei des Archivsystems wird gelöscht");
+			_debug.info("Lock-Datei des Archivsystems wird gelÃ¶scht");
 			File lockFile = new File(arsDirectory, "_isActive.flag");
 			if(lockFile.isFile() && lockFile.length() == 0) {
-				_debug.warning("- Lock-Datei " + lockFile.getCanonicalPath() + " wird gelöscht");
+				_debug.warning("- Lock-Datei " + lockFile.getCanonicalPath() + " wird gelÃ¶scht");
 				lockFile.delete();
 			}
 		}
@@ -119,7 +125,7 @@ public class RemoveLockFiles {
 			System.exit(0);
 		}
 		catch(Exception e) {
-			System.out.println("Fehler beim Löschen der Lockdateien: " + e);
+			System.out.println("Fehler beim LÃ¶schen der Lockdateien: " + e);
 			System.exit(1);
 		}
 	}
@@ -145,7 +151,7 @@ public class RemoveLockFiles {
 					_debug.error("Schwerwiegender Laufzeitfehler: " + t + " hat sich wegen eines Errors beendet, Prozess wird terminiert", e);
 				}
 				catch(Throwable ignored) {
-					// Weitere Fehler während der Ausgaben werden ignoriert, damit folgendes exit() auf jeden Fall ausgeführt wird.
+					// Weitere Fehler wÃ¤hrend der Ausgaben werden ignoriert, damit folgendes exit() auf jeden Fall ausgefÃ¼hrt wird.
 				}
 				System.exit(1);
 			}

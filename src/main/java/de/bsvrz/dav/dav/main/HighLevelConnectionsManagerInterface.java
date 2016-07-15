@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -32,7 +38,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Interface für die Verbindungsverwaltung (ehemals ConnectionsManager). Erlaubt Abfragen nach Verbindungen und ähnlichem.
+ * Interface fÃ¼r die Verbindungsverwaltung (ehemals ConnectionsManager). Erlaubt Abfragen nach Verbindungen und Ã¤hnlichem.
  */
 public interface HighLevelConnectionsManagerInterface {
 
@@ -49,7 +55,7 @@ public interface HighLevelConnectionsManagerInterface {
 	void removeConnection(T_T_HighLevelCommunication communication);
 
 	/**
-	 * Gibt die ID der Konfiguration mit der gegebenen Pid zurück
+	 * Gibt die ID der Konfiguration mit der gegebenen Pid zurÃ¼ck
 	 *
 	 * @param configurationPid Die Pid der Konfiguration
 	 *
@@ -58,97 +64,97 @@ public interface HighLevelConnectionsManagerInterface {
 	long getConfigurationId(String configurationPid);
 
 	/**
-	 * Gibt den Typ der lokalen ClientDav-Verbindung zurück
+	 * Gibt den Typ der lokalen ClientDav-Verbindung zurÃ¼ck
 	 * @return pid der lokalen ClientDav-Verbindungs-Anwendung
 	 */
 	String getTransmitterTypePid();
 
 	/**
-	 * Gibt den Namen der lokalen Transmitter-Anwendung zurück
+	 * Gibt den Namen der lokalen Transmitter-Anwendung zurÃ¼ck
 	 * @return Name der Anwendung
 	 */
 	String getTransmitterApplicationName();
 
 	/**
-	 * Gibt die ID des eigenen Transmitters zurück
+	 * Gibt die ID des eigenen Transmitters zurÃ¼ck
 	 * @return Transmitter-Id
 	 */
 	long getTransmitterId();
 
 	/**
-	 * Gibt den Benutzernamen zurück unter dem der Datenverteiler läuft
+	 * Gibt den Benutzernamen zurÃ¼ck unter dem der Datenverteiler lÃ¤uft
 	 * @return Benutzername
 	 */
 	String getUserName();
 
 	/**
-	 * Gibt das Passwort zurück unter dem der Datenverteiler läuft
+	 * Gibt das Passwort zurÃ¼ck unter dem der Datenverteiler lÃ¤uft
 	 * @return Passwort
 	 */
 	String getUserPassword();
 
 	/**
-	 * Gibt das in der Passwort(passwd)-Datei gespeicherte Passwort für den angegebenen Benutzernamen zurück
+	 * Gibt das in der Passwort(passwd)-Datei gespeicherte Passwort fÃ¼r den angegebenen Benutzernamen zurÃ¼ck
 	 * @param userName Benutzername
 	 * @return Passwort oder null falls der Benutzername nicht gefunden werden konnte
 	 */
 	String getStoredPassword(String userName);
 
 	/**
-	 * Gibt das gewicht einer Verbindung zu einem anderen Datenverteiler zurück
+	 * Gibt das gewicht einer Verbindung zu einem anderen Datenverteiler zurÃ¼ck
 	 * @param transmitterId ID des anderen Datenverteilers
 	 * @return Gewicht
 	 */
 	short getWeight(long transmitterId);
 
 	/**
-	 * Gibt die Verbindungsinformation der Verbindung von diesem Datenverteiler zum angegeben zurück
+	 * Gibt die Verbindungsinformation der Verbindung von diesem Datenverteiler zum angegeben zurÃ¼ck
 	 * @param connectedTransmitterId Verbundener Datenverteiler
 	 * @return Verbindungsinformation
 	 */
 	TransmitterConnectionInfo getTransmitterConnectionInfo(long connectedTransmitterId);
 
 	/**
-	 * Gibt die Verbindungsinformation der Verbindung vom angegebenen Datenverteiler zu diesem zurück
+	 * Gibt die Verbindungsinformation der Verbindung vom angegebenen Datenverteiler zu diesem zurÃ¼ck
 	 * @param connectedTransmitterId Verbundener Datenverteiler
 	 * @return Verbindungsinformation
 	 */
 	TransmitterConnectionInfo getRemoteTransmitterConnectionInfo(long connectedTransmitterId);
 
 	/**
-	 * Gibt eine Referenz auf den Telegram-Manager zurück
+	 * Gibt eine Referenz auf den Telegram-Manager zurÃ¼ck
 	 * @return Telegram-Manager
 	 */
 	TelegramManager getTelegramManager();
 
 	/**
-	 * Ermittelt von einer Anwendungs-ID die zugehörige Applikations-Verbindung
+	 * Ermittelt von einer Anwendungs-ID die zugehÃ¶rige Applikations-Verbindung
 	 * @param applicationId ID
 	 * @return Verbindung
 	 */
 	T_A_HighLevelCommunicationInterface getApplicationConnectionFromId(long applicationId);
 
 	/**
-	 * Ermittelt von einer Transmitter-ID die zugehörige Applikations-Verbindung
+	 * Ermittelt von einer Transmitter-ID die zugehÃ¶rige Applikations-Verbindung
 	 * @param transmitterId ID
 	 * @return Verbindung
 	 */
 	T_T_HighLevelCommunicationInterface getTransmitterConnectionFromId(long transmitterId);
 
 	/**
-	 * Gibt alle Anwendungsverbindungen zurück
+	 * Gibt alle Anwendungsverbindungen zurÃ¼ck
 	 * @return Anwendungsverbindungen
 	 */
 	Collection<T_A_HighLevelCommunication> getAllApplicationConnections();
 
 	/**
-	 * Gibt alle Datenverteilerverbindungen zurück
+	 * Gibt alle Datenverteilerverbindungen zurÃ¼ck
 	 * @return Datenverteilerverbindungen
 	 */
 	Collection<T_T_HighLevelCommunication> getAllTransmitterConnections();
 
 	/**
-	 * Gibt die vom Anwender festgelegten Namen der Zugriffsrechte-Plugin-Klassen zurück
+	 * Gibt die vom Anwender festgelegten Namen der Zugriffsrechte-Plugin-Klassen zurÃ¼ck
 	 * @return Liste mit Zugriffsrechte-Plugin-Klassen-Namen
 	 */
 	List<String> getAccessControlPluginsClassNames();
@@ -156,49 +162,49 @@ public interface HighLevelConnectionsManagerInterface {
 	/**
 	 * Beendet alle Verbindungen und Threads
 	 * @param isError Zum signalisieren, dass ein Fehler aufgetreten ist: true, sonst false
-	 * @param message Nach Bedarf eine Fehlermeldung o.ä. zur Ursache des Terminierungsbefehls
+	 * @param message Nach Bedarf eine Fehlermeldung o.Ã¤. zur Ursache des Terminierungsbefehls
 	 */
 	void shutdown(boolean isError, String message);
 
 	/**
-	 * Gibt <tt>true</tt> zurück, wenn sich der Datenverteiler gerade beendet
+	 * Gibt <tt>true</tt> zurÃ¼ck, wenn sich der Datenverteiler gerade beendet
 	 * @return <tt>true</tt>, wenn sich der Datenverteiler gerade beendet, sonst <tt>false</tt>
 	 */
 	boolean isClosing();
 
 	/**
-	 * Gibt das Konfigurations-Objekt, das den datenverteiler repräsentiert zurück
-	 * @return das Konfigurations-Objekt, das den datenverteiler repräsentiert
+	 * Gibt das Konfigurations-Objekt, das den datenverteiler reprÃ¤sentiert zurÃ¼ck
+	 * @return das Konfigurations-Objekt, das den datenverteiler reprÃ¤sentiert
 	 */
 	ConfigurationObject getDavObject();
 
 	/**
-	 * Gibt potentielle Zentraldatenverteiler für die angegebene Anmeldeinformation zurück
+	 * Gibt potentielle Zentraldatenverteiler fÃ¼r die angegebene Anmeldeinformation zurÃ¼ck
 	 * @param baseSubscriptionInfo Anmeldeinformation
 	 * @return Potentielle Zentraldatenverteiler
 	 */
 	long[] getPotentialCentralDistributors(BaseSubscriptionInfo baseSubscriptionInfo);
 
 	/**
-	 * Gibt die beste Verbindung zum angegebenen (nicht notwendigerweise direkt verbundenen) Datenverteiler zurück
+	 * Gibt die beste Verbindung zum angegebenen (nicht notwendigerweise direkt verbundenen) Datenverteiler zurÃ¼ck
 	 * @return die beste Verbindung zum angegebenen Datenverteiler
 	 */
 	T_T_HighLevelCommunicationInterface getBestConnectionToRemoteDav(long remoteDav);
 
 	/**
-	 * Informiert die Anmeldelisten, dass dieser Datenverteiler Zentraldatenverteiler für die angegebene Anmeldung geworden ist
+	 * Informiert die Anmeldelisten, dass dieser Datenverteiler Zentraldatenverteiler fÃ¼r die angegebene Anmeldung geworden ist
 	 * @param baseSubscriptionInfo Anmeldung
 	 */
 	void updateListsNewLocalSubscription(final BaseSubscriptionInfo baseSubscriptionInfo);
 
 	/**
-	 * Informiert die Anmeldelisten, dass dieser Datenverteiler nicht mehr Zentraldatenverteiler für die angegebene Anmeldung ist
+	 * Informiert die Anmeldelisten, dass dieser Datenverteiler nicht mehr Zentraldatenverteiler fÃ¼r die angegebene Anmeldung ist
 	 * @param baseSubscriptionInfo Anmeldung
 	 */
 	void updateListsRemovedLocalSubscription(final BaseSubscriptionInfo baseSubscriptionInfo);
 
 	/**
-	 * Gibt den SubscriptionsManager zurück
+	 * Gibt den SubscriptionsManager zurÃ¼ck
 	 * @return den SubscriptionsManager
 	 */
 	HighLevelSubscriptionsManager getSubscriptionsManager();

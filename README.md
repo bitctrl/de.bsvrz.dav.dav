@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/datenverteiler/de.bsvrz.dav.dav.svg?branch=master)](https://travis-ci.org/datenverteiler/de.bsvrz.dav.dav)
-[![Build Status](https://api.bintray.com/packages/datenverteiler/maven/de.bsvrz.dav.dav/images/download.svg)](https://bintray.com/datenverteiler/maven/de.bsvrz.dav.dav)
+[![Build Status](https://travis-ci.org/bitctrl/de.bsvrz.dav.dav.svg?branch=master)](https://travis-ci.org/bitctrl/de.bsvrz.dav.dav)
+[![Build Status](https://api.bintray.com/packages/bitctrl/maven/de.bsvrz.dav.dav/images/download.svg)](https://bintray.com/bitctrl/maven/de.bsvrz.dav.dav)
 
 Datenverteiler v${project.version}
 =====================

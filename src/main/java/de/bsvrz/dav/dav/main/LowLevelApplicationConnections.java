@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -39,12 +45,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Diese Klasse verwaltet Applikations-Verbindung auf unterster Protokoll-Ebene. Es wird über das ServerConnectionInterface auf neue Applikationsverbindungen
+ * Diese Klasse verwaltet Applikations-Verbindung auf unterster Protokoll-Ebene. Es wird Ã¼ber das ServerConnectionInterface auf neue Applikationsverbindungen
  * gewartet und aus dieser wird eine neue T_A_HighLevelCommunication-Klasse erzeugt und gespeichert. Dabei werden gegebenenfalls Verbindungsaufbau auf
- * Protokollebene, Authentifizierung usw. durchgeführt.
+ * Protokollebene, Authentifizierung usw. durchgefÃ¼hrt.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11478 $
+ * @version $Revision$
  */
 public final class LowLevelApplicationConnections {
 
@@ -102,7 +108,7 @@ public final class LowLevelApplicationConnections {
 		//Start the listener at the application port
 		final ServerConnectionInterface applicationsServerConnection;
 		applicationsServerConnection = communicationProtocolClass.newInstance();
-		// Falls vorhanden und möglich Parameter für das Kommunikationsinterface weitergeben
+		// Falls vorhanden und mÃ¶glich Parameter fÃ¼r das Kommunikationsinterface weitergeben
 		final String communicationParameters = _serverDavParameters.getLowLevelCommunicationParameters();
 		if(communicationParameters.length() != 0 && applicationsServerConnection instanceof ParameterizedConnectionInterface) {
 			final ParameterizedConnectionInterface parameterizedConnection = (ParameterizedConnectionInterface)applicationsServerConnection;
@@ -166,7 +172,7 @@ public final class LowLevelApplicationConnections {
 	public synchronized void updateId(final T_A_HighLevelCommunication communication) {
 		final boolean removed = _unsortedApplicationConnections.remove(communication);
 		if(!removed) {
-			// Kann möglicherweise vorkommen, wenn Applikation zwischenzeitlich abgemeldet wird
+			// Kann mÃ¶glicherweise vorkommen, wenn Applikation zwischenzeitlich abgemeldet wird
 			_debug.fine("Fehler beim Updaten einer Id: " + communication);
 			return;
 		}

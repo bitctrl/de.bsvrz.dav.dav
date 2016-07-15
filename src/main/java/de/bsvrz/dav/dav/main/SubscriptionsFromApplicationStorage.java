@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -16,8 +16,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -32,10 +38,10 @@ import java.util.*;
 
 
 /**
- * Speichert alle Anmeldungen, die über eine Kommunikationsverbindung mit einer Applikation empfangen wurden.
+ * Speichert alle Anmeldungen, die Ã¼ber eine Kommunikationsverbindung mit einer Applikation empfangen wurden.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemoteStorage {
 
@@ -50,7 +56,7 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	 */
 	public final void subscribeSendData(SendSubscriptionTelegram sendSubscriptionTelegram) {
 		if(sendSubscriptionTelegram == null) {
-			throw new IllegalArgumentException("Der Übergabeparameter ist null");
+			throw new IllegalArgumentException("Der Ãœbergabeparameter ist null");
 		}
 		SendSubscriptionInfo sendSubscriptionInfo = sendSubscriptionTelegram.getSendSubscriptionInfo();
 		if(sendSubscriptionInfo == null) {
@@ -85,7 +91,7 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	 */
 	public final void subscribeReceiveData(ReceiveSubscriptionTelegram receiveSubscriptionTelegram) {
 		if(receiveSubscriptionTelegram == null) {
-			throw new IllegalArgumentException("Der Übergabeparameter ist null");
+			throw new IllegalArgumentException("Der Ãœbergabeparameter ist null");
 		}
 		ReceiveSubscriptionInfo receiveSubscriptionInfo = receiveSubscriptionTelegram.getReceiveSubscriptionInfo();
 		if(receiveSubscriptionInfo == null) {
@@ -113,11 +119,11 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	}
 
 	/**
-	 * Überprüft, ob eine Applikation sich als Quelle für die Daten angemeldet hat.
+	 * ÃœberprÃ¼ft, ob eine Applikation sich als Quelle fÃ¼r die Daten angemeldet hat.
 	 *
 	 * @param info Basisanmeldeinformation
 	 *
-	 * @return true: Applikation ist Quelle für spezifiziertes Datum, false: Applikation ist keine Quelle für spezifiziertes Datum.
+	 * @return true: Applikation ist Quelle fÃ¼r spezifiziertes Datum, false: Applikation ist keine Quelle fÃ¼r spezifiziertes Datum.
 	 */
 	final boolean canSend(BaseSubscriptionInfo info) {
 		SendSubscriptionInfo sendSubscriptionInfo = (SendSubscriptionInfo)sendSubscriptionTable.get(info);
@@ -130,11 +136,11 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	}
 
 	/**
-	 * Überprüft ob eine Applikation sich als Senke für spezifiziertes Datum angemeldet hat.
+	 * ÃœberprÃ¼ft ob eine Applikation sich als Senke fÃ¼r spezifiziertes Datum angemeldet hat.
 	 *
 	 * @param info Basisanmeldeinformation
 	 *
-	 * @return true: Applikation ist Senke für spezifiziertes Datum, false: Applikation ist keine Senke für spezifiziertes Datum.
+	 * @return true: Applikation ist Senke fÃ¼r spezifiziertes Datum, false: Applikation ist keine Senke fÃ¼r spezifiziertes Datum.
 	 */
 	final boolean canReceive(BaseSubscriptionInfo info) {
 		ReceiveSubscriptionInfo receiveSubscriptionInfo = (ReceiveSubscriptionInfo)receiveSubscriptionTable.get(info);
@@ -147,7 +153,7 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	}
 
 	/**
-	 * Gibt die registrierte Empfangsanmeldung, wenn vorhanden, zurück.
+	 * Gibt die registrierte Empfangsanmeldung, wenn vorhanden, zurÃ¼ck.
 	 *
 	 * @param info Basisanmeldeinformation
 	 *
@@ -158,7 +164,7 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	}
 
 	/**
-	 * Gibt die registrierte Sendeanmeldung, wenn vorhanden, zurück.
+	 * Gibt die registrierte Sendeanmeldung, wenn vorhanden, zurÃ¼ck.
 	 *
 	 * @param info Basisanmeldeinformation
 	 *
@@ -176,7 +182,7 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	}
 
 	/**
-	 * Gibt alle Anmeldungen zurück, die Daten verschicken. Die Rolle (Sender, Quelle) kann mit {@link #canSend(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)} in
+	 * Gibt alle Anmeldungen zurÃ¼ck, die Daten verschicken. Die Rolle (Sender, Quelle) kann mit {@link #canSend(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)} in
 	 * Erfahrung gebracht werden.
 	 *
 	 * @return Alle Anmeldungen, die Daten verschicken.
@@ -184,7 +190,7 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	public List<SendSubscriptionInfo> getSendingSubscriptions() {
 		final List<SendSubscriptionInfo> result = new ArrayList<SendSubscriptionInfo>();
 		synchronized(sendSubscriptionTable) {
-			// Die Daten der Map müssen erst gecastet werden.
+			// Die Daten der Map mÃ¼ssen erst gecastet werden.
 
 			final Collection allSendSubscription = sendSubscriptionTable.values();
 
@@ -198,7 +204,7 @@ public class SubscriptionsFromApplicationStorage extends SubscriptionsFromRemote
 	}
 
 	/**
-	 * Gibt alle Anmeldungen zurück, die Daten empfangen. Die Rolle (Empfänger, Senke) kann mit {@link #canReceive(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)} in
+	 * Gibt alle Anmeldungen zurÃ¼ck, die Daten empfangen. Die Rolle (EmpfÃ¤nger, Senke) kann mit {@link #canReceive(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)} in
 	 * Erfahrung gebracht werden.
 	 *
 	 * @return Alle Anmeldungen, die Daten empfangen.

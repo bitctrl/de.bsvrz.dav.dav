@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -16,8 +16,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -37,18 +43,18 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Diese Klasse stellt die Parameter des Datenverteilers auf Server-Seite zur Verfügung. Diese Parameter werden durch den Konstruktor oder durch entsprechende
- * Setter-Methoden gesetzt und können durch entsprechende Getter-Methoden gelesen werden.
+ * Diese Klasse stellt die Parameter des Datenverteilers auf Server-Seite zur VerfÃ¼gung. Diese Parameter werden durch den Konstruktor oder durch entsprechende
+ * Setter-Methoden gesetzt und kÃ¶nnen durch entsprechende Getter-Methoden gelesen werden.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 12959 $
+ * @version $Revision$
  */
 public class ServerDavParameters {
 
-	/** DebugLogger für Debug-Ausgaben */
+	/** DebugLogger fÃ¼r Debug-Ausgaben */
 	private static final Debug _debug = Debug.getLogger();
 
-	/** Parameter Schlüssel */
+	/** Parameter SchlÃ¼ssel */
 	private static final String LOCAL_CONFIGURATION_DATA_KEY = "-lokaleKonfiguration=";
 
 	private static final String REMOTE_CONFIGURATION_DATA_KEY = "-remoteKonfiguration=";
@@ -96,20 +102,20 @@ public class ServerDavParameters {
 	/** Die Konfigurations-Pid */
 	private String _configurationPid;
 
-	/** Datenverteileradresse für die Konfigurationsanbindung */
+	/** Datenverteileradresse fÃ¼r die Konfigurationsanbindung */
 	private String _configDataTransmitterAddress;
 
-	/** Datenverteilersubadresse für die Konfigurationsanbindung */
+	/** Datenverteilersubadresse fÃ¼r die Konfigurationsanbindung */
 	private int _configDataTransmitterSubAddress;
 
 	/**
-	 * Das Timeout zum Senden von KeepAlive-Telegrammen. Der Wert dient als Vorschlag für die Verhandlung mit dem Datenverteiler, der den zu verwendenden Wert
+	 * Das Timeout zum Senden von KeepAlive-Telegrammen. Der Wert dient als Vorschlag fÃ¼r die Verhandlung mit dem Datenverteiler, der den zu verwendenden Wert
 	 * festlegt.
 	 */
 	private long _receiveKeepAliveTimeout;
 
 	/**
-	 * Das KeepAlive-Timeout beim Empfang von Telegrammen. Der Wert dient als Vorschlag für die Verhandlung mit dem Datenverteiler, der den zu verwendenden Wert
+	 * Das KeepAlive-Timeout beim Empfang von Telegrammen. Der Wert dient als Vorschlag fÃ¼r die Verhandlung mit dem Datenverteiler, der den zu verwendenden Wert
 	 * festlegt.
 	 */
 	private long _sendKeepAliveTimeout;
@@ -117,7 +123,7 @@ public class ServerDavParameters {
 	/** Der Name des Kommunikationsprotokolls (Default: TCP-IP) */
 	private String _lowLevelCommunicationName;
 
-	/** Parameter für das Kommunikationsprotokoll */
+	/** Parameter fÃ¼r das Kommunikationsprotokoll */
 	private String _lowLevelCommunicationParameters;
 
 	/** Der Name des Authentifikationsprozesses (Default: HMAC-MD5) */
@@ -138,35 +144,35 @@ public class ServerDavParameters {
 	/** Die Pid des Datenverteilertyps (Default: typ.datenverteiler) */
 	private String _dataTransmitterTypePid;
 
-	/** Die Größe des Sendepuffers in Byte, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird. */
+	/** Die GrÃ¶ÃŸe des Sendepuffers in Byte, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird. */
 	private int _davCommunicationOutputBufferSize;
 
-	/** Die Größe des Empfangspuffers in Byte, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird. */
+	/** Die GrÃ¶ÃŸe des Empfangspuffers in Byte, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird. */
 	private int _davCommunicationInputBufferSize;
 
-	/** Die Größe des Sendepuffers in Byte, der bei der Kommunikation mit einer Applikation eingesetzt wird. */
+	/** Die GrÃ¶ÃŸe des Sendepuffers in Byte, der bei der Kommunikation mit einer Applikation eingesetzt wird. */
 	private int _appCommunicationOutputBufferSize;
 
-	/** Die Größe des Empfangspuffers in Byte, der bei der Kommunikation mit einer Applikation eingesetzt wird. */
+	/** Die GrÃ¶ÃŸe des Empfangspuffers in Byte, der bei der Kommunikation mit einer Applikation eingesetzt wird. */
 	private int _appCommunicationInputBufferSize;
 
 	/**
-	 * Die Verzögerungszeit zur Übertragung von gepufferten und zu versendenden Telegrammen. Die Übertragung der gesammelten Daten im Sendepuffer findet erst
+	 * Die VerzÃ¶gerungszeit zur Ãœbertragung von gepufferten und zu versendenden Telegrammen. Die Ãœbertragung der gesammelten Daten im Sendepuffer findet erst
 	 * statt, wenn die hier angegebene Zeit lang keine Daten mehr in der Puffer geschrieben wurden oder der Sendepuffer voll ist.
 	 */
 	private long _communicationSendFlushDelay;
 
 	/**
-	 * Die maximale Größe von Datentelegrammen. Größere Telegramme werden in mehrere Telegramme zerlegt.
+	 * Die maximale GrÃ¶ÃŸe von Datentelegrammen. GrÃ¶ÃŸere Telegramme werden in mehrere Telegramme zerlegt.
 	 *
-	 * @param maxTelegramSize  Maximale Größe von versendeten Datentelegrammen.
+	 * @param maxTelegramSize  Maximale GrÃ¶ÃŸe von versendeten Datentelegrammen.
 	 */
 	private int _maxTelegramSize;
 
 	/** Die Subadresse auf der der Datenverteiler auf die Datenverteilerverbindungen wartet. */
 	private int _transmitterConnectionsSubAddress;
 
-	/** Offset für die Subadresse auf der der Datenverteiler auf die Datenverteilerverbindungen wartet. */
+	/** Offset fÃ¼r die Subadresse auf der der Datenverteiler auf die Datenverteilerverbindungen wartet. */
 	private int _transmitterConnectionsSubAddressOffset = 0;
 
 	/** Die Subadresse auf der der Datenverteiler auf die Applikationsverbindungen wartet. */
@@ -187,19 +193,19 @@ public class ServerDavParameters {
 	/** Benutzerpassworttabelle */
 	private Properties _userProperties;
 
-	/** Flag, das angibt, ob die Benutzerrechte durch diesen Datenverteiler geprüft werden sollen. */
+	/** Flag, das angibt, ob die Benutzerrechte durch diesen Datenverteiler geprÃ¼ft werden sollen. */
 	private UserRightsChecking _userRightsChecking = UserRightsChecking.Compatibility_Enabled;
 
-	/** Liste mit den Plugins für die Kontrolle der Benutzerrechte über den Datenverteiler */
+	/** Liste mit den Plugins fÃ¼r die Kontrolle der Benutzerrechte Ã¼ber den Datenverteiler */
 	private List<String> _accessControlPlugins = new ArrayList<String>();
 
-	/** Zeit in Millisekunden, die gewartet werden soll bevor Verbindungen von anderen Datenverteilern akzeptiert werden dürfen. */
+	/** Zeit in Millisekunden, die gewartet werden soll bevor Verbindungen von anderen Datenverteilern akzeptiert werden dÃ¼rfen. */
 	private long _initialInterDavServerDelay;
 
 	/** Zeit in Millisekunden, die gewartet werden soll bevor versucht wird, abgebrochene Verbindungen neu aufzubauen. */
 	private long _reconnectInterDavDelay;
 
-	/** Kennung, die (falls <code>true</code>) dafür sorgt, dass der Datenverteiler auf die Applikationsfertigmeldung der Parametrierung wartet. */
+	/** Kennung, die (falls <code>true</code>) dafÃ¼r sorgt, dass der Datenverteiler auf die Applikationsfertigmeldung der Parametrierung wartet. */
 	private boolean _waitForParamApp = false;
 
 	/** Inkarnationsname der Parametrierung auf deren Applikationsfertigmeldung gewartet werden soll oder <code>null</code> falls der Inkarnationsname egal ist. */
@@ -211,9 +217,9 @@ public class ServerDavParameters {
 	private String _configAreaPidForApplicationObjects = "";
 
 	/**
-	 * Erzeugt einen neuen Parametersatz mit Defaultwerten für die einzelnen Parameter und setzt die in den übergebenen Aufrufargumenten angegebenen Parameter mit
+	 * Erzeugt einen neuen Parametersatz mit Defaultwerten fÃ¼r die einzelnen Parameter und setzt die in den Ã¼bergebenen Aufrufargumenten angegebenen Parameter mit
 	 * den angegebenen Werten. Unbekannte Aufrufargumente werden ignoriert. Bekannte Aufrufargumente werden nach der Umsetzung auf null gesetzt, um zu
-	 * signalisieren, daß diese Argumente bereits interpretiert wurden.
+	 * signalisieren, daÃŸ diese Argumente bereits interpretiert wurden.
 	 *
 	 * @param argumentList Die auszuwertenden Aufrufargumente.
 	 *
@@ -236,14 +242,14 @@ public class ServerDavParameters {
 
 					final Integer bufferSize = Integer.valueOf(davBufferValue);
 					if(bufferSize < 100000) {
-						throw new IllegalArgumentException("Puffergröße " + bufferSize + " ist nicht sinnvoll. Mindestwert: 100000.");
+						throw new IllegalArgumentException("PuffergrÃ¶ÃŸe " + bufferSize + " ist nicht sinnvoll. Mindestwert: 100000.");
 					}
 					if(i==0) _davCommunicationOutputBufferSize = bufferSize;
 					_davCommunicationInputBufferSize = bufferSize;
 				}
 			}
 			catch(Exception e) {
-				throw new MissingParameterException("Argument -davTelegrammPuffer sollte eine oder zwei mit Doppelpunkt getrennte Zahlen enthalten, die die Sendepuffergröße bzw. die Empfangspuffergröße in Bytes spezifizieren.");
+				throw new MissingParameterException("Argument -davTelegrammPuffer sollte eine oder zwei mit Doppelpunkt getrennte Zahlen enthalten, die die SendepuffergrÃ¶ÃŸe bzw. die EmpfangspuffergrÃ¶ÃŸe in Bytes spezifizieren.");
 			}
 		}
 
@@ -278,28 +284,28 @@ public class ServerDavParameters {
 
 					final Integer bufferSize = Integer.valueOf(appBufferValue);
 					if(bufferSize < 100000) {
-						throw new IllegalArgumentException("Puffergröße " + bufferSize + " ist nicht sinnvoll. Mindestwert: 100000.");
+						throw new IllegalArgumentException("PuffergrÃ¶ÃŸe " + bufferSize + " ist nicht sinnvoll. Mindestwert: 100000.");
 					}
 					if(i==0) _appCommunicationOutputBufferSize = bufferSize;
 					_appCommunicationInputBufferSize = bufferSize;
 				}
 			}
 			catch(Exception e) {
-				throw new MissingParameterException("Argument -appTelegrammPuffer sollte eine oder zwei mit Doppelpunkt getrennte Zahlen enthalten, die die Sendepuffergröße bzw. die Empfangspuffergröße in Bytes spezifizieren.");
+				throw new MissingParameterException("Argument -appTelegrammPuffer sollte eine oder zwei mit Doppelpunkt getrennte Zahlen enthalten, die die SendepuffergrÃ¶ÃŸe bzw. die EmpfangspuffergrÃ¶ÃŸe in Bytes spezifizieren.");
 			}
 		}
-		final String delayArgumentName = "-verzögerungFürAndereDatenverteiler";
+		final String delayArgumentName = "-verzÃ¶gerungFÃ¼rAndereDatenverteiler";
 		if(argumentList.hasArgument(delayArgumentName)) {
 			_initialInterDavServerDelay = argumentList.fetchArgument(delayArgumentName).asRelativeTime();
 		}
 		else {
-			final String alternateArgument = delayArgumentName.replaceAll("[ö]", "oe").replaceAll("[ü]", "ue");
+			final String alternateArgument = delayArgumentName.replaceAll("[Ã¶]", "oe").replaceAll("[Ã¼]", "ue");
 			_initialInterDavServerDelay = argumentList.fetchArgument(alternateArgument + "=60s").asRelativeTime();
 		}
 
 		_reconnectInterDavDelay = argumentList.fetchArgument("-wiederverbindungsWartezeit=60s").asRelativeTime();
 		if(_reconnectInterDavDelay < 1){
-			throw new MissingParameterException("Die angegebene -wiederverbindungsWartezeit=" + _reconnectInterDavDelay + "ms ist ungültig: Muss > 0 sein.");
+			throw new MissingParameterException("Die angegebene -wiederverbindungsWartezeit=" + _reconnectInterDavDelay + "ms ist ungÃ¼ltig: Muss > 0 sein.");
 		}
 
 		final String[] strings = argumentList.fetchArgument("-tcpKommunikationsModul=" + getLowLevelCommunicationName()).asNonEmptyString().split(":", 2);
@@ -308,11 +314,11 @@ public class ServerDavParameters {
 		try {
 			final Class<?> aClass = Class.forName(tcpCommunicationClassName);
 			if(tcpCommunicationParameters.length() != 0 && !(aClass.newInstance() instanceof ParameterizedConnectionInterface)) {
-				throw new MissingParameterException("Das angegebene Kommunikationsverfahren " + tcpCommunicationClassName + " unterstützt keine Parameter: " + tcpCommunicationParameters);
+				throw new MissingParameterException("Das angegebene Kommunikationsverfahren " + tcpCommunicationClassName + " unterstÃ¼tzt keine Parameter: " + tcpCommunicationParameters);
 			}
 		}
 		catch(ClassNotFoundException e) {
-			throw new MissingParameterException("Das angegebene Kommunikationsverfahren ist nicht verfügbar, Klassenname: " + tcpCommunicationClassName, e);
+			throw new MissingParameterException("Das angegebene Kommunikationsverfahren ist nicht verfÃ¼gbar, Klassenname: " + tcpCommunicationClassName, e);
 		}
 		catch(InstantiationException e) {
 			throw new MissingParameterException("Das angegebene Kommunikationsverfahren kann nicht instantiiert werden, Klassenname: " + tcpCommunicationClassName, e);
@@ -335,7 +341,7 @@ public class ServerDavParameters {
 		try {
 			String tmp, parameter;
 
-			parameter = getParameter(startArguments, "-rechtePrüfung=");
+			parameter = getParameter(startArguments, "-rechtePrÃ¼fung=");
 			if(parameter == null) parameter = getParameter(startArguments, "-rechtePruefung=");
 			if(parameter != null) {
 				parameter = parameter.substring(parameter.indexOf('=') + 1).trim().toLowerCase();
@@ -352,19 +358,19 @@ public class ServerDavParameters {
 					setUserRightsChecking(UserRightsChecking.OldDataModel);
 				}
 				else {
-					throw new MissingParameterException("Aufrufparameter zur Rechteprüfung sollte den Wert 'neu', 'alt', 'ja' oder 'nein' haben");
+					throw new MissingParameterException("Aufrufparameter zur RechteprÃ¼fung sollte den Wert 'neu', 'alt', 'ja' oder 'nein' haben");
 				}
 			}
 
 
-			// Rechteprüfungs-Plugins
+			// RechteprÃ¼fungs-Plugins
 			parameter = getParameter(startArguments, ACCESS_CONTROL_PLUGIN_KEY);
 			if(parameter != null) {
 				try {
 					final String param = ArgumentParser.getParameter(parameter, ACCESS_CONTROL_PLUGIN_KEY);
 					if((param == null) || (param.length() == 0)) {
 						throw new MissingParameterException(
-								"Der Parameter für die Plug-Ins zur Zugriffsrechteverwaltung muss folgende Formatierung besitzen: " + ACCESS_CONTROL_PLUGIN_KEY + "=Bezeichnung[,Bezeichnung,Bezeichnung,...]"
+								"Der Parameter fÃ¼r die Plug-Ins zur Zugriffsrechteverwaltung muss folgende Formatierung besitzen: " + ACCESS_CONTROL_PLUGIN_KEY + "=Bezeichnung[,Bezeichnung,Bezeichnung,...]"
 						);
 					}
 					final String[] plugins = param.split(",");
@@ -381,7 +387,7 @@ public class ServerDavParameters {
 				}
 				catch(InvalidArgumentException ex) {
 					throw new MissingParameterException(
-							"Der Parameter für die Plug-Ins zur Zugriffsrechteverwaltung muss folgende Formatierung besitzen: " + ACCESS_CONTROL_PLUGIN_KEY + "=Bezeichnung[,Bezeichnung,Bezeichnung,...]"
+							"Der Parameter fÃ¼r die Plug-Ins zur Zugriffsrechteverwaltung muss folgende Formatierung besitzen: " + ACCESS_CONTROL_PLUGIN_KEY + "=Bezeichnung[,Bezeichnung,Bezeichnung,...]"
 					);
 				}
 			}
@@ -441,8 +447,8 @@ public class ServerDavParameters {
 			}
 			else {
 				throw new IllegalArgumentException(
-						"Aufrufargument " + LOCAL_CONFIGURATION_DATA_KEY + " wird nicht mehr unterstützt, da die Einstellung jetzt"
-						+ " automatisch von der lokalen Konfiguration übernommen wird."
+						"Aufrufargument " + LOCAL_CONFIGURATION_DATA_KEY + " wird nicht mehr unterstÃ¼tzt, da die Einstellung jetzt"
+						+ " automatisch von der lokalen Konfiguration Ã¼bernommen wird."
 				);
 			}
 
@@ -474,7 +480,7 @@ public class ServerDavParameters {
 				}
 			}
 			if(_sendKeepAliveTimeout < 1000) {
-				throw new MissingParameterException("Timeouts müssen grösser gleich als 1 Sekunde sein");
+				throw new MissingParameterException("Timeouts mÃ¼ssen grÃ¶sser gleich als 1 Sekunde sein");
 			}
 
 			//Receive keep alive timeout
@@ -505,7 +511,7 @@ public class ServerDavParameters {
 				}
 			}
 			if(_receiveKeepAliveTimeout < 1000) {
-				throw new MissingParameterException("Timeouts müssen grösser gleich als 1 Sekunde sein");
+				throw new MissingParameterException("Timeouts mÃ¼ssen grÃ¶sser gleich als 1 Sekunde sein");
 			}
 
 			// User Passwort Tabelle
@@ -569,7 +575,7 @@ public class ServerDavParameters {
 					_userPassword = _userProperties.getProperty(_userName);
 					if((_userPassword == null) || (_userPassword.length() == 0)) {
 						throw new MissingParameterException(
-								"Das Passwort für den Benutzer " + _userName + " ist in der Authentifizierungsdatei nicht vorhanden"
+								"Das Passwort fÃ¼r den Benutzer " + _userName + " ist in der Authentifizierungsdatei nicht vorhanden"
 						);
 					}
 				}
@@ -584,13 +590,13 @@ public class ServerDavParameters {
 					_authentificationProcessName = ArgumentParser.getParameter(parameter, AUTHENTIFICATION_PROCESS_KEY);
 					if((_authentificationProcessName == null) || (_authentificationProcessName.length() == 0)) {
 						throw new MissingParameterException(
-								"Der Parameter für die Klasse des Authentifizierungsverfahren muss folgende Formatierung besitzen: -authentifizierungsVerfahren=Zeichenkette"
+								"Der Parameter fÃ¼r die Klasse des Authentifizierungsverfahren muss folgende Formatierung besitzen: -authentifizierungsVerfahren=Zeichenkette"
 						);
 					}
 				}
 				catch(InvalidArgumentException ex) {
 					throw new MissingParameterException(
-							"Der Parameter für die Klasse des Authentifizierungsverfahren muss folgende Formatierung besitzen: -authentifizierungsVerfahren=Zeichenkette"
+							"Der Parameter fÃ¼r die Klasse des Authentifizierungsverfahren muss folgende Formatierung besitzen: -authentifizierungsVerfahren=Zeichenkette"
 					);
 				}
 			}
@@ -635,7 +641,7 @@ public class ServerDavParameters {
 					_configurationUserPassword = _userProperties.getProperty(_configurationUserName);
 					if((_configurationUserPassword == null) || (_configurationUserPassword.length() == 0)) {
 						throw new MissingParameterException(
-								"Das Passwort für den Konfigurationsbenutzer " + _configurationUserName + " ist in der Authentifizierungsdatei nicht vorhanden"
+								"Das Passwort fÃ¼r den Konfigurationsbenutzer " + _configurationUserName + " ist in der Authentifizierungsdatei nicht vorhanden"
 						);
 					}
 				}
@@ -673,7 +679,7 @@ public class ServerDavParameters {
 					_parameterUserPassword = _userProperties.getProperty(_parameterUserName);
 					if((_parameterUserPassword == null) || (_parameterUserPassword.length() == 0)) {
 						throw new MissingParameterException(
-								"Das Passwort für den Parametrierungsbenutzer " + _parameterUserName + " ist in der Authentifizierungsdatei nicht vorhanden"
+								"Das Passwort fÃ¼r den Parametrierungsbenutzer " + _parameterUserName + " ist in der Authentifizierungsdatei nicht vorhanden"
 						);
 					}
 				}
@@ -738,7 +744,7 @@ public class ServerDavParameters {
 				}
 			}
 			if(_transmitterConnectionsSubAddress < 0) {
-				throw new MissingParameterException("Die Subadresse muss grösser gleich 0 sein");
+				throw new MissingParameterException("Die Subadresse muss grÃ¶sser gleich 0 sein");
 			}
 
 			//Dav-Dav-Port-Offset
@@ -793,7 +799,7 @@ public class ServerDavParameters {
 				}
 			}
 			if(_applicationConnectionsSubAddress < 0) {
-				throw new MissingParameterException("Die Subadresse muss grösser gleich 0 sein");
+				throw new MissingParameterException("Die Subadresse muss grÃ¶sser gleich 0 sein");
 			}
 
 			//Connection to neighbours time out
@@ -803,12 +809,12 @@ public class ServerDavParameters {
 				long connectionTime = Long.parseLong(tmp);
 				if(connectionTime != 0) {
 					if(connectionTime < 1000) {
-						throw new MissingParameterException("Timeouts müssen grösser gleich als 1 Sekunde sein");
+						throw new MissingParameterException("Timeouts mÃ¼ssen grÃ¶sser gleich als 1 Sekunde sein");
 					}
 					CommunicationConstant.MAX_WAITING_TIME_FOR_CONNECTION = connectionTime;
 				}
 				else {
-					// es wird wieder der ursprüngliche Wert (10.000.000ms) gesetzt.
+					// es wird wieder der ursprÃ¼ngliche Wert (10.000.000ms) gesetzt.
 					CommunicationConstant.MAX_WAITING_TIME_FOR_CONNECTION = 10000000L;
 				}
 			}
@@ -822,7 +828,7 @@ public class ServerDavParameters {
 					}
 					long connectionTime = Integer.parseInt(tmp) * 1000;
 					if(connectionTime < 1000) {
-						throw new MissingParameterException("Timeouts müssen grösser gleich als 1 Sekunde sein");
+						throw new MissingParameterException("Timeouts mÃ¼ssen grÃ¶sser gleich als 1 Sekunde sein");
 					}
 					CommunicationConstant.MAX_WAITING_TIME_FOR_CONNECTION = connectionTime;
 				}
@@ -846,12 +852,12 @@ public class ServerDavParameters {
 				// Wenn der Wert aus der Resource gleich 0 ist, dann wird der Defaultwert aus CommunicationConstant benutzt.
 				if(responceTime != 0) {
 					if(responceTime < 1000) {
-						throw new MissingParameterException("Timeouts müssen grösser gleich als 1 Sekunde sein");
+						throw new MissingParameterException("Timeouts mÃ¼ssen grÃ¶sser gleich als 1 Sekunde sein");
 					}
 					CommunicationConstant.MAX_WAITING_TIME_FOR_SYNC_RESPONCE = responceTime;
 				}
 				else {
-					// es wird wieder der ursprüngliche Wert (600.000ms = 10 min) gesetzt.
+					// es wird wieder der ursprÃ¼ngliche Wert (600.000ms = 10 min) gesetzt.
 					CommunicationConstant.MAX_WAITING_TIME_FOR_SYNC_RESPONCE = 600000L;
 				}
 			}
@@ -865,7 +871,7 @@ public class ServerDavParameters {
 					}
 					long responceTime = Integer.parseInt(tmp) * 1000;
 					if(responceTime < 1000) {
-						throw new MissingParameterException("Timeouts müssen grösser gleich als 1 Sekunde sein");
+						throw new MissingParameterException("Timeouts mÃ¼ssen grÃ¶sser gleich als 1 Sekunde sein");
 					}
 					CommunicationConstant.MAX_WAITING_TIME_FOR_SYNC_RESPONCE = responceTime;
 				}
@@ -890,24 +896,24 @@ public class ServerDavParameters {
 			catch(ClassNotFoundException ex) {
 				throw new MissingParameterException("Die Kommunikationsverfahrensklasse existiert nicht");
 			}
-			tmp = resourceBundle.getString("Sendepuffergrösse");
+			tmp = resourceBundle.getString("SendepuffergrÃ¶sse");
 			_appCommunicationOutputBufferSize = Integer.parseInt(tmp);
 			_davCommunicationOutputBufferSize = _appCommunicationOutputBufferSize * 2;
-			tmp = resourceBundle.getString("Empfangspuffergrösse");
+			tmp = resourceBundle.getString("EmpfangspuffergrÃ¶sse");
 			_appCommunicationInputBufferSize = Integer.parseInt(tmp);
 			_davCommunicationInputBufferSize = _appCommunicationInputBufferSize * 2;
-			tmp = resourceBundle.getString("SendeVerzögerung");
+			tmp = resourceBundle.getString("SendeVerzÃ¶gerung");
 			_communicationSendFlushDelay = Long.parseLong(tmp);
 			if(_communicationSendFlushDelay > 0) {
 				CommunicationConstant.MAX_SEND_DELAY_TIME = _communicationSendFlushDelay;
 			}
-			tmp = resourceBundle.getString("MaxTelegrammGrösse");
+			tmp = resourceBundle.getString("MaxTelegrammGrÃ¶sse");
 			_maxTelegramSize = Integer.parseInt(tmp);
 			if(_maxTelegramSize > 0) {
 				CommunicationConstant.MAX_SPLIT_THRESHOLD = _maxTelegramSize;
 			}
 			else {
-				throw new MissingParameterException("Die maximale Telegrammlänge muss grösser 0 sein");
+				throw new MissingParameterException("Die maximale TelegrammlÃ¤nge muss grÃ¶sser 0 sein");
 			}
 		}
 		catch(MissingResourceException ex) {
@@ -919,23 +925,23 @@ public class ServerDavParameters {
 	/**
 	 * Bestimmt das in der Passwort-Datei gespeicherte Passwort eines bestimmten Benutzers.
 	 * @param userName Name des Benutzers
-	 * @return Passwort des Benutzers oder <code>null</code>, wenn kein Passwort für den Benutzer in der Passwort-Datei enthalten ist.
+	 * @return Passwort des Benutzers oder <code>null</code>, wenn kein Passwort fÃ¼r den Benutzer in der Passwort-Datei enthalten ist.
 	 */
 	public String getStoredPassword(String userName) {
 		if(_userProperties == null) {
-			_debug.warning("Lokale Passwort-Datei nicht verfügbar. Sie sollte mit dem Aufrufargument -authentifizierung= angegeben werden.");
+			_debug.warning("Lokale Passwort-Datei nicht verfÃ¼gbar. Sie sollte mit dem Aufrufargument -authentifizierung= angegeben werden.");
 			return null;
 		}
 		return _userProperties.getProperty(userName);
 	}
 
 	/**
-	 * Sucht in dem angegebenen Feld nach dem Parameter, der mit dem Schlüssel anfängt.
+	 * Sucht in dem angegebenen Feld nach dem Parameter, der mit dem SchlÃ¼ssel anfÃ¤ngt.
 	 *
 	 * @param arguments Feld von Startargumenten
-	 * @param key       der Schlüssel
+	 * @param key       der SchlÃ¼ssel
 	 *
-	 * @return Der Wert zum angegebenen Schlüssel oder <code>null</code>, falls kein Wert hierzu existiert.
+	 * @return Der Wert zum angegebenen SchlÃ¼ssel oder <code>null</code>, falls kein Wert hierzu existiert.
 	 */
 	private String getParameter(String[] arguments, String key) {
 		String parameter = null;
@@ -957,18 +963,18 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Bestimmt die maximale Größe von Datentelegrammen. Größere Telegramme werden in mehrere Telegramme zerlegt.
+	 * Bestimmt die maximale GrÃ¶ÃŸe von Datentelegrammen. GrÃ¶ÃŸere Telegramme werden in mehrere Telegramme zerlegt.
 	 *
-	 * @return maxTelegramSize  Maximale Größe von versendeten Datentelegrammen.
+	 * @return maxTelegramSize  Maximale GrÃ¶ÃŸe von versendeten Datentelegrammen.
 	 */
 	public final int getMaxDataTelegramSize() {
 		return _maxTelegramSize;
 	}
 
 	/**
-	 * Setzt die maximale Größe von Datentelegrammen. Größere Telegramme werden in mehrere Telegramme zerlegt.
+	 * Setzt die maximale GrÃ¶ÃŸe von Datentelegrammen. GrÃ¶ÃŸere Telegramme werden in mehrere Telegramme zerlegt.
 	 *
-	 * @param maxTelegramSize Maximale Größe von versendeten Datentelegrammen.
+	 * @param maxTelegramSize Maximale GrÃ¶ÃŸe von versendeten Datentelegrammen.
 	 */
 	public final void setMaxDataTelegramSize(int maxTelegramSize) {
 		if(maxTelegramSize > 0) {
@@ -1019,9 +1025,9 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Liefert einen Offset für die Subadresse mit der dieser Datenverteiler auf Verbindungen von anderen Datenverteilern wartet.
+	 * Liefert einen Offset fÃ¼r die Subadresse mit der dieser Datenverteiler auf Verbindungen von anderen Datenverteilern wartet.
 	 *
-	 * @return Offset für die Subadresse mit der dieser Datenverteiler auf Verbindungen von anderen Datenverteilern wartet.
+	 * @return Offset fÃ¼r die Subadresse mit der dieser Datenverteiler auf Verbindungen von anderen Datenverteilern wartet.
 	 */
 	public final int getTransmitterConnectionsSubAddressOffset() {
 		return _transmitterConnectionsSubAddressOffset;
@@ -1070,7 +1076,7 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt die Id des Datenverteilers zurück
+	 * Gibt die Id des Datenverteilers zurÃ¼ck
 	 *
 	 * @return die Datenverteiler Id
 	 */
@@ -1208,20 +1214,20 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Bestimmt das Timeout zum Senden von KeepAlive-Telegrammen. Der Wert dient als Vorschlag für die Verhandlung mit dem Datenverteiler, der den zu verwendenden
+	 * Bestimmt das Timeout zum Senden von KeepAlive-Telegrammen. Der Wert dient als Vorschlag fÃ¼r die Verhandlung mit dem Datenverteiler, der den zu verwendenden
 	 * Wert festlegt.
 	 *
-	 * @return timeout  Vorschlag für das Timeout zum Senden von KeepAlive-Telegrammen.
+	 * @return timeout  Vorschlag fÃ¼r das Timeout zum Senden von KeepAlive-Telegrammen.
 	 */
 	public final long getSendKeepAliveTimeout() {
 		return _sendKeepAliveTimeout;
 	}
 
 	/**
-	 * Setzt das Timeout zum Senden von KeepAlive-Telegrammen. Der Wert dient als Vorschlag für die Verhandlung mit dem Datenverteiler, der den zu verwendenden
+	 * Setzt das Timeout zum Senden von KeepAlive-Telegrammen. Der Wert dient als Vorschlag fÃ¼r die Verhandlung mit dem Datenverteiler, der den zu verwendenden
 	 * Wert festlegt.
 	 *
-	 * @param timeout Vorschlag für das Timeout zum Senden von KeepAlive-Telegrammen.
+	 * @param timeout Vorschlag fÃ¼r das Timeout zum Senden von KeepAlive-Telegrammen.
 	 */
 	public final void setSendKeepAliveTimeout(long timeout) {
 		if(timeout > 0) {
@@ -1230,20 +1236,20 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Bestimmt das KeepAlive-Timeout beim Empfang von Telegrammen. Der Wert dient als Vorschlag für die Verhandlung mit dem Datenverteiler, der den zu
+	 * Bestimmt das KeepAlive-Timeout beim Empfang von Telegrammen. Der Wert dient als Vorschlag fÃ¼r die Verhandlung mit dem Datenverteiler, der den zu
 	 * verwendenden Wert festlegt.
 	 *
-	 * @return timeout  Vorschlag für das KeepAlive-Timeout beim Empfang Telegrammen.
+	 * @return timeout  Vorschlag fÃ¼r das KeepAlive-Timeout beim Empfang Telegrammen.
 	 */
 	public final long getReceiveKeepAliveTimeout() {
 		return _receiveKeepAliveTimeout;
 	}
 
 	/**
-	 * Setzt das KeepAlive-Timeout beim Empfang von Telegrammen. Der Wert dient als Vorschlag für die Verhandlung mit dem Datenverteiler, der den zu verwendenden
+	 * Setzt das KeepAlive-Timeout beim Empfang von Telegrammen. Der Wert dient als Vorschlag fÃ¼r die Verhandlung mit dem Datenverteiler, der den zu verwendenden
 	 * Wert festlegt.
 	 *
-	 * @param timeout Vorschlag für das KeepAlive-Timeout beim Empfang Telegrammen.
+	 * @param timeout Vorschlag fÃ¼r das KeepAlive-Timeout beim Empfang Telegrammen.
 	 */
 	public final void setReceiveKeepAliveTimeout(long timeout) {
 		if(timeout > 0) {
@@ -1252,20 +1258,20 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Bestimmt die Verzögerungszeit zur Übertragung von gepufferten und zu versendenden Telegrammen. Die Übertragung der gesammelten Daten im Sendepuffer findet
+	 * Bestimmt die VerzÃ¶gerungszeit zur Ãœbertragung von gepufferten und zu versendenden Telegrammen. Die Ãœbertragung der gesammelten Daten im Sendepuffer findet
 	 * erst statt, wenn die hier angegebene Zeit lang keine Daten mehr in der Puffer geschrieben wurden oder der Sendepuffer voll ist.
 	 *
-	 * @return Verzögerungszeit
+	 * @return VerzÃ¶gerungszeit
 	 */
 	public final long getCommunicationSendFlushDelay() {
 		return _communicationSendFlushDelay;
 	}
 
 	/**
-	 * Setzt die Verzögerungszeit zur Übertragung von gepufferten und zu versendenden Telegrammen. Die Übertragung der gesammelten Daten im Sendepuffer findet erst
+	 * Setzt die VerzÃ¶gerungszeit zur Ãœbertragung von gepufferten und zu versendenden Telegrammen. Die Ãœbertragung der gesammelten Daten im Sendepuffer findet erst
 	 * statt, wenn die hier angegebene Zeit lang keine Daten mehr in der Puffer geschrieben wurden oder der Sendepuffer voll ist.
 	 *
-	 * @param delay Verzögerungszeit
+	 * @param delay VerzÃ¶gerungszeit
 	 */
 	public final void setCommunicationSendFlushDelay(long delay) {
 		if(delay > 0) {
@@ -1274,18 +1280,18 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Bestimmt die Größe des Sendepuffers, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird.
+	 * Bestimmt die GrÃ¶ÃŸe des Sendepuffers, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird.
 	 *
-	 * @return bufferSize Größe des Sendepuffers in Byte.
+	 * @return bufferSize GrÃ¶ÃŸe des Sendepuffers in Byte.
 	 */
 	public final int getDavCommunicationOutputBufferSize() {
 		return _davCommunicationOutputBufferSize;
 	}
 
 	/**
-	 * Setzt die Größe des Sendepuffers, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird.
+	 * Setzt die GrÃ¶ÃŸe des Sendepuffers, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird.
 	 *
-	 * @param bufferSize Größe des Sendepuffers in Byte.
+	 * @param bufferSize GrÃ¶ÃŸe des Sendepuffers in Byte.
 	 */
 	public final void setDavCommunicationOutputBufferSize(int bufferSize) {
 		if(bufferSize > 0) {
@@ -1294,18 +1300,18 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Bestimmt die Größe des Empfangspuffers, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird.
+	 * Bestimmt die GrÃ¶ÃŸe des Empfangspuffers, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird.
 	 *
-	 * @return bufferSize Größe des Empfangspuffers in Byte.
+	 * @return bufferSize GrÃ¶ÃŸe des Empfangspuffers in Byte.
 	 */
 	public final int getDavCommunicationInputBufferSize() {
 		return _davCommunicationInputBufferSize;
 	}
 
 	/**
-	 * Setzt die Größe des Empfangspuffers, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird.
+	 * Setzt die GrÃ¶ÃŸe des Empfangspuffers, der bei der Kommunikation mit dem Datenverteiler eingesetzt wird.
 	 *
-	 * @param bufferSize Größe des Empfangspuffers in Byte.
+	 * @param bufferSize GrÃ¶ÃŸe des Empfangspuffers in Byte.
 	 */
 	public final void setDavCommunicationInputBufferSize(int bufferSize) {
 		if(bufferSize > 0) {
@@ -1314,18 +1320,18 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Bestimmt die Größe des Sendepuffers, der bei der Kommunikation mit einer Applikation eingesetzt wird.
+	 * Bestimmt die GrÃ¶ÃŸe des Sendepuffers, der bei der Kommunikation mit einer Applikation eingesetzt wird.
 	 *
-	 * @return bufferSize Größe des Sendepuffers in Byte.
+	 * @return bufferSize GrÃ¶ÃŸe des Sendepuffers in Byte.
 	 */
 	public final int getAppCommunicationOutputBufferSize() {
 		return _appCommunicationOutputBufferSize;
 	}
 
 	/**
-	 * Setzt die Größe des Sendepuffers, der bei der Kommunikation mit einer Applikation eingesetzt wird.
+	 * Setzt die GrÃ¶ÃŸe des Sendepuffers, der bei der Kommunikation mit einer Applikation eingesetzt wird.
 	 *
-	 * @param bufferSize Größe des Sendepuffers in Byte.
+	 * @param bufferSize GrÃ¶ÃŸe des Sendepuffers in Byte.
 	 */
 	public final void setAppCommunicationOutputBufferSize(int bufferSize) {
 		if(bufferSize > 0) {
@@ -1334,18 +1340,18 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Bestimmt die Größe des Empfangspuffers, der bei der Kommunikation mit einer Applikation eingesetzt wird.
+	 * Bestimmt die GrÃ¶ÃŸe des Empfangspuffers, der bei der Kommunikation mit einer Applikation eingesetzt wird.
 	 *
-	 * @return bufferSize Größe des Empfangspuffers in Byte.
+	 * @return bufferSize GrÃ¶ÃŸe des Empfangspuffers in Byte.
 	 */
 	public final int getAppCommunicationInputBufferSize() {
 		return _appCommunicationInputBufferSize;
 	}
 
 	/**
-	 * Setzt die Größe des Empfangspuffers, der bei der Kommunikation mit einer Applikation eingesetzt wird.
+	 * Setzt die GrÃ¶ÃŸe des Empfangspuffers, der bei der Kommunikation mit einer Applikation eingesetzt wird.
 	 *
-	 * @param bufferSize Größe des Empfangspuffers in Byte.
+	 * @param bufferSize GrÃ¶ÃŸe des Empfangspuffers in Byte.
 	 */
 	public final void setAppCommunicationInputBufferSize(int bufferSize) {
 		if(bufferSize > 0) {
@@ -1354,7 +1360,7 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt die Information zurück, ob der Datenverteiler auf eine lokale Anmeldung einer Konfigurationsapplikation warten muss.
+	 * Gibt die Information zurÃ¼ck, ob der Datenverteiler auf eine lokale Anmeldung einer Konfigurationsapplikation warten muss.
 	 *
 	 * @return true  : im lokalen Konfigurationsbetrieb. false : implements remote Konfigurationsbetrieb.
 	 */
@@ -1363,7 +1369,7 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt die Konfigurationsparameter des Lokalen Modus zurück.
+	 * Gibt die Konfigurationsparameter des Lokalen Modus zurÃ¼ck.
 	 *
 	 * @return die Pid und die Id der Konfigurationsapplikation
 	 */
@@ -1393,7 +1399,7 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt die Konfigurationsparameter des Remote-Modus zurück.
+	 * Gibt die Konfigurationsparameter des Remote-Modus zurÃ¼ck.
 	 *
 	 * @return die Konfigurationsparameter des Remote-Modus
 	 */
@@ -1413,7 +1419,7 @@ public class ServerDavParameters {
 	 *
 	 * @param configDataTransmitterAddress die Adresse des Datenverteilers wo die Konfiguration angemeldet ist.
 	 * @param configDataTransmitterSubAddress
-	 *                                     Datenverteilersubadresse für die Konfigurationsanbindung
+	 *                                     Datenverteilersubadresse fÃ¼r die Konfigurationsanbindung
 	 * @param configurationPid             Pid der Konfiguration
 	 */
 	public final void setRemoteModeParameter(
@@ -1430,7 +1436,7 @@ public class ServerDavParameters {
 
 	
 	/**
-	 * Gibt die Konfigurationsid zurück
+	 * Gibt die Konfigurationsid zurÃ¼ck
 	 *
 	 * @return die Konfigurationsid
 	 */
@@ -1449,7 +1455,7 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt der Konfigurationsbenutzername zurück
+	 * Gibt der Konfigurationsbenutzername zurÃ¼ck
 	 *
 	 * @return der Konfigurationsbenutzername
 	 */
@@ -1467,7 +1473,7 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt der Konfigurationsbenutzerpasswort zurück
+	 * Gibt der Konfigurationsbenutzerpasswort zurÃ¼ck
 	 *
 	 * @return der Konfigurationsbenutzerpasswort
 	 */
@@ -1486,7 +1492,7 @@ public class ServerDavParameters {
 
 
 	/**
-	 * Gibt der Parametrierungsbenutzername zurück
+	 * Gibt der Parametrierungsbenutzername zurÃ¼ck
 	 *
 	 * @return der Parametrierungsbenutzername
 	 */
@@ -1504,7 +1510,7 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt der Parametrierungsbenutzerpasswort zurück
+	 * Gibt der Parametrierungsbenutzerpasswort zurÃ¼ck
 	 *
 	 * @return der Parametrierungsbenutzerpasswort
 	 */
@@ -1521,12 +1527,12 @@ public class ServerDavParameters {
 		_parameterUserPassword = paramUserPassword;
 	}
 
-	/** Gibt auf der Standardausgabe die möglichen Startargumente einer Datenverteilerapplikation aus. */
+	/** Gibt auf der Standardausgabe die mÃ¶glichen Startargumente einer Datenverteilerapplikation aus. */
 	public static void printArgumentsList() {
 		System.out.println();
 		System.out.println("----------Argumente des Datenverteilers----------");
 		System.out.println();
-		System.out.println("-rechtePrüfung=ja|nein|alt|neu");
+		System.out.println("-rechtePrÃ¼fung=ja|nein|alt|neu");
 		System.out.println("-zugriffsRechtePlugins=Plugin(Zeichenkette)[,Plugin(Zeichenkette)][,Plugin(Zeichenkette)]...");
 		System.out.println("-remoteKonfiguration=Datenverteileradresse(Zeichenkette):Datenverteilersubadresse(Zahl):Konfigurationspid(Zeichenkette)");
 		System.out.println("-datenverteilerId=datenverteilerId(Zeichenkette)");
@@ -1545,9 +1551,9 @@ public class ServerDavParameters {
 		System.out.println();
 		System.out.println("Bemerkungen: ");
 		System.out.println();
-		System.out.println("Es gibt zwei Startmodi für den Datenverteiler:");
+		System.out.println("Es gibt zwei Startmodi fÃ¼r den Datenverteiler:");
 		System.out.println("Modus 1: wenn die Konfiguration sich lokal anmelden muss (ohne -remoteKonfiguration)");
-		System.out.println("Modus 2: wenn die Konfiguration über einen anderen Datenverteiler erreichbar ist (-remoteKonfiguration=...)");
+		System.out.println("Modus 2: wenn die Konfiguration Ã¼ber einen anderen Datenverteiler erreichbar ist (-remoteKonfiguration=...)");
 	}
 
 	public List<String> getAccessControlPlugins() {
@@ -1566,7 +1572,7 @@ public class ServerDavParameters {
 		return _userRightsChecking;
 	}
 
-	/** Zeit in Millisekunden, die gewartet werden soll bevor Verbindungen von anderen Datenverteilern akzeptiert werden dürfen.
+	/** Zeit in Millisekunden, die gewartet werden soll bevor Verbindungen von anderen Datenverteilern akzeptiert werden dÃ¼rfen.
 	 * @return Zeit in Millisekunden
 	 */
 	public long getInitialInterDavServerDelay() {
@@ -1585,7 +1591,7 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Erzeugt einen neuen Parametersatz für eine Applikationsverbindung.
+	 * Erzeugt einen neuen Parametersatz fÃ¼r eine Applikationsverbindung.
 	 *
 	 * @throws MissingParameterException Bei formalen Fehlern beim Lesen der Aufrufargumente oder der Defaultwerte.
 	 * @return Parameterobjekt zum Aufbau einer Applikationsverbindung
@@ -1611,7 +1617,7 @@ public class ServerDavParameters {
 				throw new IllegalStateException("Inkonsistente Parameter.");
 			}
 			configurationPid = (String)objects[0];
-			address = "127.0.0.1";  // localhost über loopback
+			address = "127.0.0.1";  // localhost Ã¼ber loopback
 			subAddress = getApplicationConnectionsSubAddress();
 			userName = "TransmitterLocalApplication@" + System.currentTimeMillis();
 			userPassword = "TransmitterLocalApplication";
@@ -1691,7 +1697,7 @@ public class ServerDavParameters {
 
 	/**
 	 * @author Kappich Systemberatung
-	 * @version $Revision: 12959 $
+	 * @version $Revision$
 	 */
 	public static enum UserRightsChecking {
 		Disabled,

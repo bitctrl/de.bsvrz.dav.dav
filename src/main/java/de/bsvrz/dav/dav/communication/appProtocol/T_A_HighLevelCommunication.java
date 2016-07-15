@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2005 by Kappich+Kniß Systemberatung Aachen (K2S)
+ * Copyright 2005 by Kappich+KniÃŸ Systemberatung Aachen (K2S)
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -15,8 +15,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.communication.appProtocol;
@@ -29,28 +35,27 @@ import de.bsvrz.dav.daf.main.CommunicationError;
 import de.bsvrz.dav.daf.main.config.ConfigurationChangeException;
 import de.bsvrz.dav.daf.main.impl.CommunicationConstant;
 import de.bsvrz.dav.dav.main.*;
-import de.bsvrz.dav.dav.subscriptions.LocalSubscription;
 import de.bsvrz.sys.funclib.debug.Debug;
 
 import java.util.*;
 
 /**
- * Diese Klasse stellt eine Verbindung vom Datenverteiler zur Applikation dar. Über diese Verbindung können Telegramme an eine Applikation verschickt werden.
+ * Diese Klasse stellt eine Verbindung vom Datenverteiler zur Applikation dar. Ãœber diese Verbindung kÃ¶nnen Telegramme an eine Applikation verschickt werden.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 12020 $
+ * @version $Revision$
  */
 public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInterface, HighLevelCommunicationCallbackInterface {
 
 	private static final Debug _debug = Debug.getLogger();
 
 	/** Die erste Ebene der Kommunikation */
-	private LowLevelCommunicationInterface _lowLevelCommunication;
+	private final LowLevelCommunicationInterface _lowLevelCommunication;
 
 	/** Die Eigenschaften diese Verbindung */
 	private ServerConnectionProperties _properties;
 
-	/** Die unterstützten Versionen des Datenverteilers */
+	/** Die unterstÃ¼tzten Versionen des Datenverteilers */
 	private int[] _versions;
 
 	/** Der Applikation Id */
@@ -74,7 +79,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	/** Die Authentifizierungskomponente */
 	private AuthentificationComponent _authentificationComponent;
 
-	/** Temporäre Liste der Systemtelegramme für interne Synchronisationszwecke. */
+	/** TemporÃ¤re Liste der Systemtelegramme fÃ¼r interne Synchronisationszwecke. */
 	private List<DataTelegram> _syncSystemTelegramList;
 
 	/** Die Information ob auf die Konfiguration gewartet werden muss. */
@@ -88,7 +93,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	private Object _closedLock = new Object();
 
 	private final long _connectionCreatedTime;
-	/** Map in der eine je Datenidentifikation eine Liste von empfangenen Telegrammen, die zu einem Datensatz gehören zwischengespeichert werden können */
+	/** Map in der eine je Datenidentifikation eine Liste von empfangenen Telegrammen, die zu einem Datensatz gehÃ¶ren zwischengespeichert werden kÃ¶nnen */
 	private Map<BaseSubscriptionInfo, List<ApplicationDataTelegram>> _stalledTelegramListMap = new HashMap<BaseSubscriptionInfo, List<ApplicationDataTelegram>>();
 
 	private final HighLevelApplicationManager _applicationManager;
@@ -295,11 +300,11 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 
 
 	/**
-	 * Gibt die Version zurück, die von dieser Verbindung unterstützt wird.
+	 * Gibt die Version zurÃ¼ck, die von dieser Verbindung unterstÃ¼tzt wird.
 	 *
-	 * @param versions Versionen, die unterstützt werden sollen. Wird <code>null</code> übergeben, so wird -1 zurückgegeben.
+	 * @param versions Versionen, die unterstÃ¼tzt werden sollen. Wird <code>null</code> Ã¼bergeben, so wird -1 zurÃ¼ckgegeben.
 	 *
-	 * @return Version, die aus den gegebenen Versionen unterstützt wird. Wird keine der übergebenen Versionen unterstützt, so wird -1 zurückgegeben.
+	 * @return Version, die aus den gegebenen Versionen unterstÃ¼tzt wird. Wird keine der Ã¼bergebenen Versionen unterstÃ¼tzt, so wird -1 zurÃ¼ckgegeben.
 	 */
 	private int getPrefferedVersion(int[] versions) {
 		if(_versions == null) {
@@ -369,7 +374,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 					if(CommunicationConstant.CONFIGURATION_TYPE_PID.equals(_applicationTypePid)) {
 						if(_properties.isLocalMode()) {
 							if(formativeConfigurationId != 0) {
-								// Die von der Konfiguration vorgegebene Pid und Id des Konfigurationsverantwortlichen wird als Default für die Applikationen
+								// Die von der Konfiguration vorgegebene Pid und Id des Konfigurationsverantwortlichen wird als Default fÃ¼r die Applikationen
 								// gespeichert
 								_properties.setLocalModeParameter(_configurationPid, formativeConfigurationId);
 								_lowLevelConnectionsManager.setLocalModeParameter(_configurationPid, formativeConfigurationId);
@@ -467,7 +472,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 						}
 						_lowLevelConnectionsManager.updateApplicationId(this);
 						if(_configurationId == -1) {
-							terminate(true, "Ungültige Pid der Konfiguration: " + _configurationPid);
+							terminate(true, "UngÃ¼ltige Pid der Konfiguration: " + _configurationPid);
 							return;
 						}
 						authentificationAnswer = new AuthentificationAnswer(
@@ -484,7 +489,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 				catch(ConfigurationChangeException ex) {
 					ex.printStackTrace();
 					terminate(
-							true, "Fehler während der Authentifizierung einer Applikation beim Zugriff auf die Konfiguration: " + ex.getMessage()
+							true, "Fehler wÃ¤hrend der Authentifizierung einer Applikation beim Zugriff auf die Konfiguration: " + ex.getMessage()
 					);
 					return;
 				}
@@ -492,7 +497,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 			}
 			case DataTelegram.COM_PARAMETER_REQUEST_TYPE: {
 				ComParametersRequest comParametersRequest = (ComParametersRequest)telegram;
-				// Empfangene Timeoutparameter werden übernommen und nach unten begrenzt
+				// Empfangene Timeoutparameter werden Ã¼bernommen und nach unten begrenzt
 				long keepAliveSendTimeOut = comParametersRequest.getKeepAliveSendTimeOut();
 				if(keepAliveSendTimeOut < 5000) keepAliveSendTimeOut = 5000;
 				long keepAliveReceiveTimeOut = comParametersRequest.getKeepAliveReceiveTimeOut();
@@ -572,12 +577,12 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	}
 
 	/**
-	 * Erzeugt eine Liste für verzögerte Telegramme für eine Datenidentifikation und speichert sie in einer Map.
+	 * Erzeugt eine Liste fÃ¼r verzÃ¶gerte Telegramme fÃ¼r eine Datenidentifikation und speichert sie in einer Map.
 	 *
-	 * @param info     Datenidentifikation der verzögerten Telegramme
-	 * @param maxCount Maximale Anzahl der verzögerten Telegramme
+	 * @param info     Datenidentifikation der verzÃ¶gerten Telegramme
+	 * @param maxCount Maximale Anzahl der verzÃ¶gerten Telegramme
 	 *
-	 * @return Neue Liste für verzögerte Telegramme
+	 * @return Neue Liste fÃ¼r verzÃ¶gerte Telegramme
 	 *
 	 * @see #getStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)
 	 * @see #deleteStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)
@@ -589,11 +594,11 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	}
 
 	/**
-	 * Liefert eine vorher erzeugte Liste für verzögerte Telegramme für eine Datenidentifikation.
+	 * Liefert eine vorher erzeugte Liste fÃ¼r verzÃ¶gerte Telegramme fÃ¼r eine Datenidentifikation.
 	 *
-	 * @param info Datenidentifikation der verzögerten Telegramme
+	 * @param info Datenidentifikation der verzÃ¶gerten Telegramme
 	 *
-	 * @return Vorher erzeugte Liste für verzögerte Telegramme
+	 * @return Vorher erzeugte Liste fÃ¼r verzÃ¶gerte Telegramme
 	 *
 	 * @see #createStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo,int)
 	 * @see #deleteStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)
@@ -603,11 +608,11 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	}
 
 	/**
-	 * Liefert eine vorher erzeugte Liste für verzögerte Telegramme für eine Datenidentifikation und entfernt sie aus der Map.
+	 * Liefert eine vorher erzeugte Liste fÃ¼r verzÃ¶gerte Telegramme fÃ¼r eine Datenidentifikation und entfernt sie aus der Map.
 	 *
-	 * @param info Datenidentifikation der verzögerten Telegramme
+	 * @param info Datenidentifikation der verzÃ¶gerten Telegramme
 	 *
-	 * @return Vorher erzeugte Liste für verzögerte Telegramme
+	 * @return Vorher erzeugte Liste fÃ¼r verzÃ¶gerte Telegramme
 	 *
 	 * @see #createStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo,int)
 	 * @see #getStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)

@@ -3,13 +3,13 @@
  * Copyright 2008 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
  * Copyright 2006 by Kappich Systemberatung Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -18,8 +18,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -34,17 +40,17 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Diese Klasse dient zur Verwaltung von Anmeldelistentelegrammen, die zwischen Datenverteilern zum Austausch von Informationen über angemeldete Objekte,
- * Attributgruppen und Aspekte verwendet werden. Jeder Datenverteiler hält grobe Informationen über die vorliegenden Quell- und Senkenanmeldungen der
+ * Diese Klasse dient zur Verwaltung von Anmeldelistentelegrammen, die zwischen Datenverteilern zum Austausch von Informationen Ã¼ber angemeldete Objekte,
+ * Attributgruppen und Aspekte verwendet werden. Jeder Datenverteiler hÃ¤lt grobe Informationen Ã¼ber die vorliegenden Quell- und Senkenanmeldungen der
  * Applikationen, die bei ihm angemeldet sind, vor. Diese Informationen werden zwischen den einzelnen Datenverteilern ausgetauscht, damit bei Anmeldungen von
- * Daten direkt geprüft werden kann, ob diese Daten potentiell im System vorhanden sind und welche Datenverteiler als Zentraldatenverteiler in Frage kommen. Um
+ * Daten direkt geprÃ¼ft werden kann, ob diese Daten potentiell im System vorhanden sind und welche Datenverteiler als Zentraldatenverteiler in Frage kommen. Um
  * das Datenaufkommen und die Anzahl der Aktualisierungen hier gering zu halten, werden die Anmeldungen nicht detailliert vorgehalten und weitergegeben, sondern
- * es werden nur Änderungen zweier Listen gepflegt und verteilt: Die erste enthält die Objekte zu denen Quell- oder Senkenanmeldungen bestehen (Objektliste);
- * die zweite Liste enthält die Attributgruppen/Aspekt-Kombinationen zu denen Quell- oder Senkenanmeldungen bestehen (Attributgruppenliste). Jeder
- * Datenverteiler verwaltet für jeden von ihm erreichbaren Datenverteiler eine Anmeldungsliste.
+ * es werden nur Ã„nderungen zweier Listen gepflegt und verteilt: Die erste enthÃ¤lt die Objekte zu denen Quell- oder Senkenanmeldungen bestehen (Objektliste);
+ * die zweite Liste enthÃ¤lt die Attributgruppen/Aspekt-Kombinationen zu denen Quell- oder Senkenanmeldungen bestehen (Attributgruppenliste). Jeder
+ * Datenverteiler verwaltet fÃ¼r jeden von ihm erreichbaren Datenverteiler eine Anmeldungsliste.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 13195 $
+ * @version $Revision$
  */
 public class ListsManager implements ListsManagerInterface {
 
@@ -76,9 +82,9 @@ public class ListsManager implements ListsManagerInterface {
 
 
 	/**
-	 * Erzeugt ein neues Objekt mit den übergebenen Parametern. Zu beachten ist, dass das Verwaltungsobjekt zur Bestimmung der günstigsten Wege nicht initialisiert
+	 * Erzeugt ein neues Objekt mit den Ã¼bergebenen Parametern. Zu beachten ist, dass das Verwaltungsobjekt zur Bestimmung der gÃ¼nstigsten Wege nicht initialisiert
 	 * wird, sondern im Anschluss mit einem Aufruf des entsprechenden Setters gesetzt werden muss, bevor die Dienste des ListsManagers in Anspruch genommen werden
-	 * können.
+	 * kÃ¶nnen.
 	 *
 	 * @param connectionsManager Verbindungsverwaltung
 	 */
@@ -100,25 +106,25 @@ public class ListsManager implements ListsManagerInterface {
 	}
 
 
-	/** Bestimmt den Thread, der für die verzögerte Durchführung von Anmeldungen zuständig ist.
-	 * @return Thread, der für die verzögerte Durchführung von Anmeldungen zuständig ist. */
+	/** Bestimmt den Thread, der fÃ¼r die verzÃ¶gerte DurchfÃ¼hrung von Anmeldungen zustÃ¤ndig ist.
+	 * @return Thread, der fÃ¼r die verzÃ¶gerte DurchfÃ¼hrung von Anmeldungen zustÃ¤ndig ist. */
 	Thread getDelayedSubscriptionThread() {
 		return _delayedSubscriptionThread;
 	}
 
 	/**
-	 * Getter für das Verwaltungsobjekt zur Bestimmung der günstigsten Wege.
+	 * Getter fÃ¼r das Verwaltungsobjekt zur Bestimmung der gÃ¼nstigsten Wege.
 	 *
-	 * @return Verwaltungsobjekt zur Bestimmung der günstigsten Wege.
+	 * @return Verwaltungsobjekt zur Bestimmung der gÃ¼nstigsten Wege.
 	 */
 	public BestWayManagerInterface getBestWayManager() {
 		return _bestWayManager;
 	}
 
 	/**
-	 * Setter für das Verwaltungsobjekt zur Bestimmung der günstigsten Wege.
+	 * Setter fÃ¼r das Verwaltungsobjekt zur Bestimmung der gÃ¼nstigsten Wege.
 	 *
-	 * @param bestWayManager Verwaltungsobjekt zur Bestimmung der günstigsten Wege.
+	 * @param bestWayManager Verwaltungsobjekt zur Bestimmung der gÃ¼nstigsten Wege.
 	 */
 	public void setBestWayManager(final BestWayManagerInterface bestWayManager) {
 		_bestWayManager = bestWayManager;
@@ -129,7 +135,7 @@ public class ListsManager implements ListsManagerInterface {
 	public final void addEntry(final long delivererId, final long transmitterId) {
 		// System.out.println("addEntry _localTransmitterId = " + _localTransmitterId + ", delivererId = " + delivererId + ", transmitterId = " + transmitterId);
 		if(transmitterId == -1) {
-			throw new IllegalArgumentException("Argument ist ungültig");
+			throw new IllegalArgumentException("Argument ist ungÃ¼ltig");
 		}
 		TransmitterSubscriptionInfos entry;
 		synchronized(_subscriptionInfos) {
@@ -146,7 +152,7 @@ public class ListsManager implements ListsManagerInterface {
 				final long[] _ids = {entry._transmitterId};
 				cleanPendingDelayedSubscriptions(_ids);
 				if(entry._delivererId != -1) {
-					// Kündigung des Abos beim Lieferant der Anmeldelisten des nicht mehr erreichbaren Datenverteiler
+					// KÃ¼ndigung des Abos beim Lieferant der Anmeldelisten des nicht mehr erreichbaren Datenverteiler
 					final T_T_HighLevelCommunicationInterface connection = _connectionsManager.getTransmitterConnectionFromId(entry._delivererId);
 					if(connection != null) {
 						final TransmitterListsUnsubscription transmitterListsUnsubscription = new TransmitterListsUnsubscription(_ids);
@@ -157,7 +163,7 @@ public class ListsManager implements ListsManagerInterface {
 				entry._delivererId = -1;
 				final TransmitterListsDeliveryUnsubscription transmitterListsDeliveryUnsubscription = new TransmitterListsDeliveryUnsubscription(_ids);
 				for(final Long subscriber : subscribers) {
-					// Kündigung der Abos bei Abnehmern der Anmeldelisten des nicht mehr erreichbaren Datenverteiler
+					// KÃ¼ndigung der Abos bei Abnehmern der Anmeldelisten des nicht mehr erreichbaren Datenverteiler
 					if(subscriber != null) {
 						final T_T_HighLevelCommunicationInterface connection = _connectionsManager.getTransmitterConnectionFromId(subscriber);
 						if(connection != null) {
@@ -171,11 +177,11 @@ public class ListsManager implements ListsManagerInterface {
 				entry._atgUsageSet.clear();
 			}
 			else if((delivererId != _localTransmitterId) && (delivererId != entry._delivererId)) {
-				// Datenverteiler ist über einen anderen Nachbarn erreichbar
+				// Datenverteiler ist Ã¼ber einen anderen Nachbarn erreichbar
 				final long[] _ids = {entry._transmitterId};
 				cleanPendingDelayedSubscriptions(_ids);
 				if(entry._delivererId != -1) {
-					// Kündigung des Abos beim bisherigen Lieferant der Anmeldelisten des über einen neuen Nachbarn erreichbaren Datenverteilers
+					// KÃ¼ndigung des Abos beim bisherigen Lieferant der Anmeldelisten des Ã¼ber einen neuen Nachbarn erreichbaren Datenverteilers
 					final T_T_HighLevelCommunicationInterface connection = _connectionsManager.getTransmitterConnectionFromId(entry._delivererId);
 					if(connection != null) {
 						final TransmitterListsUnsubscription transmitterListsUnsubscription = new TransmitterListsUnsubscription(_ids);
@@ -185,7 +191,7 @@ public class ListsManager implements ListsManagerInterface {
 				}
 				final TransmitterListsDeliveryUnsubscription transmitterListsDeliveryUnsubscription = new TransmitterListsDeliveryUnsubscription(_ids);
 				if(subscribers.remove(delivererId)) {
-					// Falls der neue Lieferant bisher als Abnehmer angemeldet war, dann wird diesem die Kündigung gesendet
+					// Falls der neue Lieferant bisher als Abnehmer angemeldet war, dann wird diesem die KÃ¼ndigung gesendet
 					final T_T_HighLevelCommunicationInterface connection = _connectionsManager.getTransmitterConnectionFromId(delivererId);
 					if(connection != null) {
 						// System.out.println("Sende: " + _localTransmitterId + ", " + transmitterListsDeliveryUnsubscription);
@@ -209,7 +215,7 @@ public class ListsManager implements ListsManagerInterface {
 	public final void handleWaysChanges(final long[] changedTransmitterIds) {
 
 		if(changedTransmitterIds == null) {
-			throw new IllegalArgumentException("Argument ist ungültig");
+			throw new IllegalArgumentException("Argument ist ungÃ¼ltig");
 		}
 		final Hashtable<Long, ArrayList<Long>> unsubscriptionTable = new Hashtable<Long, ArrayList<Long>>();
 		final Hashtable<Long, ArrayList<Long>> deliveryUnsubscriptionTable = new Hashtable<Long, ArrayList<Long>>();
@@ -394,13 +400,13 @@ public class ListsManager implements ListsManagerInterface {
 	/**
 	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, wenn eine Anmeldung auf die Zuliefererinformationen eines bestimmten Datenverteilers
 	 * eingetroffen ist. Zuerst wird der Eintrag jedes in ids spezifizierten Datenverteilers aus der Tabelle bestimmt. Wenn ein Eintrag vorhanden ist, dann wird
-	 * überprüft, ob ein Zulieferer dafür definiert ist. Ist keiner vorhanden, so wird dem Datenverteiler, der hier ein Abonnement versucht, eine
-	 * Zuliefererinformationsankündigung gesendet. Wenn aber ein Zulieferer existiert, wird überprüft ob dieser nicht schon abonniert ist. Ist dies nicht der Fall,
-	 * wird er zur Abonnentenliste hinzugefügt, und alle registrierten Objekte und Kombinationen aus Attributgruppe und Aspekt werden zusammen in einer
+	 * Ã¼berprÃ¼ft, ob ein Zulieferer dafÃ¼r definiert ist. Ist keiner vorhanden, so wird dem Datenverteiler, der hier ein Abonnement versucht, eine
+	 * ZuliefererinformationsankÃ¼ndigung gesendet. Wenn aber ein Zulieferer existiert, wird Ã¼berprÃ¼ft ob dieser nicht schon abonniert ist. Ist dies nicht der Fall,
+	 * wird er zur Abonnentenliste hinzugefÃ¼gt, und alle registrierten Objekte und Kombinationen aus Attributgruppe und Aspekt werden zusammen in einer
 	 * Zuliefereraktualisierung zu ihm gesendet.
 	 *
 	 * @param transmitterId ID des DAV
-	 * @param ids           long Array mit den IDs enthält die Liste der DAVs
+	 * @param ids           long Array mit den IDs enthÃ¤lt die Liste der DAVs
 	 */
 
 	final void subscribe(final long transmitterId, final long[] ids) {
@@ -464,11 +470,11 @@ public class ListsManager implements ListsManagerInterface {
 	/**
 	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, wenn eine Abmeldung auf die Zuliefererinformationen eines bestimmten Datenverteilers
 	 * eingetroffen ist. Zuerst wird der Eintrag jedes in ids spezifizierten Datenverteilers aus der Tabelle bestimmt. Wenn ein Eintrag vorhanden ist, dann wird
-	 * überprüft, ob der Datenverteiler, der hier die Abmeldung geschickt hat, als Abonnent existiert. Ist dies der Fall, wird er aus der Abonnentenliste
+	 * Ã¼berprÃ¼ft, ob der Datenverteiler, der hier die Abmeldung geschickt hat, als Abonnent existiert. Ist dies der Fall, wird er aus der Abonnentenliste
 	 * entfernt.
 	 *
 	 * @param transmitterId ID des DAV
-	 * @param ids           long Array mit den IDs, enthält die Liste der DAVs
+	 * @param ids           long Array mit den IDs, enthÃ¤lt die Liste der DAVs
 	 */
 	final void unsubscribe(final long transmitterId, final long[] ids) {
 		if(ids == null) {
@@ -487,15 +493,15 @@ public class ListsManager implements ListsManagerInterface {
 	}
 
 	/**
-	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, wenn eine Kündigung eines Zulieferers auf die Zuliefererinformationen eines bestimmten
+	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, wenn eine KÃ¼ndigung eines Zulieferers auf die Zuliefererinformationen eines bestimmten
 	 * Datenverteilers eingetroffen ist. Zuerst wird der Eintrag jedes in ids spezifizierten Datenverteilers aus der Tabelle bestimmt. Wenn ein Eintrag vorhanden
-	 * ist, dann wird überprüft, ob der Datenverteiler, der hier die Kündigung geschickt hat, auch der eingetragene Zulieferer ist. Mit Hilfe des Wegmanagers wird
-	 * überprüft, ob ein neuer Zulieferer in Frage kommt. Existiert ein anderer Zulieferer, dann wird ihm eine Zuliefererinformationsanmeldung gesendet. Wenn kein
-	 * neuer Zulieferer existiert, dann wird eine Zuliefererinformationskündigung an die Abonnenten gesendet. Abonnentenliste, Objektliste und Kombinationsliste
+	 * ist, dann wird Ã¼berprÃ¼ft, ob der Datenverteiler, der hier die KÃ¼ndigung geschickt hat, auch der eingetragene Zulieferer ist. Mit Hilfe des Wegmanagers wird
+	 * Ã¼berprÃ¼ft, ob ein neuer Zulieferer in Frage kommt. Existiert ein anderer Zulieferer, dann wird ihm eine Zuliefererinformationsanmeldung gesendet. Wenn kein
+	 * neuer Zulieferer existiert, dann wird eine ZuliefererinformationskÃ¼ndigung an die Abonnenten gesendet. Abonnentenliste, Objektliste und Kombinationsliste
 	 * werden dann geleert.
 	 *
 	 * @param transmitterId ID des DAV
-	 * @param ids           long Array mit den IDs, enthält die Liste der DAVs
+	 * @param ids           long Array mit den IDs, enthÃ¤lt die Liste der DAVs
 	 */
 	final void unsubscribeDeliverer(final long transmitterId, final long[] ids) {
 		if(ids == null) {
@@ -574,8 +580,8 @@ public class ListsManager implements ListsManagerInterface {
 	@Override
 	public final void handleDisconnection(final long transmitterId) {
 		if(transmitterId == -1) {
-			// Kann passieren, wenn eine Verbindung zu einem anderen Datenverteiler während der Initialisierungsphase unterbrochen wurde
-			// In diesem Fall kann es noch keine Einträge in der Anmeldelistenverwaltung geben
+			// Kann passieren, wenn eine Verbindung zu einem anderen Datenverteiler wÃ¤hrend der Initialisierungsphase unterbrochen wurde
+			// In diesem Fall kann es noch keine EintrÃ¤ge in der Anmeldelistenverwaltung geben
 			return;
 		}
 		final ArrayList<TransmitterSubscriptionInfos> transmitterSubscriptionInfoList;
@@ -716,9 +722,9 @@ public class ListsManager implements ListsManagerInterface {
 	/**
 	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, wenn eine Zuliefereraktualisierung eintrifft. Bei dem Eintrag des spezifizierten
 	 * Datenverteilers werden die Objekte und die Kombinationen aus Attributgruppen und Aspekten aktualisiert. Dabei werden vier Listen aufgebaut: - Liste der
-	 * hinzugefügten Objekte - Liste der gelöschten Objekte - Liste der hinzugefügten Kombinationen - Liste der gelöschten Kombinationen aus Attributgruppen und
+	 * hinzugefÃ¼gten Objekte - Liste der gelÃ¶schten Objekte - Liste der hinzugefÃ¼gten Kombinationen - Liste der gelÃ¶schten Kombinationen aus Attributgruppen und
 	 * Aspekten Diese Listen werden dann in eine Zuliefereraktualisierungsnachricht verpackt und an die Abonnenten weitergeleitet. Am Ende werden diese Listen
-	 * zurückgegeben.
+	 * zurÃ¼ckgegeben.
 	 */
 	final void updateEntry(final TransmitterListsUpdate transmitterListsUpdate) {
 		if(transmitterListsUpdate == null) {
@@ -828,10 +834,10 @@ public class ListsManager implements ListsManagerInterface {
 
 	/**
 	 * Neue Anmeldung beim lokalen Datenverteiler in die Anmeldelistenverwaltung aufnehmen. Diese Methode wird von der Verbindungsverwaltung aufgerufen, wenn eine Quell- oder Senkenanmeldung auf ein bestimmtes Datum erfolgt ist. Im Antrag des
-	 * lokalen Datenverteilers wird überprüft, ob das Objekt und die Kombination aus Attributgruppe und Aspekt aus der spezifizierten Basisanmeldeinformation
+	 * lokalen Datenverteilers wird Ã¼berprÃ¼ft, ob das Objekt und die Kombination aus Attributgruppe und Aspekt aus der spezifizierten Basisanmeldeinformation
 	 * vorhanden sind. Wenn das Objekt oder die Kombination nicht vorhanden ist, wird eine Zuliefereraktualisierung mit den dazugekommenen Objekt und/oder der
 	 * dazugekommenen Kombination gebildet und zu den Abonnenten gesendet. Wenn das Objekt oder die Kombination vorhanden ist, dann wird der jeweilige Objekt- bzw.
-	 * Kombinationszähler um eins erhöht.
+	 * KombinationszÃ¤hler um eins erhÃ¶ht.
 	 *
 	 * @param info Anmeldeinformationen
 	 */
@@ -845,9 +851,9 @@ public class ListsManager implements ListsManagerInterface {
 
 	/**
 	 * Anmeldung beim lokalen Datenverteiler aus der Anmeldelistenverwaltung entfernen. Diese Methode wird von der Verbindungsverwaltung aufgerufen, wenn eine Quell- oder Senkenabmeldung auf ein bestimmtes Datum erfolgt ist. Im Antrag des
-	 * lokalen Datenverteilers wird überprüft ob das Objekt und die Kombination aus Attributgruppe und Aspekt aus der spezifizierten Basisanmeldeinformation
-	 * vorhanden sind. Wenn das Objekt oder die Kombination vorhanden ist, wird deren Referenzzähler um eins vermindert. Wenn der Referenzzähler null ist, wird
-	 * eine Zuliefereraktualisierung mit dem gelöschten Objekt und/oder der gelöschten Kombination gebildet, und zu den Abonnenten gesendet.
+	 * lokalen Datenverteilers wird Ã¼berprÃ¼ft ob das Objekt und die Kombination aus Attributgruppe und Aspekt aus der spezifizierten Basisanmeldeinformation
+	 * vorhanden sind. Wenn das Objekt oder die Kombination vorhanden ist, wird deren ReferenzzÃ¤hler um eins vermindert. Wenn der ReferenzzÃ¤hler null ist, wird
+	 * eine Zuliefereraktualisierung mit dem gelÃ¶schten Objekt und/oder der gelÃ¶schten Kombination gebildet, und zu den Abonnenten gesendet.
 	 *
 	 * @param info Anmeldeinformationen
 	 */
@@ -860,11 +866,11 @@ public class ListsManager implements ListsManagerInterface {
 
 	/**
 	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, um die potentiellen Zentraldatenverteiler des spezifizierten Datums zu bestimmen. In den
-	 * Anmeldelisten der erreichbaren Datenverteiler wird überprüft, ob gewünschte Objekt und die Kombination aus Attributgruppe und Aspekt enthalten ist.
+	 * Anmeldelisten der erreichbaren Datenverteiler wird Ã¼berprÃ¼ft, ob gewÃ¼nschte Objekt und die Kombination aus Attributgruppe und Aspekt enthalten ist.
 	 *
 	 * @param info Anmeldeinformationen
 	 *
-	 * @return Feld mit den potentiellen Zentraldatenverteilern. Wenn kein Datenverteiler gefunden wurde, dann wird Null zurückgegeben.
+	 * @return Feld mit den potentiellen Zentraldatenverteilern. Wenn kein Datenverteiler gefunden wurde, dann wird Null zurÃ¼ckgegeben.
 	 */
 	final long[] getPotentialCentralDavs(final BaseSubscriptionInfo info) {
 //		System.out.println("getPotentialTransmitters: " + info);
@@ -880,7 +886,7 @@ public class ListsManager implements ListsManagerInterface {
 		synchronized(_subscriptionInfos) {
 			values = new ArrayList<TransmitterSubscriptionInfos>(_subscriptionInfos.values());
 		}
-		// Nicht synchronisiert ausführen, Deadlock-Gefahr
+		// Nicht synchronisiert ausfÃ¼hren, Deadlock-Gefahr
 		for(final TransmitterSubscriptionInfos transmitterSubscriptionInfos : values) {
 			if(transmitterSubscriptionInfos == _localTransmitterSubscriptionInfos) continue;
 			if(transmitterSubscriptionInfos.isPotentialCentralDav(requiredObjectId, requiredAtgUsageId)) {
@@ -910,7 +916,7 @@ public class ListsManager implements ListsManagerInterface {
 	}
 
 	/**
-	 * Diese Methode sendet die Aktualisierungstelegramme, welche die Ergänzungen der Listen beinhalten.
+	 * Diese Methode sendet die Aktualisierungstelegramme, welche die ErgÃ¤nzungen der Listen beinhalten.
 	 *
 	 * @param connection    Verbindung zwischen zwei DAV
 	 * @param transmitterId ID des DAV
@@ -924,7 +930,7 @@ public class ListsManager implements ListsManagerInterface {
 		boolean processObjToAdd = true;
 		boolean processCombiToAdd = true;
 
-		// delta ist beim ersten Schleifendurchlauf false, weitere Durchläufe sind als updates zu versenden
+		// delta ist beim ersten Schleifendurchlauf false, weitere DurchlÃ¤ufe sind als updates zu versenden
 		boolean delta = false;
 		do {
 			// Objects to add
@@ -935,7 +941,7 @@ public class ListsManager implements ListsManagerInterface {
 					if(size > 0) {
 						if(size > 3600) {
 							final int rest = size - objToAddPos;
-							// maximal 3600 Objekte je Telegramm hinzufügen, damit die Telegrammgröße nicht überschritten wird
+							// maximal 3600 Objekte je Telegramm hinzufÃ¼gen, damit die TelegrammgrÃ¶ÃŸe nicht Ã¼berschritten wird
 							final int length = (rest > 3600 ? 3600 : rest);
 							objectsToAdd = new long[length];
 							for(int j = objToAddPos, k = 0; k < length; ++j, ++k) {
@@ -969,7 +975,7 @@ public class ListsManager implements ListsManagerInterface {
 				if(combiToAdd != null) {
 					final int size = combiToAdd.size();
 					if(size > 0) {
-						// maximal 300 Attributgruppen-Aspekt-Kombinationen je Telegramm hinzufügen, damit die Telegrammgröße nicht überschritten wird
+						// maximal 300 Attributgruppen-Aspekt-Kombinationen je Telegramm hinzufÃ¼gen, damit die TelegrammgrÃ¶ÃŸe nicht Ã¼berschritten wird
 						if(size > 300) {
 							final int rest = size - combiToAddPos;
 							final int length = (rest > 300 ? 300 : rest);
@@ -1015,7 +1021,7 @@ public class ListsManager implements ListsManagerInterface {
 	}
 
 	/**
-	 * * Diese Methode sendet die Aktualisierungstelegramme, welche die Ergänzungen und Löschungen der Listen beinhalten.
+	 * * Diese Methode sendet die Aktualisierungstelegramme, welche die ErgÃ¤nzungen und LÃ¶schungen der Listen beinhalten.
 	 *
 	 * @param connection    Verbindung zwischen zwei DAV
 	 * @param transmitterId ID des DAV
@@ -1051,7 +1057,7 @@ public class ListsManager implements ListsManagerInterface {
 					if(size > 0) {
 						if(size > 1800) {
 							final int rest = size - objToAddPos;
-							// maximal 1800 Objekte je Telegramm hinzufügen, damit die Telegrammgröße nicht überschritten wird
+							// maximal 1800 Objekte je Telegramm hinzufÃ¼gen, damit die TelegrammgrÃ¶ÃŸe nicht Ã¼berschritten wird
 							final int length = (rest > 1800 ? 1800 : rest);
 							objectsToAdd = new long[length];
 							for(int j = objToAddPos, k = 0; k < length; ++j, ++k) {
@@ -1092,7 +1098,7 @@ public class ListsManager implements ListsManagerInterface {
 					if(size > 0) {
 						if(size > 1800) {
 							final int rest = size - objToRemovePos;
-							// maximal 1800 Objekte je Telegramm entfernen, damit die Telegrammgröße nicht überschritten wird
+							// maximal 1800 Objekte je Telegramm entfernen, damit die TelegrammgrÃ¶ÃŸe nicht Ã¼berschritten wird
 							final int length = (rest > 1800 ? 1800 : rest);
 							objectsToRemove = new long[length];
 							for(int j = objToRemovePos, k = 0; k < length; ++j, ++k) {
@@ -1133,7 +1139,7 @@ public class ListsManager implements ListsManagerInterface {
 					if(size > 0) {
 						if(size > 150) {
 							final int rest = size - combiToAddPos;
-							// maximal 150 Attributgruppen-Aspekt-Kombinationen je Telegramm hinzufügen, damit die Telegrammgröße nicht überschritten wird
+							// maximal 150 Attributgruppen-Aspekt-Kombinationen je Telegramm hinzufÃ¼gen, damit die TelegrammgrÃ¶ÃŸe nicht Ã¼berschritten wird
 							final int length = (rest > 150 ? 150 : rest);
 							attributeGroupAspectsToAdd = new AttributeGroupAspectCombination[length];
 							for(int j = combiToAddPos, k = 0; k < length; ++j, ++k) {
@@ -1168,7 +1174,7 @@ public class ListsManager implements ListsManagerInterface {
 					if(size > 0) {
 						if(size > 150) {
 							final int rest = size - combiToRemovePos;
-							// maximal 150 Attributgruppen-Aspekt-Kombinationen je Telegramm entfernen, damit die Telegrammgröße nicht überschritten wird
+							// maximal 150 Attributgruppen-Aspekt-Kombinationen je Telegramm entfernen, damit die TelegrammgrÃ¶ÃŸe nicht Ã¼berschritten wird
 							final int length = (rest > 150 ? 150 : rest);
 							attributeGroupAspectsToRemove = new AttributeGroupAspectCombination[length];
 							for(int j = combiToRemovePos, k = 0; k < length; ++j, ++k) {
@@ -1206,16 +1212,16 @@ public class ListsManager implements ListsManagerInterface {
 			else {
 				break;
 			}
-			// weitere Schleifendurchläufe sind unabhängig vom vorgegebenen delta-Flag als Updates zu verstehen:
+			// weitere SchleifendurchlÃ¤ufe sind unabhÃ¤ngig vom vorgegebenen delta-Flag als Updates zu verstehen:
 			update = true;
 		}
 		while(processObjToAdd || processObjToRemove || processCombiToAdd || processCombiToRemove);
 	}
 
 	/**
-	 * Diese Methode entfernt die wartenden verzögerten Anmeldungen.
+	 * Diese Methode entfernt die wartenden verzÃ¶gerten Anmeldungen.
 	 *
-	 * @param ids long Array mit den IDs der zu löschenden Datenverteiler
+	 * @param ids long Array mit den IDs der zu lÃ¶schenden Datenverteiler
 	 */
 	private void cleanPendingDelayedSubscriptions(final long[] ids) {
 		synchronized(_delayedSubscriptionList) {
@@ -1258,7 +1264,7 @@ public class ListsManager implements ListsManagerInterface {
 		}
 	}
 
-	/** Enthält die Anmeldungsliste eines erreichbaren Datenverteilers. */
+	/** EnthÃ¤lt die Anmeldungsliste eines erreichbaren Datenverteilers. */
 	private class TransmitterSubscriptionInfos {
 
 		/** Die ID des Datenverteilers auf den sich diese Anmeldeliste bezieht. */
@@ -1274,7 +1280,7 @@ public class ListsManager implements ListsManagerInterface {
 		Set<Long> _atgUsageSet = new HashSet<Long>();
 
 		/**
-		 * Erzeugt eine neue Anmeldungsliste für einen erreichbaren Datenverteiler
+		 * Erzeugt eine neue Anmeldungsliste fÃ¼r einen erreichbaren Datenverteiler
 		 *
 		 * @param transmitterId Die ID des Datenverteilers auf den sich diese Anmeldeliste bezieht.
 		 */

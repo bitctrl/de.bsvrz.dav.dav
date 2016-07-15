@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.subscriptions;
@@ -29,19 +35,19 @@ package de.bsvrz.dav.dav.subscriptions;
 public enum SenderState {
 	/** Unbekannt, Sender wurde gerade erst angemeldet */
 	UNKNOWN(false),
-	/** Empfänger sind Verfügbar, bereit zum Senden */
+	/** EmpfÃ¤nger sind VerfÃ¼gbar, bereit zum Senden */
 	RECEIVERS_AVAILABLE(true),
-	/** Keine Empfänger verfügbar */
+	/** Keine EmpfÃ¤nger verfÃ¼gbar */
 	NO_RECEIVERS(true),
-	/** Es ist unbekannt, ob Empfänger verfügbar sind */
+	/** Es ist unbekannt, ob EmpfÃ¤nger verfÃ¼gbar sind */
 	WAITING(true),
 	/** Keine Rechte zum Senden */
 	NOT_ALLOWED(false),
-	/** ungültige Anmeldung (z.B. mehrere Quellen oder Senken) */
+	/** ungÃ¼ltige Anmeldung (z.B. mehrere Quellen oder Senken) */
 	INVALID_SUBSCRIPTION(false),
-	/** ungültiger Status einer entfernten Anmeldung, z.B. keine Rechte am entfernten Dav oder nicht verantwortlich */
+	/** ungÃ¼ltiger Status einer entfernten Anmeldung, z.B. keine Rechte am entfernten Dav oder nicht verantwortlich */
 	NO_REMOTE_SOURCE(false),
-	/** es gibt mehrere mögliche Zentraldatenverteiler, Anmeldung daher deaktiviert */
+	/** es gibt mehrere mÃ¶gliche Zentraldatenverteiler, Anmeldung daher deaktiviert */
 	MULTIPLE_REMOTE_LOCK(false);
 
 	private final boolean _validSender;
@@ -51,8 +57,8 @@ public enum SenderState {
 	}
 
 	/**
-	 * Gibt zurück, ob der Sender gültig ist
-	 * @return true wenn die Anmeldung gültig ist damit z.B. Empfängern mitgeteilt werden kann, dass es Sender gibt.
+	 * Gibt zurÃ¼ck, ob der Sender gÃ¼ltig ist
+	 * @return true wenn die Anmeldung gÃ¼ltig ist damit z.B. EmpfÃ¤ngern mitgeteilt werden kann, dass es Sender gibt.
 	 */
 	public boolean isValidSender() {
 		return _validSender;

@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -30,11 +36,11 @@ import java.util.*;
  * Kapselt einen Block zur Auswahl von Objekten, z.B. "Enthaltene Objekte" bzw. "Ausgeschlossene Objekte" im Zugriffsrechte-Datenmodell.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 13323 $
+ * @version $Revision$
  */
 public final class ObjectSet implements ObjectCollection {
 
-	/** Enthält Objekte die die einzelnen Auswahl-Blöcke repräsentieren */
+	/** EnthÃ¤lt Objekte die die einzelnen Auswahl-BlÃ¶cke reprÃ¤sentieren */
 	private final Collection<ObjectSelectionBlock> _selectionBlocks = new ArrayList<ObjectSelectionBlock>();
 
 	private final ObjectCollectionParent _region;
@@ -62,7 +68,7 @@ public final class ObjectSet implements ObjectCollection {
 			final ObjectCollectionParent region, final ClientDavInterface connection, final Data.Array array, final boolean isOnlyTypeSelection) {
 		this(region, connection, isOnlyTypeSelection);
 
-		// Die Arrays EnthalteneObjekte und AusgeschlosseneObjekte sind überflüssig. deshalb werden die einzelnen Auswahl-Strukturen hier zusammengefügt.
+		// Die Arrays EnthalteneObjekte und AusgeschlosseneObjekte sind Ã¼berflÃ¼ssig. deshalb werden die einzelnen Auswahl-Strukturen hier zusammengefÃ¼gt.
 		for(int i = 0; i < array.getLength(); i++) {
 			final Data item = array.getItem(i);
 			createAreaBlocks(item.getArray("Bereich"));
@@ -93,7 +99,7 @@ public final class ObjectSet implements ObjectCollection {
 	 *
 	 * @param region              Region bzw. Elternobjekt
 	 * @param connection          Verbindung zur Konfiguration
-	 * @param data                Daten-Array mit Blöcken
+	 * @param data                Daten-Array mit BlÃ¶cken
 	 * @param isOnlyTypeSelection Falls Mengen und einzelne Objektangaben ignoriert werden sollen
 	 */
 	public ObjectSet(
@@ -108,7 +114,7 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Verarbeitet die einzelnen AuswahlBereich-Blöcke und kapselt diese in Klassen
+	 * Verarbeitet die einzelnen AuswahlBereich-BlÃ¶cke und kapselt diese in Klassen
 	 *
 	 * @param array Datenarray "AuswahlBereich"
 	 */
@@ -140,7 +146,7 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Verarbeitet die einzelnen AuswahlRegion-Blöcke und kapselt diese in Klassen
+	 * Verarbeitet die einzelnen AuswahlRegion-BlÃ¶cke und kapselt diese in Klassen
 	 *
 	 * @param array Datenarray "AuswahlRegion"
 	 */
@@ -170,7 +176,7 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Verarbeitet die einzelnen AuswahlObjekte-Blöcke und kapselt diese in Klassen
+	 * Verarbeitet die einzelnen AuswahlObjekte-BlÃ¶cke und kapselt diese in Klassen
 	 *
 	 * @param array Datenarray "AuswahlObjekte"
 	 */
@@ -203,9 +209,9 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Prüft ob ein spezielles Systemobjekt in dieser Auswahl enthalten ist.
+	 * PrÃ¼ft ob ein spezielles Systemobjekt in dieser Auswahl enthalten ist.
 	 *
-	 * @param object Objekt zu prüfen
+	 * @param object Objekt zu prÃ¼fen
 	 *
 	 * @return true wenn es enthalten ist
 	 */
@@ -217,11 +223,11 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Alle Objekte, die durch diesen Block ausgewählt werden
+	 * Alle Objekte, die durch diesen Block ausgewÃ¤hlt werden
 	 *
 	 * @param types Systemobjekttypen die beachtet werden sollen
 	 *
-	 * @return Alle Objekte, die durch diesen Block ausgewählt werden
+	 * @return Alle Objekte, die durch diesen Block ausgewÃ¤hlt werden
 	 */
 	@Override
 	public List<SystemObject> getAllObjects(final Collection<? extends SystemObjectType> types) {
@@ -233,7 +239,7 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Gibt alle referenzierten Unter-Regionen zurück
+	 * Gibt alle referenzierten Unter-Regionen zurÃ¼ck
 	 *
 	 * @return alle referenzierten Unter-Regionen
 	 */
@@ -249,9 +255,9 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Fügt einen Listener auf Änderungen hinzu
+	 * FÃ¼gt einen Listener auf Ã„nderungen hinzu
 	 *
-	 * @param listener Listener auf Änderungen
+	 * @param listener Listener auf Ã„nderungen
 	 */
 	@Override
 	public void addChangeListener(final ObjectCollectionChangeListener listener) {
@@ -261,9 +267,9 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Entfernt einen Listener auf Änderungen
+	 * Entfernt einen Listener auf Ã„nderungen
 	 *
-	 * @param listener Listener auf Änderungen
+	 * @param listener Listener auf Ã„nderungen
 	 */
 	@Override
 	public void removeChangeListener(final ObjectCollectionChangeListener listener) {
@@ -279,8 +285,8 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Stellt den Block "AuswahlBereich" dar, aber nur, wenn mindestens ein KB oder KV ausgewählt ist und keine Menge angegeben ist. Kann sich zur Laufzeit ändern,
-	 * da neue dynamische Objekte erstellt werden könnten.
+	 * Stellt den Block "AuswahlBereich" dar, aber nur, wenn mindestens ein KB oder KV ausgewÃ¤hlt ist und keine Menge angegeben ist. Kann sich zur Laufzeit Ã¤ndern,
+	 * da neue dynamische Objekte erstellt werden kÃ¶nnten.
 	 */
 	private final class ObjectSelectionBlockAreaSimple extends AbstractObjectSelectionBlock {
 
@@ -304,7 +310,7 @@ public final class ObjectSet implements ObjectCollection {
 		/**
 		 * Erstellt einen Auswahlbereich-Block
 		 * @param item Data-Objekt
-		 * @throws IllegalArgumentException falls ein Data-Objekt mit Textwerten benutzt wurde und kein gültiges Objekt enthalten war
+		 * @throws IllegalArgumentException falls ein Data-Objekt mit Textwerten benutzt wurde und kein gÃ¼ltiges Objekt enthalten war
 		 */
 		public ObjectSelectionBlockAreaSimple(final Data item) {
 			if(item.getItem("Konfigurationsverantwortlicher").getAttributeType() instanceof ReferenceAttributeType){
@@ -322,7 +328,7 @@ public final class ObjectSet implements ObjectCollection {
 				for(int i = 0; i < authorities.getLength(); i++) {
 					final SystemObject object = _connection.getDataModel().getObject(authorities.getText(i));
 					if(object == null || !(object instanceof ConfigurationAuthority)){
-						throw new IllegalArgumentException("Es wurde ein ungültiger Konfigurationsverantwortlicher angegeben: " + authorities.getText(i));
+						throw new IllegalArgumentException("Es wurde ein ungÃ¼ltiger Konfigurationsverantwortlicher angegeben: " + authorities.getText(i));
 					}
 					_configurationAuthorities.add((ConfigurationAuthority)object);
 				}
@@ -330,7 +336,7 @@ public final class ObjectSet implements ObjectCollection {
 				for(int i = 0; i < areas.getLength(); i++) {
 					final SystemObject object = _connection.getDataModel().getObject(areas.getText(i));
 					if(object == null || !(object instanceof ConfigurationArea)){
-						throw new IllegalArgumentException("Es wurde ein ungültiger Konfigurationsbereich angegeben: " + areas.getText(i));
+						throw new IllegalArgumentException("Es wurde ein ungÃ¼ltiger Konfigurationsbereich angegeben: " + areas.getText(i));
 					}
 					_configurationAreas.add((ConfigurationArea)object);
 				}
@@ -435,7 +441,7 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Hilfsklasse hauptsächlich für KexDav, die sicherstellt, dass Typreferenzen gültig sind und zum lokalen Datenmodell passen.
+	 * Hilfsklasse hauptsÃ¤chlich fÃ¼r KexDav, die sicherstellt, dass Typreferenzen gÃ¼ltig sind und zum lokalen Datenmodell passen.
 	 * @param systemObject potentieller SystemObjektTyp
 	 * @return Korrekter SystemObjektTyp aus dem lokalen Datenmodell
 	 */
@@ -446,7 +452,7 @@ public final class ObjectSet implements ObjectCollection {
 				return systemObjectType;
 			}
 			else {
-				// Für KExDav: Typ-Objekt in richtiges Datenmodell konvertieren
+				// FÃ¼r KExDav: Typ-Objekt in richtiges Datenmodell konvertieren
 				SystemObjectType type = _connection.getDataModel().getType(systemObjectType.getPid());
 				if(type == null) throw new IllegalArgumentException("Typ " + systemObjectType + " ist auf dem lokalen Datenverteiler nicht vorhanden.");
 				return type;
@@ -457,8 +463,8 @@ public final class ObjectSet implements ObjectCollection {
 
 	/**
 	 * Kapselt einen "AuswahlRegion" oder einen "AuswahlBereich"-Block mit leerer Mengenangabe, bei dem das Region[]-Array bzw. die KV[] und KB[]-Arrays leer sind,
-	 * das also nur zum Filtern nach Typ benutzt wird. Wird zudem für einen AuswahlObjekt-Block benutzt, wenn keine Objektliste angegeben wurde, also alle
-	 * Systemobjekte ausgewählt sind. Ist zur Laufzeit änderbar, wenn die verwalteten Typen dynamisch sind bzw. kein Typ angegeben wurde.
+	 * das also nur zum Filtern nach Typ benutzt wird. Wird zudem fÃ¼r einen AuswahlObjekt-Block benutzt, wenn keine Objektliste angegeben wurde, also alle
+	 * Systemobjekte ausgewÃ¤hlt sind. Ist zur Laufzeit Ã¤nderbar, wenn die verwalteten Typen dynamisch sind bzw. kein Typ angegeben wurde.
 	 */
 	private final class ObjectSelectionBlockTypeSimple extends AbstractObjectSelectionBlock {
 
@@ -476,11 +482,11 @@ public final class ObjectSet implements ObjectCollection {
 		};
 
 		/**
-		 * Erstellt einen neuen Block, der nach Typ auswählt (oder alle Objekte auswählt, wenn kein Typ angegeben ist)
+		 * Erstellt einen neuen Block, der nach Typ auswÃ¤hlt (oder alle Objekte auswÃ¤hlt, wenn kein Typ angegeben ist)
 		 *
 		 * @param item        Daten-Objekt
-		 * @param dataHasType Ob das Daten-Objekt ein Referenz-Array namens "Typ" hat. Wenn ja wird nach diesem der typ ausgewählt, wenn nein werden alle
-		 *                    Systemobjekte ausgewählt
+		 * @param dataHasType Ob das Daten-Objekt ein Referenz-Array namens "Typ" hat. Wenn ja wird nach diesem der typ ausgewÃ¤hlt, wenn nein werden alle
+		 *                    Systemobjekte ausgewÃ¤hlt
 		 */
 		public ObjectSelectionBlockTypeSimple(final Data item, final boolean dataHasType) {
 			_types = new ArrayList<SystemObjectType>();
@@ -549,8 +555,8 @@ public final class ObjectSet implements ObjectCollection {
 	}
 
 	/**
-	 * Kapselt einen AuswahlRegion-Block mit Region-Angabe(n) ohne Mengenangabe. Kann zur Laufzeit verändert werden, da sich die enthaltenen Regionen verändern
-	 * können.
+	 * Kapselt einen AuswahlRegion-Block mit Region-Angabe(n) ohne Mengenangabe. Kann zur Laufzeit verÃ¤ndert werden, da sich die enthaltenen Regionen verÃ¤ndern
+	 * kÃ¶nnen.
 	 */
 	private final class ObjectSelectionBlockRegionSimple extends AbstractObjectSelectionBlock implements ObjectSelectionBlockRegion {
 
@@ -568,7 +574,7 @@ public final class ObjectSet implements ObjectCollection {
 		/**
 		 * Erstellt einen AuswahlRegion-Block
 		 * @param item Data-Objekt
-		 * @throws IllegalArgumentException falls ein Data-Objekt mit Textwerten benutzt wurde und kein gültiges Objekt enthalten war
+		 * @throws IllegalArgumentException falls ein Data-Objekt mit Textwerten benutzt wurde und kein gÃ¼ltiges Objekt enthalten war
 		 */
 		public ObjectSelectionBlockRegionSimple(final Data item) {
 			_regions = new ArrayList<Region>();
@@ -583,7 +589,7 @@ public final class ObjectSet implements ObjectCollection {
 				final Data.TextArray areas = item.getTextArray("Region");
 				for(int i = 0; i < areas.getLength(); i++) {
 					final SystemObject object = _connection.getDataModel().getObject(areas.getText(i));
-					if(object == null) throw new IllegalArgumentException("Es wurde eine ungültige Region angegeben: " + areas.getText(i));
+					if(object == null) throw new IllegalArgumentException("Es wurde eine ungÃ¼ltige Region angegeben: " + areas.getText(i));
 					_regions.add(_region.getRegion(object));
 				}
 			}
@@ -656,7 +662,7 @@ public final class ObjectSet implements ObjectCollection {
 		@Override
 		void stopChangeListener() {
 			for(final Region region : _regions) {
-				// Nächste Prüfung ist wichtig um zyklische Rekursionen zu vermeiden
+				// NÃ¤chste PrÃ¼fung ist wichtig um zyklische Rekursionen zu vermeiden
 				if(!_region.isDisabled(region)) {
 					region.removeRegionChangeListener(_innerRegionChangeListener);
 				}
@@ -701,19 +707,19 @@ public final class ObjectSet implements ObjectCollection {
 		}
 	}
 
-	/** Kapselt einen Block mit festgelegter Menge. Enthält intern den Block ohne festgelegte Menge und ruft die Mengen von dessen Objektliste ab. */
+	/** Kapselt einen Block mit festgelegter Menge. EnthÃ¤lt intern den Block ohne festgelegte Menge und ruft die Mengen von dessen Objektliste ab. */
 	private final class ObjectSelectionBlockObjectSet extends AbstractObjectSelectionBlock implements ObjectSelectionBlockRegion {
 
 		/** Hier werden die Objekte gespeichert, die in dieser Region enthalten sind (die also in der angegebenen Menge von den angegebenen Objekten vorkommen) */
 		private final Collection<SystemObject> _objectCache = new HashSet<SystemObject>();
 
 		/**
-		 * Hier werden zu Optimierungsgründen die Typen gespeichert, die überhaupt Mengen mit diesem Namen unterstützen. Objekte von anderen Typen müssen nicht
+		 * Hier werden zu OptimierungsgrÃ¼nden die Typen gespeichert, die Ã¼berhaupt Mengen mit diesem Namen unterstÃ¼tzen. Objekte von anderen Typen mÃ¼ssen nicht
 		 * beachtet werden.
 		 */
 		private Collection<ConfigurationObjectType> _relevantTypes = new HashSet<ConfigurationObjectType>();
 
-		/** Hier werden die gefundenen Mengen zwischengespeichert um sich auf Änderungen anzumelden */
+		/** Hier werden die gefundenen Mengen zwischengespeichert um sich auf Ã„nderungen anzumelden */
 		private final Collection<MutableSet> _mutableSets = new HashSet<MutableSet>();
 
 		private final ObjectCollectionChangeListener _innerChangeListener = new ObjectCollectionChangeListener() {
@@ -829,7 +835,7 @@ public final class ObjectSet implements ObjectCollection {
 			return _objectCache.contains(object);
 		}
 
-		/** Wird derzeit nicht gebraucht, da Mengenabfragen nicht verschachtelt werden können. Implementierung schadet aber nicht und ist trivial. */
+		/** Wird derzeit nicht gebraucht, da Mengenabfragen nicht verschachtelt werden kÃ¶nnen. Implementierung schadet aber nicht und ist trivial. */
 		@Override
 		public Collection<SystemObjectType> getAllObjectTypes() {
 			if(!_isInitialized) initialize();

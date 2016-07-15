@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -44,23 +50,23 @@ import java.util.*;
 /**
  * Diese Klasse bietet Funktionen um die Anmeldungen zu verwalten. Bei neuen Datenanmeldungen werden entsprechend neue Anmeldeklassen ({@link
  * de.bsvrz.dav.dav.subscriptions.SubscriptionInfo}) erstellt, welche den Status der angemeldeten Applikationen und Datenverteiler ermitteln und entsprechend
- * veröffentlichen.
+ * verÃ¶ffentlichen.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11478 $
+ * @version $Revision$
  */
 public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager {
 
 	/** Verbindungsverwaltung */
 	private final HighLevelConnectionsManagerInterface _connectionsManager;
 
-	/** Legt fest, ob die Rechteprüfung aktiviert ist */
+	/** Legt fest, ob die RechteprÃ¼fung aktiviert ist */
 	private final ServerDavParameters.UserRightsChecking _userRightsChecking;
 
-	/** Verwaltungsklasse für Zugriffsrechte */
+	/** Verwaltungsklasse fÃ¼r Zugriffsrechte */
 	private volatile AccessControlManager _accessControlManager = null;
 
-	/** Verwaltungsklasse für Telegramme */
+	/** Verwaltungsklasse fÃ¼r Telegramme */
 	private final TelegramManager _telegramManager;
 
 	/** Eigene Applikation-Verbindung zum Datenverteiler */
@@ -74,7 +80,7 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	 * Initialisiert den Anmeldungsmanager
 	 *
 	 * @param telegramManager    Telegramm-Manager
-	 * @param userRightsChecking Ob die Zugriffsrechteprüfung aktiviert ist
+	 * @param userRightsChecking Ob die ZugriffsrechteprÃ¼fung aktiviert ist
 	 */
 	public HighLevelSubscriptionsManager(final TelegramManager telegramManager, final ServerDavParameters.UserRightsChecking userRightsChecking) {
 		_telegramManager = telegramManager;
@@ -83,13 +89,14 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	/**
-	 * Initialisiert Funktionen, die von der Konfiguration anhängen (z.B. Rechteprüfung)
+	 * Initialisiert Funktionen, die von der Konfiguration abhÃ¤ngen (z.B. RechteprÃ¼fung)
 	 *
 	 * @param selfClientDavConnection eigene Datenverteiler-Verbindung
-	 * @param applicationStatusUpdater Klasse, die angemeldete Datensätze verschickt
+	 * @param applicationStatusUpdater Klasse, die angemeldete DatensÃ¤tze verschickt
 	 */
 	public void setConfigurationAvailable(final SelfClientDavConnection selfClientDavConnection, final ApplicationStatusUpdater applicationStatusUpdater) {
 		_connection = selfClientDavConnection.getConnection();
+		// Interpretation von Compatibility_Enabled wie in de.bsvrz.dav.dav.main.DavAccessControlPublisher.createData()!
 		if(_userRightsChecking != ServerDavParameters.UserRightsChecking.Disabled) {
 			_accessControlManager = new AccessControlManager(_connection, this, _userRightsChecking == ServerDavParameters.UserRightsChecking.NewDataModel);
 		}
@@ -126,7 +133,7 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	/**
-	 * Führt eine Rechteprüfung durch
+	 * FÃ¼hrt eine RechteprÃ¼fung durch
 	 *
 	 * @param userId Benutzer-ID
 	 * @param info   Anmeldeinfo
@@ -157,8 +164,8 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 
 		// Andere Anmeldungen
 		if(_accessControlManager == null) {
-			// das sollte nicht passieren, da für lokale Datenverteilerverbindung und Konfiguration oben Ausnahmefälle eingerichtet sind
-			// und sich andere Verbindungen erst anmelden dürfen, wenn die lokale Datenverteilerverbindung steht und also auch der AccessControlManager da ist.
+			// das sollte nicht passieren, da fÃ¼r lokale Datenverteilerverbindung und Konfiguration oben AusnahmefÃ¤lle eingerichtet sind
+			// und sich andere Verbindungen erst anmelden dÃ¼rfen, wenn die lokale Datenverteilerverbindung steht und also auch der AccessControlManager da ist.
 			throw new IllegalStateException("AccessControlManager wurde noch nicht initialisiert");
 		}
 
@@ -173,11 +180,11 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	/**
-	 * Formatiert eine baseSubscriptionInfo zu einem String, der sich zur Darstellung in Fehlerausgaben u.ä. eignet
+	 * Formatiert eine baseSubscriptionInfo zu einem String, der sich zur Darstellung in Fehlerausgaben u.Ã¤. eignet
 	 *
 	 * @param baseSubscriptionInfo baseSubscriptionInfo
 	 *
-	 * @return Ein Text der Form [objectPid, atgPid, aspPid] mit möglichen Abweichungen je nach Anmeldung und Zustand
+	 * @return Ein Text der Form [objectPid, atgPid, aspPid] mit mÃ¶glichen Abweichungen je nach Anmeldung und Zustand
 	 */
 	public String subscriptionToString(final BaseSubscriptionInfo baseSubscriptionInfo) {
 		if(_connection == null) return baseSubscriptionInfo.toString();
@@ -195,11 +202,11 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	/**
-	 * Formatiert eine Id zu einem Text der sich in Fehlerausgaben und ähnlichem eignet
+	 * Formatiert eine Id zu einem Text der sich in Fehlerausgaben und Ã¤hnlichem eignet
 	 *
 	 * @param objectId Id
 	 *
-	 * @return je nach Verfügbarkeit und Zustand des Datenmodells Pid, Name oder Id des Objekts
+	 * @return je nach VerfÃ¼gbarkeit und Zustand des Datenmodells Pid, Name oder Id des Objekts
 	 */
 	public String objectToString(final long objectId) {
 		if(_connection == null) return "[" + objectId + "]";
@@ -215,7 +222,7 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	/**
-	 * Gibt den AccessControlManager zurück
+	 * Gibt den AccessControlManager zurÃ¼ck
 	 *
 	 * @return AccessControlManager
 	 */
@@ -224,7 +231,7 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	/**
-	 * Wird aufgerufen, wenn dieser Datenverteiler für eine Anmeldung Zentraldatenverteiler geworden ist, z.B. um die Anmeldelisten zu aktualisieren
+	 * Wird aufgerufen, wenn dieser Datenverteiler fÃ¼r eine Anmeldung Zentraldatenverteiler geworden ist, z.B. um die Anmeldelisten zu aktualisieren
 	 *
 	 * @param baseSubscriptionInfo
 	 */
@@ -234,7 +241,7 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	/**
-	 * Wird aufgerufen, wenn dieser Datenverteiler für eine Anmeldung nicht mehr Zentraldatenverteiler ist, z.B. um die Anmeldelisten zu aktualisieren
+	 * Wird aufgerufen, wenn dieser Datenverteiler fÃ¼r eine Anmeldung nicht mehr Zentraldatenverteiler ist, z.B. um die Anmeldelisten zu aktualisieren
 	 *
 	 * @param baseSubscriptionInfo
 	 */
@@ -320,7 +327,7 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	/**
-	 * Meldet einen lokalen Empfänger oder eine lokale Senke ab.
+	 * Meldet einen lokalen EmpfÃ¤nger oder eine lokale Senke ab.
 	 *
 	 * @param application      Anwendung
 	 * @param subscriptionInfo subscriptionInfo
@@ -339,7 +346,7 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 
 	@Override
 	public void initializeUser(final long userId) {
-		_debug.fine("Lade Benutzerrechte für Benutzer", userId);
+		_debug.fine("Lade Benutzerrechte fÃ¼r Benutzer", userId);
 		if(_accessControlManager != null) {
 			UserInfo user = _accessControlManager.getUser(userId);
 			if(user instanceof DataLoader) {

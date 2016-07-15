@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -32,21 +38,26 @@ import de.bsvrz.sys.funclib.configObjectAcquisition.ConfigurationHelper;
 import de.bsvrz.sys.funclib.debug.Debug;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Stoppt die Datenverteiler- bzw. Applikations-Verbindung mit der übergebenen Objekt-Spezifikation.
+ * Stoppt die Datenverteiler- bzw. Applikations-Verbindung mit der Ã¼bergebenen Objekt-Spezifikation.
  * -objekt ID oder IDs durch Kommata getrennt, ist die Angabe welche Prozesse terminiert werden sollen.
  * Bsp : "-objekt=1466766103639706224 -benutzer=Tester -authentifizierung=passwd -debugLevelStdErrText=INFO"
  *
  * @author Kappich Systemberatung
- * @version $Revision: 13002 $
+ * @version $Revision$
  */
 public class TerminateConnection implements StandardApplication {
 
 	private static Debug _debug = Debug.getLogger();
 	private String _objectSpec;
 	private String _appName;
+	private long _delayMillis;
 
 	public static void main(String[] args) {
 		StandardApplicationRunner.run(new TerminateConnection(), args);
@@ -57,6 +68,7 @@ public class TerminateConnection implements StandardApplication {
 		_debug = Debug.getLogger();
 		_objectSpec = argumentList.fetchArgument("-objekt=").asString();
 		_appName = argumentList.fetchArgument("-name=").asString();
+		_delayMillis = argumentList.fetchArgument("-wartezeit=jetzt").asRelativeTime();
 	}
 
 	@Override
@@ -81,14 +93,10 @@ public class TerminateConnection implements StandardApplication {
 			}
 		}
 		if(objects.isEmpty()){
-			_debug.warning("Keine Objekte ausgewählt. Mit -objekt=... Pids und IDs auswählen, oder mit -name=... Applikationsnamen auswählen");
+			_debug.warning("Keine Objekte ausgewÃ¤hlt. Mit -objekt=... Pids und IDs auswÃ¤hlen, oder mit -name=... Applikationsnamen auswÃ¤hlen");
 		}
-		else{
-			for(SystemObject object : objects) {
-				_debug.info("Terminiere", object);
-			}
-		}
-		sendTerminationData(connection, objects);
+		sendTerminationData(connection, objects, _delayMillis);
+		connection.disconnect(false, "");
 	}
 
 	private static boolean matches(final SystemObject systemObject, final String appName) {
@@ -103,6 +111,20 @@ public class TerminateConnection implements StandardApplication {
 		return false;
 	}
 
+	public static void sendTerminationData(final ClientDavInterface connection, final List<SystemObject> systemObjectList, final long delayMillis) throws InterruptedException {
+		if(delayMillis <= 0){
+			sendTerminationData(connection, systemObjectList);
+			return;
+		}
+		for(Iterator<SystemObject> iterator = systemObjectList.iterator(); iterator.hasNext(); ) {
+			final SystemObject systemObject = iterator.next();
+			sendTerminationData(connection, Collections.singletonList(systemObject));
+			if(iterator.hasNext()){
+				Thread.sleep(delayMillis);
+			}
+		}
+	}
+	
 	public static void sendTerminationData(final ClientDavInterface connection, final List<SystemObject> systemObjectList) throws InterruptedException {
 		if(_debug == null){
 			_debug = Debug.getLogger();
@@ -110,17 +132,17 @@ public class TerminateConnection implements StandardApplication {
 		DataModel configuration = connection.getDataModel();
 		SystemObject object = connection.getLocalDav();
 
-		_debug.fine("Objekt: " + object);
+		_debug.info("Terminiere", systemObjectList);
 		AttributeGroup atg = configuration.getAttributeGroup("atg.terminierung");
 		_debug.fine("Attributgruppe: " + atg);
 		if(atg == null){
-			throw new IllegalStateException("Aktualisieren Sie die Konfiguration der Kernsoftware.\nDie benötigte Attributgruppe (atg.terminierung) ist unbekannt.");
+			throw new IllegalStateException("Aktualisieren Sie die Konfiguration der Kernsoftware.\nDie benÃ¶tigte Attributgruppe (atg.terminierung) ist unbekannt.");
 		}
 
 		Aspect aspect = configuration.getAspect("asp.anfrage");
 		_debug.fine("Aspekt: " + aspect);
 		if(aspect == null){
-			throw new IllegalStateException("Aktualisieren Sie die Konfiguration der Kernsoftware.\nDer benötigte Aspekt (asp.anfrage) ist unbekannt.");
+			throw new IllegalStateException("Aktualisieren Sie die Konfiguration der Kernsoftware.\nDer benÃ¶tigte Aspekt (asp.anfrage) ist unbekannt.");
 		}
 
 
@@ -136,7 +158,7 @@ public class TerminateConnection implements StandardApplication {
 
 		for(SystemObject systemObject : systemObjectList) {
 			if(systemObject == null){
-				_debug.error("Die Übergebene Objekt-Spezifikation ist ungültig.");
+				_debug.error("Die Ãœbergebene Objekt-Spezifikation ist ungÃ¼ltig.");
 				continue;
 			}
 
@@ -164,16 +186,22 @@ public class TerminateConnection implements StandardApplication {
 		catch(Exception e) {
 			System.out.println("Fehler: " + e.getMessage());
 		}
+		sender.await();
 	}
 
 	private static class Sender implements ClientSenderInterface {
 
 		private final ClientDavInterface _connection;
 		private final ResultData _data;
+		private final Condition _send;
+		private final ReentrantLock _lock;
+		private boolean _hasSend;
 
 		public Sender(final ClientDavInterface connection, final ResultData data) {
 			_connection = connection;
 			_data = data;
+			_lock = new ReentrantLock();
+			_send = _lock.newCondition();
 		}
 
 		@Override
@@ -181,6 +209,15 @@ public class TerminateConnection implements StandardApplication {
 			try {
 				if(state == START_SENDING) {
 					_connection.sendData(_data);
+					_connection.unsubscribeSender(this, object, dataDescription);
+					_lock.lock();
+					try {
+						_hasSend = true;
+						_send.signalAll();
+					}
+					finally {
+						_lock.unlock();
+					}
 				}
 				else {
 					_debug.warning("Negative Sendesteuerung", state);
@@ -189,13 +226,23 @@ public class TerminateConnection implements StandardApplication {
 			catch(SendSubscriptionNotConfirmed ignored) {
 				return;
 			}
-			_connection.unsubscribeSender(this, object, dataDescription);
-			_connection.disconnect(false, "");
 		}
 
 		@Override
 		public boolean isRequestSupported(SystemObject object, DataDescription dataDescription) {
 			return true;
+		}
+
+		public void await() throws InterruptedException {
+			_lock.lock();
+			try {
+				while(!_hasSend) {
+					_send.await();
+				}
+			}
+			finally {
+				_lock.unlock();
+			}
 		}
 	}
 }

@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -49,10 +55,10 @@ import java.util.List;
 
 /**
  *
- * Klasse, die Dav-Dav-Verbindungen verwaltet und Telegramme von T_T-Verbindungen entgegen nimmt und entsprechende Updates bei den verantwortlichen Klassen auslöst.
+ * Klasse, die Dav-Dav-Verbindungen verwaltet und Telegramme von T_T-Verbindungen entgegen nimmt und entsprechende Updates bei den verantwortlichen Klassen auslÃ¶st.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11475 $
+ * @version $Revision$
  */
 public class HighLevelTransmitterManager implements DistributionInterface, HighLevelTransmitterManagerInterface {
 	private static final Debug _debug = Debug.getLogger();
@@ -103,13 +109,13 @@ public class HighLevelTransmitterManager implements DistributionInterface, HighL
 				userName = remoteInfo.getRemoteUserName();
 			}
 			else {
-				_debug.warning("Keine Verbindungsinfo für Verbindung zum Datenverteiler " + connectedTransmitterId + " gefunden.");
+				_debug.warning("Keine Verbindungsinfo fÃ¼r Verbindung zum Datenverteiler " + connectedTransmitterId + " gefunden.");
 			}
 		}
 		if("".equals(userName)) {
 			userName = _connectionsManager.getUserName();
 			_debug.warning(
-					"Kein Benutzername für die Authentifizierung beim Datenverteiler " + connectedTransmitterId + " gefunden."
+					"Kein Benutzername fÃ¼r die Authentifizierung beim Datenverteiler " + connectedTransmitterId + " gefunden."
 					+ " Es wird der Default-Benutzername " + userName + " benutzt."
 			);
 		}
@@ -191,7 +197,7 @@ public class HighLevelTransmitterManager implements DistributionInterface, HighL
 			subscriptionType = TransmitterSubscriptionType.fromByte(subscription.getSubscriptionType());
 		}
 		catch(IllegalArgumentException e) {
-			_debug.warning("Ungültige Anmeldung", e);
+			_debug.warning("UngÃ¼ltige Anmeldung", e);
 			subscriptionInfo.close();
 			return;
 		}
@@ -210,7 +216,7 @@ public class HighLevelTransmitterManager implements DistributionInterface, HighL
 		BaseSubscriptionInfo baseSubscriptionInfo = unsubscription.getBaseSubscriptionInfo();
 		final SubscriptionInfo subscriptionInfo = _subscriptionsManager.openExistingSubscriptionInfo(baseSubscriptionInfo);
 		if(subscriptionInfo == null) {
-//			_debug.warning("Erhalte Abmeldeauftrag für Datenidentifikation, die nicht angemeldet ist: " + _subscriptionsManager.subscriptionToString(baseSubscriptionInfo));
+//			_debug.warning("Erhalte Abmeldeauftrag fÃ¼r Datenidentifikation, die nicht angemeldet ist: " + _subscriptionsManager.subscriptionToString(baseSubscriptionInfo));
 			return;
 		}
 		TransmitterSubscriptionType subscriptionType = TransmitterSubscriptionType.fromByte(unsubscription.getSubscriptionType());
@@ -245,7 +251,7 @@ public class HighLevelTransmitterManager implements DistributionInterface, HighL
 			connectionState = ConnectionState.fromByte(receipt.getReceipt());
 		}
 		catch(IllegalArgumentException e) {
-			_debug.warning("Ungültige Anmeldungsquittung", e);
+			_debug.warning("UngÃ¼ltige Anmeldungsquittung", e);
 			return;
 		}
 		_subscriptionsManager.handleTransmitterSubscriptionReceipt(

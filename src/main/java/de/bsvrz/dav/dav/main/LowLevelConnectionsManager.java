@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2005 by Kappich+Kniß Systemberatung Aachen (K2S)
+ * Copyright 2005 by Kappich+KniÃŸ Systemberatung Aachen (K2S)
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -16,8 +16,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -26,23 +32,22 @@ import de.bsvrz.dav.daf.communication.lowLevel.AuthentificationProcess;
 import de.bsvrz.dav.daf.communication.lowLevel.ServerConnectionInterface;
 import de.bsvrz.dav.daf.main.*;
 import de.bsvrz.dav.daf.main.config.*;
+import de.bsvrz.dav.daf.main.impl.ConfigurationManager;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterConnectionInfo;
+import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterInfo;
 import de.bsvrz.dav.dav.communication.appProtocol.T_A_HighLevelCommunication;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 import de.bsvrz.sys.funclib.debug.Debug;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * Klasse, die die Verbindungen des Datenverteilers verwaltet. Diese Klasse initialisiert die LowLevelApplicationConnections,
- * LowLevelTransmitterConnections, stellt eine Klasse für die Passwort-Prüfung von Benutzern bereit und initialisiert schließlich den
+ * LowLevelTransmitterConnections, stellt eine Klasse fÃ¼r die Passwort-PrÃ¼fung von Benutzern bereit und initialisiert schlieÃŸlich den
  * HighLevelConnectionsManager.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11473 $
+ * @version $Revision$
  */
 public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInterface {
 
@@ -73,11 +78,15 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 	private boolean _waitForParamDone = false;
 
 	private final Object _waitForParamLock = new Object();
+	
+	private Map<TransmitterInfo, CommunicationStateAndMessage> _stateMap;
+	
+	private Collection<Long> _disabledConnections = Collections.emptyList();
 
 	/**
-	 * Erzeugt eine neue Verbindungsverwaltung für den Datenverteiler.
+	 * Erzeugt eine neue Verbindungsverwaltung fÃ¼r den Datenverteiler.
 	 *
-	 * @param serverDavParameters Die Parameter sind u. a. die Adressen und Subadressen der Kommunikationskanäle
+	 * @param serverDavParameters Die Parameter sind u. a. die Adressen und Subadressen der KommunikationskanÃ¤le
 	 *
 	 */
 	public LowLevelConnectionsManager(final ServerDavParameters serverDavParameters) throws DavInitializationException {
@@ -93,13 +102,13 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 			_debug.fine("DatenverteilerID = " + _transmitterId);
 			_highLevelConnectionsManager = new HighLevelConnectionsManager(this, _serverDavParameters.getUserRightsChecking());
 
-			// Kommunikations und Authentifizierungs-Klassen für die HighLevelCommunication-Klassen initialisieren
+			// Kommunikations und Authentifizierungs-Klassen fÃ¼r die HighLevelCommunication-Klassen initialisieren
 			final Class<? extends ServerConnectionInterface> communicationProtocolClass = getCommunicationsProtocolClass();
 			final AuthentificationComponent authenticationComponent = getAuthenticationComponent();
 
 			// Komponente zur Authentifizierung bereitstellen. Es gibt zwar noch keine Konfiguration, aber die lokale Datenverteilerverbindung muss angemeldet
-			// werden, um überhaupt auf die Konfiguration zugreifen zu können. Um dieses Henne-Ei-problem zu umgehen hat die LowLevelAuthentication eine
-			// Spezialbehandlung damit lokale Datenverteilerverbindung, Konfiguration und Parametrierung ohne vorhandene Konfiguration angemeldet werden können.
+			// werden, um Ã¼berhaupt auf die Konfiguration zugreifen zu kÃ¶nnen. Um dieses Henne-Ei-problem zu umgehen hat die LowLevelAuthentication eine
+			// Spezialbehandlung damit lokale Datenverteilerverbindung, Konfiguration und Parametrierung ohne vorhandene Konfiguration angemeldet werden kÃ¶nnen.
 			_lowLevelAuthentication = new LowLevelAuthentication(_serverDavParameters, _clientDavParameters, _transmitterId, authenticationComponent);
 
 			// Kommunikation mit Applikationen starten
@@ -112,17 +121,19 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 			// Eigene Datenverteilerverbindung starten
 			_debug.fine("Starte Kommunikation mit eigener Datenverteiler-Verbindung");
 			_selfClientDavConnection = new SelfClientDavConnection(_clientDavParameters);
-			_selfClientDavConnection.getConnection().addConnectionListener(new DavConnectionListener() {
-				@Override
-				public void connectionClosed(final ClientDavInterface connection) {
-					shutdown(true, "Datenverteilerverbindung verloren");
-				}
-			});
+			_selfClientDavConnection.getConnection().addConnectionListener(
+					new DavConnectionListener() {
+						@Override
+						public void connectionClosed(final ClientDavInterface connection) {
+							shutdown(true, "Datenverteilerverbindung verloren");
+						}
+					}
+			);
 
 			_highLevelConnectionsManager.setSelfClientDavConnection(_selfClientDavConnection);
 
-			// Jetzt auch die Anmeldung für andere Anwendungen erlauben
-			_debug.fine("Verbindungsaufbau für normale Applikationen ermöglichen");
+			// Jetzt auch die Anmeldung fÃ¼r andere Anwendungen erlauben
+			_debug.fine("Verbindungsaufbau fÃ¼r normale Applikationen ermÃ¶glichen");
 			_lowLevelAuthentication.setSelfClientDavConnection(_selfClientDavConnection);
 			_lowLevelApplicationConnections.continueAuthentication();
 
@@ -138,26 +149,39 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 				_debug.warning("Thread wurde beim Warten auf Parametrierung unterbrochen", e);
 			}
 
-			final long delay = _serverDavParameters.getInitialInterDavServerDelay();
-			_debug.config("Verbindungen von und zu anderen Datenverteilern werden in " + delay + " ms zugelassen");
-			try {
-				Thread.sleep(delay);
-			}
-			catch(InterruptedException e) {
-				_debug.warning("Thread wurde beim Warten auf Verbindungsaufbau zu anderen Datenverteilern unterbrochen", e);
-			}
-
 			_debug.finer("Datenverteiler-ID", _transmitterId);
-			_debug.config("Verbindungen von und zu anderen Datenverteilern werden jetzt zugelassen");
 
 			// Datenverteiler-Verbindungen vorbereiten
 			_lowLevelTransmitterConnections = new LowLevelTransmitterConnections(
-					_highLevelConnectionsManager.getTransmitterManager(), communicationProtocolClass, _serverDavParameters, this
+					_highLevelConnectionsManager.getTransmitterManager(), _serverDavParameters, this
 			);
 
-			// Erst jetzt die Datenverteilerverbindungen starten. Würde dieser Aufruf im Konstruktor von LowLevelTransmitterConnections stattfinden,
-			// wäre das Field _lowLevelTransmitterConnections noch nicht initialisiert.
-			_lowLevelTransmitterConnections.startTransmitterConnections(communicationProtocolClass, _selfClientDavConnection.getDataModel());
+			// Erst jetzt die Datenverteilerverbindungen starten. WÃ¼rde dieser Aufruf im Konstruktor von LowLevelTransmitterConnections stattfinden,
+			// wÃ¤re das Field _lowLevelTransmitterConnections noch nicht initialisiert.
+			try {
+	
+				final ConfigurationManager configurationManager = _selfClientDavConnection.getDataModel().getConfigurationManager();
+				if(configurationManager != null) {
+					TransmitterConnectionInfo[] infos = configurationManager.getTransmitterConnectionInfo(_transmitterId);
+
+					final long delay = _serverDavParameters.getInitialInterDavServerDelay();
+					_debug.config("Verbindungen von und zu anderen Datenverteilern werden in " + delay + " ms zugelassen");
+					try {
+						Thread.sleep(delay);
+					}
+					catch(InterruptedException e) {
+						_debug.warning("Thread wurde beim Warten auf Verbindungsaufbau zu anderen Datenverteilern unterbrochen", e);
+					}
+
+					_debug.config("Verbindungen von und zu anderen Datenverteilern werden jetzt zugelassen");
+					
+					_lowLevelTransmitterConnections.startTransmitterConnections(communicationProtocolClass, infos, _disabledConnections);
+				}
+			}
+			catch(RuntimeException ex) {
+				ex.printStackTrace();
+				_lowLevelTransmitterConnections.close(true, ex.getMessage());
+			}
 		}
 		catch(ClassNotFoundException e) {
 			throw new DavInitializationException("Eine angegebene Klasse konnte nicht gefunden werden", e);
@@ -189,7 +213,7 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 			AttributeGroup atg = config.getAttributeGroup("atg.applikationsFertigmeldung");
 			Aspect aspect = config.getAspect("asp.standard");
 			if(atg == null || aspect==null) {
-				_debug.warning("Datenmodell für Applikationsfertigmeldungen nicht verfügbar. Es wird nicht auf die Parametrierung gewartet");
+				_debug.warning("Datenmodell fÃ¼r Applikationsfertigmeldungen nicht verfÃ¼gbar. Es wird nicht auf die Parametrierung gewartet");
 				_waitForParamDone = true;
 				return;
 			}
@@ -225,12 +249,12 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 	}
 
 	/**
-	 * Gibt das Transmitter-Objekt zurück. Wirft eine IllegalArgumentException und produziert entsprechende Debug-Ausgabe wenn die angefragte DatenverteilerID zu
+	 * Gibt das Transmitter-Objekt zurÃ¼ck. Wirft eine IllegalArgumentException und produziert entsprechende Debug-Ausgabe wenn die angefragte DatenverteilerID zu
 	 * keinem Datenverteiler der Konfiguration passt.
 	 *
 	 * @param dataModel Datenmodell
 	 *
-	 * @return Das Objekt, dass diesen Datenverteiler repräsentiert
+	 * @return Das Objekt, dass diesen Datenverteiler reprÃ¤sentiert
 	 */
 	private SystemObject getTransmitterObject(final DataModel dataModel) {
 		final SystemObject davObject = dataModel.getObject(_transmitterId);
@@ -260,7 +284,7 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 			}
 			catch(InterruptedException ignored) {
 			}
-			throw new IllegalArgumentException("Ungültige Datenverteiler-ID " + _transmitterId);
+			throw new IllegalArgumentException("UngÃ¼ltige Datenverteiler-ID " + _transmitterId);
 		}
 		return davObject;
 	}
@@ -281,13 +305,13 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 	private Class<? extends ServerConnectionInterface> getCommunicationsProtocolClass() throws ClassNotFoundException {
 		final String communicationProtocolName = _serverDavParameters.getLowLevelCommunicationName();
 		if(communicationProtocolName == null) {
-			throw new InitialisationNotCompleteException("Kommunikationsprotokollname ungültig.");
+			throw new InitialisationNotCompleteException("Kommunikationsprotokollname ungÃ¼ltig.");
 		}
 		final Class<? extends ServerConnectionInterface> communicationProtocolClass = Class.forName(communicationProtocolName).asSubclass(
 				ServerConnectionInterface.class
 		);
 		if(communicationProtocolClass == null) {
-			throw new InitialisationNotCompleteException("Kommunikationsprotokollname ungültig.");
+			throw new InitialisationNotCompleteException("Kommunikationsprotokollname ungÃ¼ltig.");
 		}
 		return communicationProtocolClass;
 	}
@@ -303,8 +327,8 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 	 */
 	@Override
 	public final void shutdown(final boolean error, final String message) {
-		// Außerhalb von synchronized ausführen, um Deadlocks zu vermeiden, wenn mehrere Threads aus unterschiedlichen
-		// Quellen (mit unterschiedlichen Locks) gleichzeitig Shutdown ausführen.
+		// AuÃŸerhalb von synchronized ausfÃ¼hren, um Deadlocks zu vermeiden, wenn mehrere Threads aus unterschiedlichen
+		// Quellen (mit unterschiedlichen Locks) gleichzeitig Shutdown ausfÃ¼hren.
 		if(_closing) return;
 		
 		synchronized(this) {
@@ -410,7 +434,7 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 	}
 
 	/**
-	 * Bestimmt die Verbindungsinformationen für eine Verbindung von diesem Datenverteiler zum angegebenen Datenverteiler.
+	 * Bestimmt die Verbindungsinformationen fÃ¼r eine Verbindung von diesem Datenverteiler zum angegebenen Datenverteiler.
 	 *
 	 * @param connectedTransmitterId ID des DAV
 	 *
@@ -422,7 +446,7 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 	}
 
 	/**
-	 * Bestimmt die Verbindungsinformationen für eine Verbindung vom angegebenen Datenverteiler zu diesem Datenverteiler.
+	 * Bestimmt die Verbindungsinformationen fÃ¼r eine Verbindung vom angegebenen Datenverteiler zu diesem Datenverteiler.
 	 *
 	 * @param connectedTransmitterId ID des DAV
 	 *
@@ -475,5 +499,28 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 			_highLevelConnectionsManager.userLoggedIn(userId);
 		}
 		return userId;
+	}
+
+	@Override
+	public void updateCommunicationState() {
+		final Map<TransmitterInfo, CommunicationStateAndMessage> oldStateMap = _stateMap;
+		_stateMap = _lowLevelTransmitterConnections.getStateMap();
+		if(!_stateMap.equals(oldStateMap)) {
+			_highLevelConnectionsManager.updateTransmitterCommunicationStates(_stateMap);
+		}
+	}
+
+	@Override
+	public void setDisabledTransmitterConnections(final Collection<Long> disabledConnections) {
+		_disabledConnections = disabledConnections;
+		if(_lowLevelTransmitterConnections != null) {
+			_lowLevelTransmitterConnections.setDisabledTransmitterConnections(disabledConnections);
+		}
+	}
+
+	@Override
+	public boolean isDisabledConnection(final long remoteTransmitterId) {
+		if(_lowLevelTransmitterConnections == null) return false;
+		return _lowLevelTransmitterConnections.getDisabledTransmitterConnections().contains(remoteTransmitterId);
 	}
 }

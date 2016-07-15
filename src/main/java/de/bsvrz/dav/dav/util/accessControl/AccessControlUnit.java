@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -48,7 +54,7 @@ class AccessControlUnit extends DataLoader {
 	private final AccessControlManager _accessControlManager;
 
 	/**
-	 * Erstellt eine neue Klasse, die eine Berechtigungsklasse verwaltet. Sollte außer in Ausnahmen nur im AccessControlManager aufgerufen werden, um unnötige
+	 * Erstellt eine neue Klasse, die eine Berechtigungsklasse verwaltet. Sollte auÃŸer in Ausnahmen nur im AccessControlManager aufgerufen werden, um unnÃ¶tige
 	 * Instanzen zu vermeiden
 	 *
 	 * @param systemObject         Das Systemobjekt, das die Berechtigungsklasse symbolisiert
@@ -84,7 +90,7 @@ class AccessControlUnit extends DataLoader {
 	}
 
 	/**
-	 * Gibt eine Liste mit den referenzierten Rollen und Regionen zurück
+	 * Gibt eine Liste mit den referenzierten Rollen und Regionen zurÃ¼ck
 	 *
 	 * @return eine Liste mit den referenzierten Rollen und Regionen
 	 */
@@ -106,12 +112,12 @@ class AccessControlUnit extends DataLoader {
 
 	@Override
 	public void deactivateInvalidChild(final DataLoader node) {
-		// Implementierung nicht notwendig, Berechtigungsklassen können sich nicht rekursiv referenzieren
+		// Implementierung nicht notwendig, Berechtigungsklassen kÃ¶nnen sich nicht rekursiv referenzieren
 		throw new UnsupportedOperationException("removeInvalidChild nicht implementiert");
 	}
 
 	/**
-	 * Prüft den Berechtigungsstatus für eine angegebene Datenanmeldung
+	 * PrÃ¼ft den Berechtigungsstatus fÃ¼r eine angegebene Datenanmeldung
 	 *
 	 * @param object Objekt auf das Daten angemeldet werden sollen
 	 * @param atg    Attributgruppe
@@ -136,7 +142,7 @@ class AccessControlUnit extends DataLoader {
 	}
 
 	/**
-	 * Prüft, ob ein Objekt im angegebenen Konfigurationsbereich mit dem angegeben Typ erstellt, bearbeitet oder gelöscht werden darf.
+	 * PrÃ¼ft, ob ein Objekt im angegebenen Konfigurationsbereich mit dem angegeben Typ erstellt, bearbeitet oder gelÃ¶scht werden darf.
 	 *
 	 * @param area Konfigurationsbereich
 	 * @param type Objekttyp
@@ -158,7 +164,7 @@ class AccessControlUnit extends DataLoader {
 	}
 
 	/**
-	 * Prüft, ob eine Menge im angegebenen Konfigurationsbereich mit dem angegeben Typ verändert werden darf.
+	 * PrÃ¼ft, ob eine Menge im angegebenen Konfigurationsbereich mit dem angegeben Typ verÃ¤ndert werden darf.
 	 *
 	 * @param area Konfigurationsbereich
 	 * @param type Mengentyp
@@ -200,7 +206,7 @@ class AccessControlUnit extends DataLoader {
 		}
 
 		/**
-		 * Prüft den Berechtigungsstatus für eine angegebene Datenanmeldung
+		 * PrÃ¼ft den Berechtigungsstatus fÃ¼r eine angegebene Datenanmeldung
 		 *
 		 * @param object Objekt auf das Daten angemeldet werden sollen
 		 * @param atg    Attributgruppe
@@ -217,7 +223,7 @@ class AccessControlUnit extends DataLoader {
 		}
 
 		/**
-		 * Prüft den Berechtigungsstatus für die Erstellung/Veränderung/Löschung von Objekten
+		 * PrÃ¼ft den Berechtigungsstatus fÃ¼r die Erstellung/VerÃ¤nderung/LÃ¶schung von Objekten
 		 *
 		 * @param area Konfigurationsbereich
 		 * @param type Objekttyp
@@ -231,7 +237,7 @@ class AccessControlUnit extends DataLoader {
 		}
 
 		/**
-		 * Prüft den Berechtigungsstatus für die Veränderung von Mengen
+		 * PrÃ¼ft den Berechtigungsstatus fÃ¼r die VerÃ¤nderung von Mengen
 		 *
 		 * @param area Konfigurationsbereich
 		 * @param type Objekttyp

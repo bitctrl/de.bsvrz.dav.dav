@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -29,7 +35,7 @@ import de.bsvrz.sys.funclib.debug.Debug;
  * Verarbeitet Anfragen, Anwendungs-Verbindungen oder Dav-Verbindungen zu terminieren, oder den Datenverteiler zu beenden
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11409 $
+ * @version $Revision$
  */
 class TerminationQueryReceiver implements ClientReceiverInterface {
 
@@ -58,30 +64,30 @@ class TerminationQueryReceiver implements ClientReceiverInterface {
 				}
 			}
 			catch(Exception e) {
-				_debug.error("Fehler beim Ausführen einer Terminierungsanfrage:", e);
+				_debug.error("Fehler beim AusfÃ¼hren einer Terminierungsanfrage:", e);
 			}
 		}
 	}
 
 	private void removeAppConnection(final long applicationId) {
-		_debug.info("Erhalte Terminierungsanweisung für Anwendung-ID: " + applicationId);
+		_debug.info("Erhalte Terminierungsanweisung fÃ¼r Anwendung-ID: " + applicationId);
 		final T_A_HighLevelCommunicationInterface connection = _highLevelConnectionsManager.getApplicationConnectionFromId(applicationId);
 		if(connection != null) {
-			connection.terminate(false, "Terminierungsanfrage über Datenverteiler");
+			connection.terminate(false, "Terminierungsanfrage Ã¼ber Datenverteiler");
 			return;
 		}
 		_debug.warning("Es konnte zur Terminierung keine verbundene Anwendung mit der ID " + applicationId + " gefunden werden.");
 	}
 
 	private void removeDavConnection(final long transmitterId) {
-		_debug.info("Erhalte Terminierungsanweisung für Datenverteiler-ID: " + transmitterId);
+		_debug.info("Erhalte Terminierungsanweisung fÃ¼r Datenverteiler-ID: " + transmitterId);
 		if(transmitterId == _highLevelConnectionsManager.getTransmitterId()) {
-			_highLevelConnectionsManager.shutdown(false, "Terminierungsanfrage über Datenverteiler");
+			_highLevelConnectionsManager.shutdown(false, "Terminierungsanfrage Ã¼ber Datenverteiler");
 			return;
 		}
 		final T_T_HighLevelCommunicationInterface transmitterConnection = _highLevelConnectionsManager.getTransmitterConnectionFromId(transmitterId);
 		if(transmitterConnection != null) {
-			transmitterConnection.terminate(false, "Terminierungsanfrage über Datenverteiler");
+			transmitterConnection.terminate(false, "Terminierungsanfrage Ã¼ber Datenverteiler");
 			return;
 		}
 		_debug.warning("Es konnte zur Terminierung kein verbundener Datenverteiler mit der ID " + transmitterId + " gefunden werden.");
