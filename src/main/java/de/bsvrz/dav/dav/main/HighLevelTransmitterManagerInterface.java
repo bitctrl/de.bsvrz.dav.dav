@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -33,10 +39,10 @@ import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunicationInterface;
 
 /**
- * Interface für die Verwaltung der Dav-Dav_Verbindungen
+ * Interface fÃ¼r die Verwaltung der Dav-Dav_Verbindungen
  *
  * @author Kappich Systemberatung
- * @version $Revision: 0000 $
+ * @version $Revision$
  */
 public interface HighLevelTransmitterManagerInterface {
 
@@ -52,21 +58,21 @@ public interface HighLevelTransmitterManagerInterface {
 	 * Topologie nicht vorgegeben ist, dann wird der Standardbenutzername des Datenverteilers benutzt.
 	 *
 	 * @param connectedTransmitterId Objekt-ID des anderen Datenverteilers.
-	 * @return Benutzername für die Authentifizierung beim anderen Datenverteiler.
+	 * @return Benutzername fÃ¼r die Authentifizierung beim anderen Datenverteiler.
 	 */
 	String getUserNameForAuthentication(long connectedTransmitterId);
 
 	/**
 	 * Bestimmt das Benutzerpasswort das zur Authentifizierung beim angegebenen Datenverteiler benutzt werden soll. Wenn der Benutzername in
-	 * der Topologie nicht vorgegeben ist, dann wird das Passwort des Standardbenutzers des Datenverteilers zurückgegeben.
+	 * der Topologie nicht vorgegeben ist, dann wird das Passwort des Standardbenutzers des Datenverteilers zurÃ¼ckgegeben.
 	 *
 	 * @param connectedTransmitterId Objekt-ID des anderen Datenverteilers.
-	 * @return Passwort für die Authentifizierung beim anderen Datenverteiler.
+	 * @return Passwort fÃ¼r die Authentifizierung beim anderen Datenverteiler.
 	 */
 	String getPasswordForAuthentication(long connectedTransmitterId);
 
 	/**
-	 * Gibt das Gewicht einer Verbindung zurück
+	 * Gibt das Gewicht einer Verbindung zurÃ¼ck
 	 *
 	 * @param transmitterId Datenverteiler, zu dem das Gewischt ermittelt werden soll
 	 * @return
@@ -76,7 +82,7 @@ public interface HighLevelTransmitterManagerInterface {
 	/**
 	 * Wird aufgerufen, wenn ein Datentelegramm eintrifft
 	 *
-	 * @param communication           Verbindung über die das Telegram eintrifft
+	 * @param communication           Verbindung Ã¼ber die das Telegram eintrifft
 	 * @param transmitterDataTelegram Telegram
 	 */
 	void handleDataTelegram(T_T_HighLevelCommunication communication, TransmitterDataTelegram transmitterDataTelegram);
@@ -91,7 +97,7 @@ public interface HighLevelTransmitterManagerInterface {
 	/**
 	 * Dieses Telegramm wird an den ListsManager weitergegeben, siehe Dokumentation dort
 	 *
-	 * @param communication Verbindung über die das Telegram gesendet wurde
+	 * @param communication Verbindung Ã¼ber die das Telegram gesendet wurde
 	 * @param transmitterListsDeliveryUnsubscription telegram
 	 */
 	void handleListsDeliveryUnsubscription(
@@ -100,7 +106,7 @@ public interface HighLevelTransmitterManagerInterface {
 	/**
 	 * Dieses Telegramm wird an den ListsManager weitergegeben, siehe Dokumentation dort
 	 *
-	 * @param communication  Verbindung über die das Telegram gesendet wurde
+	 * @param communication  Verbindung Ã¼ber die das Telegram gesendet wurde
 	 * @param transmitterListsUnsubscription telegram
 	 */
 	void handleListsUnsubscription(
@@ -109,7 +115,7 @@ public interface HighLevelTransmitterManagerInterface {
 	/**
 	 * Dieses Telegramm wird an den ListsManager weitergegeben, siehe Dokumentation dort
 	 *
-	 * @param communication  Verbindung über die das Telegram gesendet wurde
+	 * @param communication  Verbindung Ã¼ber die das Telegram gesendet wurde
 	 * @param transmitterListsSubscription telegram
 	 */
 	void handleListsSubscription(
@@ -133,7 +139,7 @@ public interface HighLevelTransmitterManagerInterface {
 			T_T_HighLevelCommunicationInterface communication, TransmitterDataUnsubscription unsubscription);
 
 	/**
-	 * Bestätigung einer ausgehenden Datenanmeldung auf einem entfernten datenverteiler
+	 * BestÃ¤tigung einer ausgehenden Datenanmeldung auf einem entfernten datenverteiler
 	 *
 	 * @param communication Verbindung
 	 * @param receipt       Telegram
@@ -144,14 +150,14 @@ public interface HighLevelTransmitterManagerInterface {
 	/**
 	 * Es gibt einen neuen Weg, diese Nachricht wird im BestWayManager behandelt, siehe Dokumentation dort.
 	 *
-	 * @param communication  Verbindung über die das Telegram gesendet wurde
+	 * @param communication  Verbindung Ã¼ber die das Telegram gesendet wurde
 	 */
 	void addWay(T_T_HighLevelCommunication communication);
 
 	/**
 	 * Wird bei einem BestWayUpdate-Telegramm aufgerufen
 	 *
-	 * @param communication             Verbindung über die das Telegram gesendet wurde
+	 * @param communication             Verbindung Ã¼ber die das Telegram gesendet wurde
 	 * @param transmitterBestWayUpdate Telegramm
 	 */
 	void updateBestWay(T_T_HighLevelCommunication communication, TransmitterBestWayUpdate transmitterBestWayUpdate);

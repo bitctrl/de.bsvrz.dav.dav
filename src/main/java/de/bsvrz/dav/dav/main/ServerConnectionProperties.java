@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -16,8 +16,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -26,10 +32,10 @@ import de.bsvrz.dav.daf.communication.lowLevel.ConnectionProperties;
 import de.bsvrz.dav.daf.communication.lowLevel.LowLevelCommunicationInterface;
 
 /**
- * Diese Klasse stellt die Parameter einer Verbindung zwischen zwei Servern zur Verfügung. Sie repräsentiert die Eigenschaften dieser Verbindung.
+ * Diese Klasse stellt die Parameter einer Verbindung zwischen zwei Servern zur VerfÃ¼gung. Sie reprÃ¤sentiert die Eigenschaften dieser Verbindung.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public class ServerConnectionProperties extends ConnectionProperties {
 
@@ -48,15 +54,15 @@ public class ServerConnectionProperties extends ConnectionProperties {
 	/** Die Konfigurations-Pid */
 	private String _configurationPid;
 
-	/** Datenverteiler Adresse für die Konfigurationsanbindung */
+	/** Datenverteiler Adresse fÃ¼r die Konfigurationsanbindung */
 	private String _configDataTransmitterAdress;
 
-	/** Datenverteiler Subadresse für die Konfigurationsanbindung */
+	/** Datenverteiler Subadresse fÃ¼r die Konfigurationsanbindung */
 	private int _configDataTransmitterSubAdress;
 
 
 	/**
-	 * Dieser Konstruktor wird für Tests benötigt.
+	 * Dieser Konstruktor wird fÃ¼r Tests benÃ¶tigt.
 	 */
 	public ServerConnectionProperties() {
 		super();
@@ -106,7 +112,7 @@ public class ServerConnectionProperties extends ConnectionProperties {
 	}
 
 	/**
-	 * Gibt die Authentifikationskomponente zurück.
+	 * Gibt die Authentifikationskomponente zurÃ¼ck.
 	 *
 	 * @return die Authentifikationskomponente
 	 */
@@ -115,7 +121,7 @@ public class ServerConnectionProperties extends ConnectionProperties {
 	}
 
 	/**
-	 * Gibt die Id des Datenverteilers zurück.
+	 * Gibt die Id des Datenverteilers zurÃ¼ck.
 	 *
 	 * @return die Datenverteiler-Id
 	 */
@@ -133,7 +139,7 @@ public class ServerConnectionProperties extends ConnectionProperties {
 	}
 
 	/**
-	 * Gibt die Information zurück, ob der Datenverteiler auf eine lokale Anmeldung einer Konfigurationsapplikation warten muss.
+	 * Gibt die Information zurÃ¼ck, ob der Datenverteiler auf eine lokale Anmeldung einer Konfigurationsapplikation warten muss.
 	 *
 	 * @return <code>true</code> - im lokalen Konfigurationsbetrieb. <br><code>false</code> - im 'remote' Konfigurationsbetrieb.
 	 */
@@ -142,7 +148,7 @@ public class ServerConnectionProperties extends ConnectionProperties {
 	}
 
 	/**
-	 * Gibt die Konfigurationsparameter des lokalen Modus zurück.
+	 * Gibt die Konfigurationsparameter des lokalen Modus zurÃ¼ck.
 	 *
 	 * @return die Pid und die Id der Konfigurationsapplikation
 	 */
@@ -169,7 +175,7 @@ public class ServerConnectionProperties extends ConnectionProperties {
 	}
 
 	/**
-	 * Gibt die Konfigurationsparameter des Remote-Modus zurück.
+	 * Gibt die Konfigurationsparameter des Remote-Modus zurÃ¼ck.
 	 *
 	 * @return Konfigurationsparameter des Remote-Modus
 	 */

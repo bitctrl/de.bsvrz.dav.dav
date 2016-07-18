@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -16,8 +16,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -28,17 +34,17 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterBestWayUpdat
 import java.util.*;
 
 /**
- * Die Klasse ist für die Weginformationsverwaltung zuständig. Sie stellt die Tabelle der Weginformationen dar.
+ * Die Klasse ist fÃ¼r die Weginformationsverwaltung zustÃ¤ndig. Sie stellt die Tabelle der Weginformationen dar.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11561 $
+ * @version $Revision$
  */
 public class RoutingTable {
 
-	/** zu einem Knoten gehörige Reihe aus der Tabelle */
+	/** zu einem Knoten gehÃ¶rige Reihe aus der Tabelle */
 	private final List<NodeInfo> _rowToNodeInfo;
 
-	/** zu einem Knoten gehörige Spalte aus der Tabelle */
+	/** zu einem Knoten gehÃ¶rige Spalte aus der Tabelle */
 	private final List<NodeInfo> _columnToNodeInfo;
 
 	/** Id des Knotens */
@@ -53,7 +59,7 @@ public class RoutingTable {
 	/** Anzahl der Reihen */
 	private int _rows = 0;
 
-	/** Die über Änderungen zu benachrichtigende Komponente */
+	/** Die Ã¼ber Ã„nderungen zu benachrichtigende Komponente */
 	private final DistributionInterface _distribution;
 
 	/** ID des lokalen Datenverteilers */
@@ -62,7 +68,7 @@ public class RoutingTable {
 	/**
 	 * Erzeugt ein neues Objekt mit den gegebenen Parametern.
 	 *
-	 * @param distribution Die über Änderungen zu benachrichtigende Komponente.
+	 * @param distribution Die Ã¼ber Ã„nderungen zu benachrichtigende Komponente.
 	 * @param localNodeId  ID des lokalen Datenverteilers
 	 */
 	public RoutingTable(DistributionInterface distribution, long localNodeId) {
@@ -75,12 +81,12 @@ public class RoutingTable {
 	}
 
 	/**
-	 * Diese Methode wird von der Wegverwaltung aufgerufen. Gibt es zur angegebenen Ziel-ID (Knoten) einen Eintrag, wird die Verbindunginformation zurückgegeben,
-	 * über die dieses Ziel am Besten erreicht werden kann.
+	 * Diese Methode wird von der Wegverwaltung aufgerufen. Gibt es zur angegebenen Ziel-ID (Knoten) einen Eintrag, wird die Verbindunginformation zurÃ¼ckgegeben,
+	 * Ã¼ber die dieses Ziel am Besten erreicht werden kann.
 	 *
 	 * @param destinationNodeId ID des Zielknotens
 	 *
-	 * @return Routing-Repräsentant der Datenverteilerverbindung, oder <code>null</code>, falls es keine Verbindung zum Zielknoten gibt.
+	 * @return Routing-ReprÃ¤sentant der Datenverteilerverbindung, oder <code>null</code>, falls es keine Verbindung zum Zielknoten gibt.
 	 */
 	public RoutingConnectionInterface findBestConnection(long destinationNodeId) {
 		NodeInfo nodeInfo = _idToNodeInfo.get(new Long(destinationNodeId));
@@ -91,14 +97,14 @@ public class RoutingTable {
 	}
 
 	/**
-	 * Diese Methode wird von der Wegverwaltung aufgerufen und es wird überprüft, ob ein Eintrag mit dem spezifizierten Repräsentanten der Datenverteilerverbindung
+	 * Diese Methode wird von der Wegverwaltung aufgerufen und es wird Ã¼berprÃ¼ft, ob ein Eintrag mit dem spezifizierten ReprÃ¤sentanten der Datenverteilerverbindung
 	 * vorhanden ist. Ist dies nicht der Fall, so wird ein neuer Eintrag erzeugt und in die Tabelle aufgenommen. Wenn der Eintrag vorhanden ist und dessen
-	 * Repräsentant der Datenverteilerverbindung nicht vorhanden ist, wird dieser Eintrag durch den als übergebenen Repräsentanten aktualisiert. Hat sich durch
-	 * diese Änderung der beste Weg zu einem Datenverteiler geändert, so wird das {@link DistributionInterface} darüber benachrichtigt. Haben sich die Gewichte der
-	 * einzelnen Wege über einen bestimmten Datenverteiler geändert, so werden die Änderungen in ein {@link TransmitterBestWayUpdate}-Telegramm verpackt und über
+	 * ReprÃ¤sentant der Datenverteilerverbindung nicht vorhanden ist, wird dieser Eintrag durch den als Ã¼bergebenen ReprÃ¤sentanten aktualisiert. Hat sich durch
+	 * diese Ã„nderung der beste Weg zu einem Datenverteiler geÃ¤ndert, so wird das {@link DistributionInterface} darÃ¼ber benachrichtigt. Haben sich die Gewichte der
+	 * einzelnen Wege Ã¼ber einen bestimmten Datenverteiler geÃ¤ndert, so werden die Ã„nderungen in ein {@link TransmitterBestWayUpdate}-Telegramm verpackt und Ã¼ber
 	 * die Datenverteiler gesendet.
 	 *
-	 * @param connection Repräsentant der Datenverteilerverbindung
+	 * @param connection ReprÃ¤sentant der Datenverteilerverbindung
 	 */
 	public void addConnection(RoutingConnectionInterface connection) {
 		Long remoteNodeId = new Long(connection.getRemoteNodeId());
@@ -125,7 +131,7 @@ public class RoutingTable {
 	}
 
 	/**
-	 * Diese Methode wird für automatisierte Tests benötigt und prüft, ob ein <code>RoutingConnectionInterface</code> Objekt in die entsprechenden
+	 * Diese Methode wird fÃ¼r automatisierte Tests benÃ¶tigt und prÃ¼ft, ob ein <code>RoutingConnectionInterface</code> Objekt in die entsprechenden
 	 * Datenstruktur eingetragen wurde.
 	 *
 	 * @param connection Verbindung, die in der Datenstruktur <code>_idToNodeInfo</code> eingetragen sein muss.
@@ -136,13 +142,13 @@ public class RoutingTable {
 	}
 
 	/**
-	 * Diese Methode wird von der Wegverwaltung aufgerufen und es wird überprüft, ob ein Eintrag mit dem spezifizierten Repräsentanten der Datenverteilerverbindung
-	 * connection vorhanden ist. Ist dies der Fall, so wird dessen Repräsentant der Datenverteilerverbindung gelöscht. Alle Weginformationen über die nicht mehr
-	 * vorhandene Verbindung werden zurückgesetzt. Hat sich durch diese Änderung der beste Weg zu einem Datenverteiler geändert, so wird {@link
-	 * DistributionInterface} darüber benachrichtigt. Haben sich die Gewichte der einzelnen Wege über einen bestimmten Datenverteiler geändert, so werden die
-	 * Änderungen in ein {@link TransmitterBestWayUpdate}-Telegramm verpackt und über die Protokollsteuerung DaV-DaV zu diesem Datenverteiler gesendet.
+	 * Diese Methode wird von der Wegverwaltung aufgerufen und es wird Ã¼berprÃ¼ft, ob ein Eintrag mit dem spezifizierten ReprÃ¤sentanten der Datenverteilerverbindung
+	 * connection vorhanden ist. Ist dies der Fall, so wird dessen ReprÃ¤sentant der Datenverteilerverbindung gelÃ¶scht. Alle Weginformationen Ã¼ber die nicht mehr
+	 * vorhandene Verbindung werden zurÃ¼ckgesetzt. Hat sich durch diese Ã„nderung der beste Weg zu einem Datenverteiler geÃ¤ndert, so wird {@link
+	 * DistributionInterface} darÃ¼ber benachrichtigt. Haben sich die Gewichte der einzelnen Wege Ã¼ber einen bestimmten Datenverteiler geÃ¤ndert, so werden die
+	 * Ã„nderungen in ein {@link TransmitterBestWayUpdate}-Telegramm verpackt und Ã¼ber die Protokollsteuerung DaV-DaV zu diesem Datenverteiler gesendet.
 	 *
-	 * @param connection Repräsentant der Datenverteilerverbindung
+	 * @param connection ReprÃ¤sentant der Datenverteilerverbindung
 	 */
 	public void removeConnection(RoutingConnectionInterface connection) {
 		Long remoteNodeId = new Long(connection.getRemoteNodeId());
@@ -161,13 +167,13 @@ public class RoutingTable {
 	}
 
 	/**
-	 * Diese Methode wird von der Wegverwaltung aufgerufen und es wird überprüft, ob ein Eintrag mit der als Parameter spezifizierten <code>fromNodeId</code>
+	 * Diese Methode wird von der Wegverwaltung aufgerufen und es wird Ã¼berprÃ¼ft, ob ein Eintrag mit der als Parameter spezifizierten <code>fromNodeId</code>
 	 * vorhanden ist. Wenn der Eintrag vorhanden ist, werden die Gewichte der Wege zwischen dem aktuellen Datenverteiler und den Datenverteilern, die in
-	 * RoutingUpdate spezifiziert sind, aktualisiert. Dabei muß der Datenverteiler mit der ID <code>fromNodeId</code> auf diesem Weg liegen. Die Aktualisierung
+	 * RoutingUpdate spezifiziert sind, aktualisiert. Dabei muÃŸ der Datenverteiler mit der ID <code>fromNodeId</code> auf diesem Weg liegen. Die Aktualisierung
 	 * erfolgt durch das Addieren des Gewichts der Verbindung zwischen aktuellem Datenverteiler und <code>fromNodeId</code> und die jeweiligen
-	 * RoutingUpdate-Gewichte. Hat sich durch diese Änderung der beste Weg zu einem Datenverteiler geändert, so wird {@link DistributionInterface} darüber
-	 * benachrichtigt. Haben sich die Gewichte der einzelnen Wege zu einem bestimmten Datenverteiler geändert, so werden die Änderungen in ein {@link
-	 * de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterBestWayUpdate}-Telegramm verpackt und über die Protokollsteuerung DaV-DaV zu den Nachbardatenverteilern gesendet.
+	 * RoutingUpdate-Gewichte. Hat sich durch diese Ã„nderung der beste Weg zu einem Datenverteiler geÃ¤ndert, so wird {@link DistributionInterface} darÃ¼ber
+	 * benachrichtigt. Haben sich die Gewichte der einzelnen Wege zu einem bestimmten Datenverteiler geÃ¤ndert, so werden die Ã„nderungen in ein {@link
+	 * de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterBestWayUpdate}-Telegramm verpackt und Ã¼ber die Protokollsteuerung DaV-DaV zu den Nachbardatenverteilern gesendet.
 	 *
 	 * @param fromNodeId     ID eines Eintrags in routingTable
 	 * @param routingUpdates Gewichte der Wege zwischen dem aktuellen Datenverteiler und den Datenverteilern
@@ -221,7 +227,7 @@ public class RoutingTable {
 	}
 
 	/**
-	 * Diese Methode schreibt alle Ziele, die von dem Ausgangsknoten(Ausgangs-DAV) zu erreichen sind in einen String, und gibt diesen zurück.
+	 * Diese Methode schreibt alle Ziele, die von dem Ausgangsknoten(Ausgangs-DAV) zu erreichen sind in einen String, und gibt diesen zurÃ¼ck.
 	 *
 	 * @return Matrix der erreichbaren Ziele in einem String
 	 */
@@ -290,7 +296,7 @@ public class RoutingTable {
 		return result.toString();
 	}
 	/**
-	 * Diese Methode schreibt alle Ziele, die von dem Ausgangsknoten(Ausgangs-DAV) zu erreichen sind in einen String, und gibt diesen zurück.
+	 * Diese Methode schreibt alle Ziele, die von dem Ausgangsknoten(Ausgangs-DAV) zu erreichen sind in einen String, und gibt diesen zurÃ¼ck.
 	 *
 	 * @return Matrix der erreichbaren Ziele in einem String
 	 */
@@ -509,7 +515,7 @@ public class RoutingTable {
 }
 
 	/**
-	 * Repräsentiert einen Knoten. Ist der Knoten ein Zwischenknoten, so repräsentiert diese Klasse ein Zeile. Ist der Knoten ein zielknoten, so repräsentiert
+	 * ReprÃ¤sentiert einen Knoten. Ist der Knoten ein Zwischenknoten, so reprÃ¤sentiert diese Klasse ein Zeile. Ist der Knoten ein zielknoten, so reprÃ¤sentiert
 	 * diese Klasse eine Spalte.
 	 */
 	class NodeInfo {
@@ -591,7 +597,7 @@ public class RoutingTable {
 		}
 	}
 
-	/** Repräsentiert eine Zelle in der Tabelle */
+	/** ReprÃ¤sentiert eine Zelle in der Tabelle */
 	class RoutingInfo {
 
 		private int _throughputResistance = -1;

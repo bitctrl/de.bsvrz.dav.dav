@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -43,7 +49,7 @@ import java.util.List;
  * Implementiert die Schnittstelle Applikation-Dav (siehe {@link #DavRequester}) auf Datenverteiler-Seite
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 
 public class DavDavRequester extends DavRequester {
@@ -73,8 +79,8 @@ public class DavDavRequester extends DavRequester {
 		_davTransactionManager = davTransactionManager;
 		_highLevelSubscriptionsManager = highLevelSubscriptionsManager;
 
-		// Folgender Code wäre falsch, da getLocalDav bei Remote-Dav-Verbindungen (also Datenverteilern ohne eigener Konfiguration)
-		// Den Konfigurations-Dav ausspucken würde und nicht den hier verwendeten
+		// Folgender Code wÃ¤re falsch, da getLocalDav bei Remote-Dav-Verbindungen (also Datenverteilern ohne eigener Konfiguration)
+		// Den Konfigurations-Dav ausspucken wÃ¼rde und nicht den hier verwendeten
 //		_localDav = _connection.getLocalDav();
 		
 		_localDav =_highLevelSubscriptionsManager.getTelegramManager().getConnectionsManager().getDavObject();
@@ -94,7 +100,7 @@ public class DavDavRequester extends DavRequester {
 			final int requestKind = (int)data.getUnscaledValue("AnfrageTyp").longValue();
 			final byte[] bytes = data.getUnscaledArray("Daten").getByteArray();
 			switch(requestKind) {
-				// je nach Anfragetyp die entsprechende Aktion durchführen
+				// je nach Anfragetyp die entsprechende Aktion durchfÃ¼hren
 				case SUBSCRIBE_TRANSMITTER_SOURCE:
 					// Anmeldung einer Transaktionsquelle
 					_davTransactionManager.handleSubscribeTransactionSource(bytes);
@@ -170,7 +176,7 @@ public class DavDavRequester extends DavRequester {
 				}
 				default:
 					answerKind = ANSWER_ERROR;
-					errorString = "Ungültige Anfrage: " + requestKind;
+					errorString = "UngÃ¼ltige Anfrage: " + requestKind;
 			}
 		}
 		catch(Exception e){

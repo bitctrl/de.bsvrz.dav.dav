@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,21 +14,27 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
 
 /**
- * Steht für eine Aktion, die ein Benutzer durchführen kann, und für die z.B. ExtendedUserInfo überprüfen soll, ob sie erlaubt ist
+ * Steht fÃ¼r eine Aktion, die ein Benutzer durchfÃ¼hren kann, und fÃ¼r die z.B. ExtendedUserInfo Ã¼berprÃ¼fen soll, ob sie erlaubt ist
  *
  * @author Kappich Systemberatung
  * @version $Revision: 0000 $
  */
 public enum UserAction {
 
-	RECEIVER("Empfänger"),    // Daten lesen
+	RECEIVER("EmpfÃ¤nger"),    // Daten lesen
 	SENDER("Sender"),         // Daten schreiben
 	SOURCE("Quelle"),         // Daten als Quelle anmelden
 	DRAIN("Senke")            // Daten als Senke anmelden

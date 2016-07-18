@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -24,8 +30,8 @@ import de.bsvrz.dav.daf.main.ClientDavInterface;
 import de.bsvrz.dav.daf.main.Data;
 
 /**
- * Abstrakte Klasse, die gemeinsame Funktionalitäten von {@link de.bsvrz.dav.dav.util.accessControl.OldUserInfo} und {@link
- * de.bsvrz.dav.dav.util.accessControl.ExtendedUserInfo} beinhaltet und, da sie {@link de.bsvrz.dav.dav.util.accessControl.DataLoader} erweitert, auch für das
+ * Abstrakte Klasse, die gemeinsame FunktionalitÃ¤ten von {@link de.bsvrz.dav.dav.util.accessControl.OldUserInfo} und {@link
+ * de.bsvrz.dav.dav.util.accessControl.ExtendedUserInfo} beinhaltet und, da sie {@link de.bsvrz.dav.dav.util.accessControl.DataLoader} erweitert, auch fÃ¼r das
  * laden der BenutzerParameter (also die referenzierten Berechtigungsklassen) verantwortlich ist.
  *
  * @author Kappich Systemberatung
@@ -35,11 +41,11 @@ abstract class AbstractUserInfo extends DataLoader implements UserInfoInternal {
 
 	protected static final String USER_ASPECT_PID = "asp.parameterSoll";
 
-	/** Zählt wie oft ein UserInfo-Objekt referenziert wurde. */
+	/** ZÃ¤hlt wie oft ein UserInfo-Objekt referenziert wurde. */
 	private int _referenceCounter = 1;
 
 	/**
-	 * Initialisiert die BenutzerInfo-Klasse, indem einem DataLoader Aspekt und Attributgruppe übergeben wird um die BenutzerParameter (Berechtigungsklassen) zu
+	 * Initialisiert die BenutzerInfo-Klasse, indem einem DataLoader Aspekt und Attributgruppe Ã¼bergeben wird um die BenutzerParameter (Berechtigungsklassen) zu
 	 * laden.
 	 *
 	 * @param accessControlManager
@@ -66,9 +72,9 @@ abstract class AbstractUserInfo extends DataLoader implements UserInfoInternal {
 	}
 
 	/**
-	 * Wird aufgerufen, wenn sich die BenutzerParameter für den aktuellen Benutzer ändern.
+	 * Wird aufgerufen, wenn sich die BenutzerParameter fÃ¼r den aktuellen Benutzer Ã¤ndern.
 	 *
-	 * @param data Datenobjekt mit den Daten der Attributgruppe atg.benutzerParameter für den aktuellen Benutzer.
+	 * @param data Datenobjekt mit den Daten der Attributgruppe atg.benutzerParameter fÃ¼r den aktuellen Benutzer.
 	 */
 	@Override
 	protected abstract void update(final Data data);

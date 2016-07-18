@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -16,8 +16,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -27,10 +33,10 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import java.util.*;
 
 /**
- * Speichert alle Anmeldungen, die über eine Kommunikationsverbindung mit einer Applikation oder mit einem anderen Datenverteiler empfangen wurden.
+ * Speichert alle Anmeldungen, die Ã¼ber eine Kommunikationsverbindung mit einer Applikation oder mit einem anderen Datenverteiler empfangen wurden.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11561 $
+ * @version $Revision$
  */
 public abstract class SubscriptionsFromRemoteStorage {
 
@@ -61,7 +67,7 @@ public abstract class SubscriptionsFromRemoteStorage {
 	}
 
 	/**
-	 * Gibt die Verbindungskomponente zurück.
+	 * Gibt die Verbindungskomponente zurÃ¼ck.
 	 *
 	 * @return die Verbindungskomponente
 	 */
@@ -70,7 +76,7 @@ public abstract class SubscriptionsFromRemoteStorage {
 	}
 
 	/**
-	 * Gibt den Typ der Komponente zurück <ul> <li>0: Verbindung mit einer Applikation</li> <li>1: Verbindung mit einem Datenverteiler</li> </ul>
+	 * Gibt den Typ der Komponente zurÃ¼ck <ul> <li>0: Verbindung mit einer Applikation</li> <li>1: Verbindung mit einem Datenverteiler</li> </ul>
 	 *
 	 * @return Typ der Komponente
 	 */

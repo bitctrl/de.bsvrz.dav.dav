@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-Stra√üe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.subscriptions;
@@ -24,19 +30,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Klasse, die zu Objekten einen Datenindex hochz‰hlt
+ * Klasse, die zu Objekten einen Datenindex hochz√§hlt
  *
- * Funktioniert ‰hnlich wie eine Map&lt;E, Long&gt;, ist aber einfacher zu benutzen.
+ * Funktioniert √§hnlich wie eine Map&lt;E, Long&gt;, ist aber einfacher zu benutzen.
  *
  * Die verwendete Map ist threadsicher, der Index zu einer bestimmten Datenidentifikation darf aber nur von einem
- * Thread gleichzeitig hochgez‰hlt werden.
+ * Thread gleichzeitig hochgez√§hlt werden.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 12132 $
+ * @version $Revision$
  */
 public class DataIndexCounter<E> {
 
-	// Primitivimplentierung, optimierbar falls nˆtig
+	// Primitivimplentierung, optimierbar falls n√∂tig
 	private final Map<E, Long> _innerMap = new ConcurrentHashMap<E, Long>();
 
 	public DataIndexCounter() {

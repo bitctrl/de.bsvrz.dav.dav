@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -35,7 +41,7 @@ import de.bsvrz.dav.daf.main.config.SystemObjectType;
 import java.util.*;
 
 /**
- * Kapselt für die Rechteverwaltung einen Benutzer und dessen Berechtigungsklassen. Diese Klasse wird von dem neuen Datenmodell verwendet, bei dem jeder Benutzer
+ * Kapselt fÃ¼r die Rechteverwaltung einen Benutzer und dessen Berechtigungsklassen. Diese Klasse wird von dem neuen Datenmodell verwendet, bei dem jeder Benutzer
  * mehrere Berechtigungsklassen zugewiesen bekommen kann. Andernfalls wird {@link de.bsvrz.dav.dav.util.accessControl.OldUserInfo} verwendet.
  *
  * @author Kappich Systemberatung
@@ -45,7 +51,7 @@ class ExtendedUserInfo extends AbstractUserInfo {
 
 	protected static final String USER_ATTRIBUTE_GROUP_PID = "atg.berechtigungsklassen";
 
-	/** Liste mit den Berechtigungsklassen, denen der Benutzer angehört. */
+	/** Liste mit den Berechtigungsklassen, denen der Benutzer angehÃ¶rt. */
 	private final List<AccessControlUnit> _accessControlUnits = Collections.synchronizedList(new ArrayList<AccessControlUnit>());
 
 	private final DataModel _dataModel;
@@ -77,14 +83,14 @@ class ExtendedUserInfo extends AbstractUserInfo {
 	}
 
 	/**
-	 * Gibt den referenzierten Benutzer als Systemobjekt zurück
+	 * Gibt den referenzierten Benutzer als Systemobjekt zurÃ¼ck
 	 * @return den referenzierten Benutzer
 	 */
 	public final SystemObject getUser() {
 		return _user;
 	}
 
-	/** Gibt die ID des Benutzers zurück */
+	/** Gibt die ID des Benutzers zurÃ¼ck */
 	@Override
 	public final long getUserId() {
 		return _userId;
@@ -116,7 +122,7 @@ class ExtendedUserInfo extends AbstractUserInfo {
 
 	@Override
 	public void deactivateInvalidChild(final DataLoader node) {
-		// Implementierung nicht notwendig, Benutzer können sich nicht rekursiv referenzieren
+		// Implementierung nicht notwendig, Benutzer kÃ¶nnen sich nicht rekursiv referenzieren
 		throw new UnsupportedOperationException("removeInvalidChild nicht implementiert");
 	}
 
@@ -167,7 +173,7 @@ class ExtendedUserInfo extends AbstractUserInfo {
 		if(attributeGroup == null) throw new IllegalArgumentException("attributeGroup ist null");
 		if(aspect == null) throw new IllegalArgumentException("aspect ist null");
 		if(!isInitialized()) waitForInitialization();
-		if(!getSystemObject().isValid()) return false; // das Benutzerobjekt kann zwischenzeitlich gelöscht worden sein
+		if(!getSystemObject().isValid()) return false; // das Benutzerobjekt kann zwischenzeitlich gelÃ¶scht worden sein
 		_readLock.lock();
 		try{
 			// Falls die Rechte implizit erlaubt sind, erlauben wir die Aktion

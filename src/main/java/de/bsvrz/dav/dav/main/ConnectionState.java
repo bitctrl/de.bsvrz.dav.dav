@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -25,7 +31,7 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterSubscription
 /**
  * Stellt einen Verbindungsstatus einer Anmeldung dar
  * @author Kappich Systemberatung
- * @version $Revision: 0000 $
+ * @version $Revision$
  */
 public enum ConnectionState {
 	/** Lokale Verbindung, Status immer OK */
@@ -34,11 +40,11 @@ public enum ConnectionState {
 	FROM_REMOTE_OK(true),
 	/** Ausgehende Verbindung, warten auf Antwort (receipt/Quittung) des Kommunikationspartners */
 	TO_REMOTE_WAITING(false),
-	/** Ausgehende Verbindung, anderer Datenverteiler ist zuständig (OK) */
+	/** Ausgehende Verbindung, anderer Datenverteiler ist zustÃ¤ndig (OK) */
 	TO_REMOTE_OK(true),
-	/** Ausgehende Verbindung, anderer Datenverteiler ist nicht zuständig */
+	/** Ausgehende Verbindung, anderer Datenverteiler ist nicht zustÃ¤ndig */
 	TO_REMOTE_NOT_RESPONSIBLE(false),
-	/** Ausgehende Verbindung, anderer Datenverteiler ist zuständig, aber es sind keine Rechte vorhanden */
+	/** Ausgehende Verbindung, anderer Datenverteiler ist zustÃ¤ndig, aber es sind keine Rechte vorhanden */
 	TO_REMOTE_NOT_ALLOWED(true),
 	/** Ausgehende Verbindung, hinter dem verbundenen Datenverteiler gibt es mehrere Zentraldatenverteiler */
 	TO_REMOTE_MULTIPLE(true);
@@ -50,8 +56,8 @@ public enum ConnectionState {
 	}
 
 	/**
-	 * Gibt zurück, ob die Anmeldung gültig ist
-	 * @return True bei gültiger Anmeldung, siehe Definitionen der einzelnen Enums
+	 * Gibt zurÃ¼ck, ob die Anmeldung gÃ¼ltig ist
+	 * @return True bei gÃ¼ltiger Anmeldung, siehe Definitionen der einzelnen Enums
 	 */
 	public boolean isValid() {
 		return _valid;
@@ -73,7 +79,7 @@ public enum ConnectionState {
 			case TransmitterSubscriptionsConstants.MORE_THAN_ONE_POSITIV_RECEIP:
 				return TO_REMOTE_MULTIPLE;
 			default:
-				throw new IllegalArgumentException("Ungültiger Status: " + b);
+				throw new IllegalArgumentException("UngÃ¼ltiger Status: " + b);
 		}
 	}
 }

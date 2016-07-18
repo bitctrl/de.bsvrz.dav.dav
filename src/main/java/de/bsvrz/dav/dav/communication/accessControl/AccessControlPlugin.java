@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.communication.accessControl;
@@ -29,10 +35,10 @@ import de.bsvrz.dav.dav.util.accessControl.AccessControlManager;
 import java.util.Collection;
 
 /**
- * Interface, das Datenverteiler-Zugriffssteuerungs-Plugins implementieren müssen. Diese Plugins diesen dazu den Datenverkehr nach bestimmten
- * Attributgruppenverwendungen zu filtern, sodass weitere Rechteprüfungen durchgeführt werden können (beispielsweise ob ein Benutzer berechtigt ist,
- * Konfigurationsänderungen auszuführen oder Archivanfragen zu stellen. Diese Prüfungen sind in der Konfiguration oder im Archivsystem mangels Authentifizierung
- * nicht möglich).
+ * Interface, das Datenverteiler-Zugriffssteuerungs-Plugins implementieren mÃ¼ssen. Diese Plugins diesen dazu den Datenverkehr nach bestimmten
+ * Attributgruppenverwendungen zu filtern, sodass weitere RechteprÃ¼fungen durchgefÃ¼hrt werden kÃ¶nnen (beispielsweise ob ein Benutzer berechtigt ist,
+ * KonfigurationsÃ¤nderungen auszufÃ¼hren oder Archivanfragen zu stellen. Diese PrÃ¼fungen sind in der Konfiguration oder im Archivsystem mangels Authentifizierung
+ * nicht mÃ¶glich).
  *
  * @author Kappich Systemberatung
  * @version $Revision: 0000 $
@@ -40,7 +46,7 @@ import java.util.Collection;
 public interface AccessControlPlugin {
 
 	/**
-	 * Wird aufgerufen, nachdem das Plugin instantiiert wurde. Hiermit wird dem Plugin eine Verbindung zum Datenverteiler übergeben.
+	 * Wird aufgerufen, nachdem das Plugin instantiiert wurde. Hiermit wird dem Plugin eine Verbindung zum Datenverteiler Ã¼bergeben.
 	 *
 	 * @param accessControlManager Klasse, die die Standard-Zugriffsrechte verwaltet.
 	 * @param clientDavInterface   Verbindung zum Datenverteiler
@@ -49,7 +55,7 @@ public interface AccessControlPlugin {
 
 	/**
 	 * Wird nach {@link #initialize(de.bsvrz.dav.dav.util.accessControl.AccessControlManager, de.bsvrz.dav.daf.main.ClientDavInterface)} aufgerufen. Die Funktion
-	 * soll alle Attributgruppenverwendungen zurückgeben, dessen Daten es ansehen und gegebenenfalls verändern will.
+	 * soll alle Attributgruppenverwendungen zurÃ¼ckgeben, dessen Daten es ansehen und gegebenenfalls verÃ¤ndern will.
 	 *
 	 * @return Liste mit Attributgruppenverwendungen
 	 */
@@ -57,23 +63,23 @@ public interface AccessControlPlugin {
 
 	/**
 	 * Wird aufgerufen wenn ein Datenpaket eintrifft, dass den in {@link #getAttributeGroupUsagesToFilter()} angegebenen Attributgruppenverwendungen entspricht.
-	 * Die Funktion kann <ul><li> das Datenpaket unverändert weitergeben</li><li>das Datenpaket modifizieren</li><li>ein neues Datenobjekt erstellen</li><li>das
+	 * Die Funktion kann <ul><li> das Datenpaket unverÃ¤ndert weitergeben</li><li>das Datenpaket modifizieren</li><li>ein neues Datenobjekt erstellen</li><li>das
 	 * Datenpaket verwerfen</li></ul>
 	 *
 	 * @param userID               Benutzer-ID, von dem das Datenpaket stammt. Ist nicht zwingend der Benutzer, der das Datenpaket abgesendet hat, sondern kann
 	 *                             auch der Benutzer des Datenverteilers sein, der das Paket zuletzt verarbeitet hat. Die Standard-Berechtigungen zu diesem
-	 *                             Benutzer können mit {@link AccessControlManager#getUser(long)} gelesen werden.
-	 * @param baseSubscriptionInfo Anmeldung für die das Datenpaket verschickt wurde.
+	 *                             Benutzer kÃ¶nnen mit {@link AccessControlManager#getUser(long)} gelesen werden.
+	 * @param baseSubscriptionInfo Anmeldung fÃ¼r die das Datenpaket verschickt wurde.
 	 * @param data                 Datenpaket, das gefiltert wurde.
 	 *
-	 * @return <dl> <dt><code>data</code></dt><dd>Wenn das Datenpaket unverändert weitergesendet werden soll, ist der Parameter <code>data</code>
-	 *         zurückzugeben.</dd> <dt><code>data.createModifiableCopy()</code></dt><dd>Wenn das Datenpaket verändert werden soll, kann mit
-	 *         <code>data.createModifiableCopy()</code> eine veränderbare Kopie erzeugt und entsprechend verändert werden. Diese Kopie ist dann zurückzugeben.</dd>
+	 * @return <dl> <dt><code>data</code></dt><dd>Wenn das Datenpaket unverÃ¤ndert weitergesendet werden soll, ist der Parameter <code>data</code>
+	 *         zurÃ¼ckzugeben.</dd> <dt><code>data.createModifiableCopy()</code></dt><dd>Wenn das Datenpaket verÃ¤ndert werden soll, kann mit
+	 *         <code>data.createModifiableCopy()</code> eine verÃ¤nderbare Kopie erzeugt und entsprechend verÃ¤ndert werden. Diese Kopie ist dann zurÃ¼ckzugeben.</dd>
 	 *         <dt><code>clientDavInterface.createData()</code></dt><dd>Mit der in {@link #initialize(de.bsvrz.dav.dav.util.accessControl.AccessControlManager,
-	 *         de.bsvrz.dav.daf.main.ClientDavInterface)} angegebenen Datenverteilerverbindung kann auch ein neues Data-Objekt erstellt und zurückgegeben werden.
-	 *         Zu beachten ist, dass es dennoch an die ursprüngliche Anmeldung verschickt wird und deshalb die gleiche Attributgruppe benutzen sollte, wie das
-	 *         originale Datenpaket. Ist das nicht der Fall tritt möglicherweise undefiniertes Verhalten auf.</dd> <dt><code>null</code></dt><dd>Wird
-	 *         <code>null</code> zurückgegeben wird das Datenpaket verworfen und nicht weitergesendet. Sollte nur verwendet werden, wenn das Plugin selbst eine
+	 *         de.bsvrz.dav.daf.main.ClientDavInterface)} angegebenen Datenverteilerverbindung kann auch ein neues Data-Objekt erstellt und zurÃ¼ckgegeben werden.
+	 *         Zu beachten ist, dass es dennoch an die ursprÃ¼ngliche Anmeldung verschickt wird und deshalb die gleiche Attributgruppe benutzen sollte, wie das
+	 *         originale Datenpaket. Ist das nicht der Fall tritt mÃ¶glicherweise undefiniertes Verhalten auf.</dd> <dt><code>null</code></dt><dd>Wird
+	 *         <code>null</code> zurÃ¼ckgegeben wird das Datenpaket verworfen und nicht weitergesendet. Sollte nur verwendet werden, wenn das Plugin selbst eine
 	 *         Antwort bzw. ein eigenes Datenpaket verschickt, oder wenn das Eintreffen des Datenpakets unwichtig ist und niemand auf eine eventuelle Antwort
 	 *         wartet.</dd> </dl>
 	 */

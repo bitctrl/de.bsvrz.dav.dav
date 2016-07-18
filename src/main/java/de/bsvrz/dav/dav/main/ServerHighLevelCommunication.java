@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniﬂ Systemberatung, Aachen
+ * Copyright 2004 by Kappich+Kni√ü Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -16,8 +16,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-Stra√üe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -30,7 +36,7 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TelegramTimeRequest;
  * Highlevelcommunication implementiert.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public interface ServerHighLevelCommunication {
 
@@ -49,9 +55,9 @@ public interface ServerHighLevelCommunication {
 
 	/**
 	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, sobald die Konfiguration vorhanden ist, um zu signalisieren, dass eine blockierte
-	 * Authentifizierung weiter bearbeitet werden kann: Steht eine Authentifizierungsschl¸sselanfrage an, w‰hrend die Konfiguration noch nicht vorhanden ist, wird
+	 * Authentifizierung weiter bearbeitet werden kann: Steht eine Authentifizierungsschl√ºsselanfrage an, w√§hrend die Konfiguration noch nicht vorhanden ist, wird
 	 * die Antwort blockiert bis die Konfiguration bereit ist. Dies ist notwendig, da nur die Konfiguration bestimmen kann, ob die Authentifizierungsdaten korrekt
-	 * sind. Auch f¸r die Interpretation der Daten ist die Konfiguration notwendig.
+	 * sind. Auch f√ºr die Interpretation der Daten ist die Konfiguration notwendig.
 	 */
 	public void continueAuthentification();
 
@@ -63,7 +69,7 @@ public interface ServerHighLevelCommunication {
 	public long getId();
 
 	/**
-	 * Gibt die ID des verbundenen Benutzers zur¸ck.
+	 * Gibt die ID des verbundenen Benutzers zur√ºck.
 	 *
 	 * @return die Benutzer ID
 	 */
@@ -74,7 +80,7 @@ public interface ServerHighLevelCommunication {
 	 *
 	 * @param error   Ist <code>true</code>, wenn die Verbindung im Fehlerfall abgebrochen werden soll, ohne die noch gepufferten Telegramme zu versenden;
 	 *                <code>false</code>, wenn versucht werden soll alle gepufferten Telegramme zu versenden.
-	 * @param message Fehlermeldung, die die Fehlersituation n‰her beschreibt.
+	 * @param message Fehlermeldung, die die Fehlersituation n√§her beschreibt.
 	 */
 	void terminate(boolean error, final String message);
 }

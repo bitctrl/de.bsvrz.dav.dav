@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-Stra√üe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.subscriptions;
@@ -35,7 +41,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Anmeldung eines entfernten Empf‰ngers auf diesen Datenverteiler (der mˆglicherweise Zentraldatenverteiler ist)
+ * Anmeldung eines entfernten Empf√§ngers auf diesen Datenverteiler (der m√∂glicherweise Zentraldatenverteiler ist)
  *
  * @author Kappich Systemberatung
  * @version $Revision: 11462 $
@@ -107,8 +113,8 @@ public class RemoteReceiverSubscription implements RemoteReceivingSubscription {
 				break;
 		}
 		if(!_potentialCentralDistributors.contains(centralTransmitterId)){
-			// Es ist mˆglicherweise ein anderer Datenverteiler zust‰ndig als angegeben.
-			// Hier ein "nicht verantwortlich" zur¸ckmelden, damit keine "Schleifen" entstehen
+			// Es ist m√∂glicherweise ein anderer Datenverteiler zust√§ndig als angegeben.
+			// Hier ein "nicht verantwortlich" zur√ºckmelden, damit keine "Schleifen" entstehen
 			receip = ConnectionState.TO_REMOTE_NOT_RESPONSIBLE;
 		}
 		if(_lastSendState == receip) return;
@@ -117,9 +123,9 @@ public class RemoteReceiverSubscription implements RemoteReceivingSubscription {
 	}
 
 	/**
-	 * Sendet an einen Empf‰nger falls nˆtig im Falle eines ge‰nderten Anmeldestatus einen leeren Datensatz mit dem entsprechenden Inhalt.
+	 * Sendet an einen Empf√§nger falls n√∂tig im Falle eines ge√§nderten Anmeldestatus einen leeren Datensatz mit dem entsprechenden Inhalt.
 	 *
-	 * @param receiverState         Empf‰ngerstatus
+	 * @param receiverState         Empf√§ngerstatus
 	 */
 	@Override
 	public void sendStateTelegram(final ReceiverState receiverState) {
@@ -193,9 +199,9 @@ public class RemoteReceiverSubscription implements RemoteReceivingSubscription {
 
 	@Override
 	public String toString() {
-		return "Eingehende Anmeldung (" +_receiverState + ") als " +  "Empf‰nger" +
+		return "Eingehende Anmeldung (" +_receiverState + ") als " +  "Empf√§nger" +
 				" auf " + _subscriptionsManager.subscriptionToString(_baseSubscriptionInfo) +
-				" ¸ber " + _transmitterCommunication +
+				" √ºber " + _transmitterCommunication +
 		       " (Benutzer=" + _subscriptionsManager.objectToString(getUserId()) + ")";
 	}
 

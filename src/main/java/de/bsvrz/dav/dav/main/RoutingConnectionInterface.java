@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniﬂ Systemberatung, Aachen
+ * Copyright 2004 by Kappich+Kni√ü Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -15,8 +15,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-Stra√üe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -27,19 +33,19 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.RoutingUpdate;
  * Dieses Interface deklariert Methoden, die Informationen zu Verbindungen liefern.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public interface RoutingConnectionInterface {
 
 	/**
-	 * Diese Methode gibt die ID des Zielknotens zur¸ck.
+	 * Diese Methode gibt die ID des Zielknotens zur√ºck.
 	 *
 	 * @return ID des Zielknotens
 	 */
 	public long getRemoteNodeId();
 
 	/**
-	 * Diese Methode gibt die Gewichtung der Verbindung zur¸ck.
+	 * Diese Methode gibt die Gewichtung der Verbindung zur√ºck.
 	 *
 	 * @return Gewichtung der Verbindung
 	 */

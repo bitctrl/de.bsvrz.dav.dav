@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -28,7 +34,7 @@ import de.bsvrz.dav.dav.communication.appProtocol.T_A_HighLevelCommunication;
  * Klasse, die Telegramme von den Applikations-Verbindungen entgegennimmt und entsprechend weiterleitet und verarbeitet
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11478 $
+ * @version $Revision$
  */
 public class HighLevelApplicationManager {
 
@@ -53,7 +59,7 @@ public class HighLevelApplicationManager {
 	}
 
 	/**
-	 * Wird aufgerufen, wenn die Konfiguration verfügbar wird.
+	 * Wird aufgerufen, wenn die Konfiguration verfÃ¼gbar wird.
 	 * @param selfClientDavConnection Verbindung zur Konfiguration
 	 * @param configAreaPidForApplicationObjects
 	 */
@@ -111,7 +117,7 @@ public class HighLevelApplicationManager {
 	}
 
 	/**
-	 * Gibt die Konfigurations-Id zu einer Pid zurück
+	 * Gibt die Konfigurations-Id zu einer Pid zurÃ¼ck
 	 * @param configurationPid Pid eines Konfigurationsverantwortlichen
 	 * @return die Id der Konfiguration oder -1 falls kein Objekt gefunden werden konnte
 	 */
@@ -120,7 +126,7 @@ public class HighLevelApplicationManager {
 	}
 
 	/**
-	 * Gibt die ID einer Applikation zurück und erstellt gegebenenfalls ein Systemobjekt
+	 * Gibt die ID einer Applikation zurÃ¼ck und erstellt gegebenenfalls ein Systemobjekt
 	 *
 	 * @param communication
 	 * @param applicationTypePid die Pid des Applikationstyps
@@ -128,7 +134,7 @@ public class HighLevelApplicationManager {
 	 *
 	 * @return die Applikation ID oder -1 bei einem Problem
 	 *
-	 * @throws de.bsvrz.dav.daf.main.config.ConfigurationChangeException signalisiert Fehler bei Konfigurationsänderungen
+	 * @throws de.bsvrz.dav.daf.main.config.ConfigurationChangeException signalisiert Fehler bei KonfigurationsÃ¤nderungen
 	 */
 	public long createNewApplication(final T_A_HighLevelCommunication communication, final String applicationTypePid, final String applicationName) throws ConfigurationChangeException {
 		if(applicationTypePid == null) throw new IllegalArgumentException("applicationTypePid ist null");
@@ -152,9 +158,9 @@ public class HighLevelApplicationManager {
 	 */
 	public void removeApplication(final T_A_HighLevelCommunication communication) {
 
-		// Während der Datenverteiler sich gerade beendet, nicht versuchen Applikationsobjekte zu löschen oder ähnliches.
-		// da die Konfigurationsverbindung schon getrennt ist oder jeden Moment getrennt werden kann und es beim Löschauftrag
-		// dazu führen kann, dass der Datenverteiler beim Warten auf die Konfiguration hängen bleibt.
+		// WÃ¤hrend der Datenverteiler sich gerade beendet, nicht versuchen Applikationsobjekte zu lÃ¶schen oder Ã¤hnliches.
+		// da die Konfigurationsverbindung schon getrennt ist oder jeden Moment getrennt werden kann und es beim LÃ¶schauftrag
+		// dazu fÃ¼hren kann, dass der Datenverteiler beim Warten auf die Konfiguration hÃ¤ngen bleibt.
 		if(_connectionsManager.isClosing()) return;
 
 		if(communication.isConfiguration()){

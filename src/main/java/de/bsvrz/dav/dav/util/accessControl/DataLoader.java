@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -40,7 +46,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public abstract class DataLoader {
 
-	/** Empfänger */
+	/** EmpfÃ¤nger */
 	private final ClientReceiverInterface _receiver;
 
 	/** Datenbeschreibung */
@@ -61,8 +67,8 @@ public abstract class DataLoader {
 	/** Debug */
 	protected final Debug _debug = Debug.getLogger();
 
-	/** Ob auf das Eintreffen von Daten gewartet werden soll, oder ob auch das Eintreffen von "keine Daten" oder "keine Quelle" ausreichen soll, mit dem Initialisieren aufzuhören */
-	private volatile boolean _waitForData = true; // Bein Anlegen des Objektes zunächst auf Daten warten
+	/** Ob auf das Eintreffen von Daten gewartet werden soll, oder ob auch das Eintreffen von "keine Daten" oder "keine Quelle" ausreichen soll, mit dem Initialisieren aufzuhÃ¶ren */
+	private volatile boolean _waitForData = true; // Bein Anlegen des Objektes zunÃ¤chst auf Daten warten
 
 	/** Ob der Receiver bereits etwas empfangen hat (auch true wenn "keine Daten" oder "keine Quelle") */
 	private volatile boolean _isInitialized = false;
@@ -70,7 +76,7 @@ public abstract class DataLoader {
 	/** Ob auch wirklich Daten da sind (nicht true wenn "keine Daten" oder "keine Quelle") */
 	private volatile boolean _hasData = false;
 
-	/** Objekt, das für notifyAll() benutzt wird um das Eintreffen von Daten zu signalisieren */
+	/** Objekt, das fÃ¼r notifyAll() benutzt wird um das Eintreffen von Daten zu signalisieren */
 	private final Object _updateNotifier = new Object();
 
 	/** Wie lange auf Daten gewartet wird (in ms) */
@@ -79,8 +85,8 @@ public abstract class DataLoader {
 	private final ReadWriteLock _readWriteLock = new ReentrantReadWriteLock();
 
 	/**
-	 * Lock, das zum Lesen von Daten benutzt wird. Um Deadlocks zu verhindern und gleichzeitige Abfragen aus Performancegründen zu ermöglichen
-	 * sollte dieses ReadLock bei allen lesenden Zugriffen verwendet werden. (Durch das Update einer Rolle/Region wird enumerateChildren bei anderen DataLoadern ausgeführt, wenn nebenläufig noch eine Abfrage nach Benutzerrechten läuft und und beide Threads ein exklusives Lock verwenden, gibt es Probleme. Da der Thread, in dem das Update durchgeführt wird, zwingend eine exklusives Lock (ein WriteLock) braucht, müssen alle Abfragen nach Benutzerrechten nicht exklusiv sein (ReadLock). Da immer nur ein Objekt gleichzeitig geupdatet wird, kommt es nicht zu Deadlocks durch mehrere WriteLocks)
+	 * Lock, das zum Lesen von Daten benutzt wird. Um Deadlocks zu verhindern und gleichzeitige Abfragen aus PerformancegrÃ¼nden zu ermÃ¶glichen
+	 * sollte dieses ReadLock bei allen lesenden Zugriffen verwendet werden. (Durch das Update einer Rolle/Region wird enumerateChildren bei anderen DataLoadern ausgefÃ¼hrt, wenn nebenlÃ¤ufig noch eine Abfrage nach Benutzerrechten lÃ¤uft und und beide Threads ein exklusives Lock verwenden, gibt es Probleme. Da der Thread, in dem das Update durchgefÃ¼hrt wird, zwingend eine exklusives Lock (ein WriteLock) braucht, mÃ¼ssen alle Abfragen nach Benutzerrechten nicht exklusiv sein (ReadLock). Da immer nur ein Objekt gleichzeitig geupdatet wird, kommt es nicht zu Deadlocks durch mehrere WriteLocks)
 	 */
 	protected final Lock _readLock = _readWriteLock.readLock();
 	protected final Lock _writeLock = _readWriteLock.writeLock();
@@ -90,7 +96,7 @@ public abstract class DataLoader {
 	private volatile DataState _dataState = null;
 
 	/**
-	 * Erstellt ein neues Objekt, für das Daten aktualisiert werden sollen.
+	 * Erstellt ein neues Objekt, fÃ¼r das Daten aktualisiert werden sollen.
 	 *
 	 * @param connection        Verbindung zum Datenverteiler
 	 * @param attributeGroupPid Attributgruppe
@@ -141,32 +147,32 @@ public abstract class DataLoader {
 	protected abstract void update(final Data data);
 
 	/**
-	 * Gibt die untergeordneten Objekte zurück. Z.B. die Rollen und Regionen bei der Berechtigungsklasse oder die Berechtigungsklassen beim Benutzer. Wird
-	 * gebraucht um Rekursionen zu erkennen und um den {@link de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager} über geänderte Benutzerrechte zu informieren. Achtung: Es
-	 * werden nur die direkten Kinder zurückzugeben, nicht die "Enkel" usw. - Will man alle "Enkel" usw. haben muss man diese Funktion rekursiv aufrufen.<br>
-	 * Hinweis: Mit {@link #deactivateInvalidChild(DataLoader)} deaktivierte Kindelemente werden nicht aufgeführt.
+	 * Gibt die untergeordneten Objekte zurÃ¼ck. Z.B. die Rollen und Regionen bei der Berechtigungsklasse oder die Berechtigungsklassen beim Benutzer. Wird
+	 * gebraucht um Rekursionen zu erkennen und um den {@link de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager} Ã¼ber geÃ¤nderte Benutzerrechte zu informieren. Achtung: Es
+	 * werden nur die direkten Kinder zurÃ¼ckzugeben, nicht die "Enkel" usw. - Will man alle "Enkel" usw. haben muss man diese Funktion rekursiv aufrufen.<br>
+	 * Hinweis: Mit {@link #deactivateInvalidChild(DataLoader)} deaktivierte Kindelemente werden nicht aufgefÃ¼hrt.
 	 *
 	 * @return Liste mit untergeordneten Objekten
 	 */
 	protected abstract Collection<DataLoader> getChildObjects();
 
 	/**
-	 * Startet das Aktualisieren der Daten über das ClientReceiverInterface. Wartet bis die Daten geladen wurden. Nachdem diese Methode aufgerufen wurde, sollte
+	 * Startet das Aktualisieren der Daten Ã¼ber das ClientReceiverInterface. Wartet bis die Daten geladen wurden. Nachdem diese Methode aufgerufen wurde, sollte
 	 * das Objekt also initialisiert sein. Bei jedem Eintreffen von Daten wird die {@link #update(de.bsvrz.dav.daf.main.Data)}-Methode aufgerufen (auch nach dem
 	 * ersten Aufruf der Methode). Um das Laden der Daten anzuhalten ist {@link #stopDataListener()} aufzurufen.
 	 *
-	 * @param systemObject Objekt für das die Daten geholt werden sollen
+	 * @param systemObject Objekt fÃ¼r das die Daten geholt werden sollen
 	 */
 	protected final void startDataListener(final SystemObject systemObject) {
 		_systemObject = systemObject;
 		final DataModel dataModel = _systemObject.getDataModel();
 		final AttributeGroup attributeGroup = (AttributeGroup)dataModel.getObject(_attributeGroupPid);
 		if(attributeGroup == null) {
-			throw new IllegalArgumentException("Keine gültige Attributgruppe: " + _attributeGroupPid);
+			throw new IllegalArgumentException("Keine gÃ¼ltige Attributgruppe: " + _attributeGroupPid);
 		}
 		final Aspect aspect = (Aspect)dataModel.getObject(_aspectPid);
 		if(aspect == null) {
-			throw new IllegalArgumentException("Keine gültiger Aspekt: " + _aspectPid);
+			throw new IllegalArgumentException("Keine gÃ¼ltiger Aspekt: " + _aspectPid);
 		}
 		_dataDescription = new DataDescription(attributeGroup, aspect);
 		_connection.subscribeReceiver(
@@ -174,7 +180,7 @@ public abstract class DataLoader {
 		);
 	}
 
-	/** Beendet das Aktualisieren der Daten über das ClientReceiverInterface */
+	/** Beendet das Aktualisieren der Daten Ã¼ber das ClientReceiverInterface */
 	public void stopDataListener() {
 		_connection.unsubscribeReceiver(
 				_receiver, _systemObject, _dataDescription
@@ -183,7 +189,7 @@ public abstract class DataLoader {
 
 	/**
 	 * Wenn es ein Problem mit der Rekursion gibt, wird dieses Objekt hiermit angewiesen den Verweis auf das angegebene (Unter-)Objekt zu deaktivieren.
-	 * Beispielsweise könnte eine Rolle angewiesen werden, eine innere Rolle zu deaktivieren, weil sie identisch mit der eigentlichen Rolle ist.
+	 * Beispielsweise kÃ¶nnte eine Rolle angewiesen werden, eine innere Rolle zu deaktivieren, weil sie identisch mit der eigentlichen Rolle ist.
 	 *
 	 * @param node Das zu entfernende Kindobjekt
 	 */
@@ -196,8 +202,8 @@ public abstract class DataLoader {
 	}
 
 	/**
-	 * Bietet auf Wunsch eine ausführlichere String-Darstellung des Objekts (Allerdings auf Kosten der Verarbeitungszeit)
-	 * @param verbose ausführlichere Darstellung wenn true
+	 * Bietet auf Wunsch eine ausfÃ¼hrlichere String-Darstellung des Objekts (Allerdings auf Kosten der Verarbeitungszeit)
+	 * @param verbose ausfÃ¼hrlichere Darstellung wenn true
 	 * @return mehrzeiliger String
 	 */
 	public String toString(final boolean verbose) {
@@ -205,9 +211,9 @@ public abstract class DataLoader {
 	}
 
 	/**
-	 * Bietet auf Wunsch eine ausführlichere String-Darstellung des Objekts (Allerdings auf Kosten der Verarbeitungszeit)
-	 * @param verbose ausführlichere Darstellung wenn true
-	 * @param depth Tiefe für Einrückung zur Darstellung
+	 * Bietet auf Wunsch eine ausfÃ¼hrlichere String-Darstellung des Objekts (Allerdings auf Kosten der Verarbeitungszeit)
+	 * @param verbose ausfÃ¼hrlichere Darstellung wenn true
+	 * @param depth Tiefe fÃ¼r EinrÃ¼ckung zur Darstellung
 	 * @return mehrzeiliger String
 	 */
 	String toString(final boolean verbose, final int depth) {
@@ -225,7 +231,7 @@ public abstract class DataLoader {
 	}
 
 	/**
-	 * Gibt die Verbindung zum Datenverteiler zurück
+	 * Gibt die Verbindung zum Datenverteiler zurÃ¼ck
 	 *
 	 * @return die Verbindung zum Datenverteiler
 	 */
@@ -234,7 +240,7 @@ public abstract class DataLoader {
 	}
 
 	/**
-	 * Prüft, ob dieses DataLoader-Objekt mit dem Laden der Daten fertig ist
+	 * PrÃ¼ft, ob dieses DataLoader-Objekt mit dem Laden der Daten fertig ist
 	 *
 	 * @return true wenn die Daten geladen wurden, d.h. die Update-Methode mindestens einmal aufgerufen wurde.
 	 */
@@ -245,7 +251,7 @@ public abstract class DataLoader {
 	}
 
 	/**
-	 * Gibt zurück, wie lange keine Daten eingetroffen sind
+	 * Gibt zurÃ¼ck, wie lange keine Daten eingetroffen sind
 	 * @return Zeit seit der keine Daten da sind oder -1 falls Daten da sind
 	 */
 	public long getNoDataTime(){
@@ -254,7 +260,7 @@ public abstract class DataLoader {
 	}
 
 	/**
-	 * Gibt den aktuellen Zustand zurück
+	 * Gibt den aktuellen Zustand zurÃ¼ck
 	 * @return Zustand (null falls noch keine Meldung von Datenverteiler gekommen ist)
 	 */
 	public DataState getDataState(){
@@ -262,7 +268,7 @@ public abstract class DataLoader {
 	}
 
 	/**
-	 * Gibt das Systemobjekt zurück
+	 * Gibt das Systemobjekt zurÃ¼ck
 	 * @return Systemobjekt
 	 */
 	public SystemObject getSystemObject() {
@@ -284,7 +290,7 @@ public abstract class DataLoader {
 				}
 				if(isInitialized()) return;
 				if(System.currentTimeMillis() - startTime > TIMEOUT) {
-					_debug.warning("Konnte keine Parameter für " + toString() + " laden. Es werden keine Berechtigungen zugeteilt.");
+					_debug.warning("Konnte keine Parameter fÃ¼r " + toString() + " laden. Es werden keine Berechtigungen zugeteilt.");
 					_waitForData = false;
 					return;
 				}
@@ -304,7 +310,7 @@ public abstract class DataLoader {
 	}
 
 	/**
-	 * Wird für Tests usw. gebraucht um dem Objekt zu sagen, dass es nicht initialisiert ist, also bei der nächsten Anfrage darauf warten soll, bis neue Daten
+	 * Wird fÃ¼r Tests usw. gebraucht um dem Objekt zu sagen, dass es nicht initialisiert ist, also bei der nÃ¤chsten Anfrage darauf warten soll, bis neue Daten
 	 * eintreffen
 	 */
 	void invalidate() {

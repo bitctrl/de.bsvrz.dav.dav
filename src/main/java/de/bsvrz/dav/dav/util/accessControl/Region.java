@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -71,13 +77,13 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	}
 
 	/**
-	 * Gibt die Objekttypen zurück, die in beiden Listen sind. Ist in Liste 1 z.B. DynamischerObjektTyp und FahrstreifenTyp und in Liste 2 BenutzerTyp,
-	 * FahrStreifenTyp und MessQuerschnittTyp wird BenutzerTyp und FahrStreifenTyp zurückgegeben
+	 * Gibt die Objekttypen zurÃ¼ck, die in beiden Listen sind. Ist in Liste 1 z.B. DynamischerObjektTyp und FahrstreifenTyp und in Liste 2 BenutzerTyp,
+	 * FahrStreifenTyp und MessQuerschnittTyp wird BenutzerTyp und FahrStreifenTyp zurÃ¼ckgegeben
 	 *
 	 * @param typesA Liste 1
 	 * @param typesB Liste 2
 	 *
-	 * @return Objekttypen zurück, die in beiden Listen sind
+	 * @return Objekttypen zurÃ¼ck, die in beiden Listen sind
 	 */
 	static Collection<SystemObjectType> mergeTypes(final Iterable<? extends SystemObjectType> typesA, final Iterable<? extends SystemObjectType> typesB) {
 		final Set<SystemObjectType> result = new HashSet<SystemObjectType>();
@@ -100,7 +106,7 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	/**
 	 * Erstellt eine neue Region
 	 *
-	 * @param systemObject         Systemobjekt, das die Daten dieser Region enthält
+	 * @param systemObject         Systemobjekt, das die Daten dieser Region enthÃ¤lt
 	 * @param connection           Verbindung zum Datenverteiler
 	 * @param accessControlManager Klasse, die Berechtigungsobjekte verwaltet
 	 */
@@ -111,7 +117,7 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	}
 
 	/**
-	 * Fügt einen Listener hinzu, der Objekte benachrichtigt, wenn diese Region geändert wird
+	 * FÃ¼gt einen Listener hinzu, der Objekte benachrichtigt, wenn diese Region geÃ¤ndert wird
 	 *
 	 * @param object Callback-Interface das benachrichtigt wird
 	 */
@@ -121,9 +127,9 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	}
 
 	/**
-	 * Prüft, ob ein angegebenes Systemobjekt in der Region enthalten ist
+	 * PrÃ¼ft, ob ein angegebenes Systemobjekt in der Region enthalten ist
 	 *
-	 * @param object Zu prüfendes SystemObjekt
+	 * @param object Zu prÃ¼fendes SystemObjekt
 	 *
 	 * @return true wenn es enthalten ist
 	 */
@@ -131,9 +137,9 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 		if(!isInitialized()) waitForInitialization();
 		_readLock.lock();
 		try{
-			// Standardmäßig false zurückliefern wenn keine Werte gesetzt sind
+			// StandardmÃ¤ÃŸig false zurÃ¼ckliefern wenn keine Werte gesetzt sind
 			if(_includedObjects == null || _excludedObjects == null) return false;
-			// Region enthält Objekte, wenn diese in "Enthaltene Objekte" sind, aber nicht in "Ausgeschlossene Objekte".
+			// Region enthÃ¤lt Objekte, wenn diese in "Enthaltene Objekte" sind, aber nicht in "Ausgeschlossene Objekte".
 			return _includedObjects.contains(object) && !_excludedObjects.contains(object);
 		}
 		finally {
@@ -143,7 +149,7 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 
 	@Override
 	public void deactivateInvalidChild(final DataLoader node) {
-		// Wir fügen die Region in eine Art Blacklist ein um unnötige Komplexität zu vermeiden
+		// Wir fÃ¼gen die Region in eine Art Blacklist ein um unnÃ¶tige KomplexitÃ¤t zu vermeiden
 		_writeLock.lock();
 		try{
 			_disabledInnerRegions.add((Region)node);
@@ -154,7 +160,7 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	}
 
 	/**
-	 * Gibt alle Objekte in der Region zurück. Der Aufruf sollte, falls möglich, vermieden werden, da der Vorgang je nach Definition der Region sehr lange dauern
+	 * Gibt alle Objekte in der Region zurÃ¼ck. Der Aufruf sollte, falls mÃ¶glich, vermieden werden, da der Vorgang je nach Definition der Region sehr lange dauern
 	 * kann
 	 *
 	 * @param types Objekttypen, die beachtet werden sollen
@@ -184,11 +190,11 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 		_readLock.lock();
 		try{
 			final Collection<DataLoader> loaderArrayList = new HashSet<DataLoader>();
-			// Die referenzierten Regionen der einzelnen Blöcke zusammenfügen
+			// Die referenzierten Regionen der einzelnen BlÃ¶cke zusammenfÃ¼gen
 			if(_includedObjects != null) loaderArrayList.addAll(_includedObjects.getRegions());
 			if(_excludedObjects != null) loaderArrayList.addAll(_excludedObjects.getRegions());
 
-			// Deaktivierte Kindelemente ausschließen
+			// Deaktivierte Kindelemente ausschlieÃŸen
 			loaderArrayList.removeAll(_disabledInnerRegions);
 
 			return loaderArrayList;
@@ -199,7 +205,7 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	}
 
 	/**
-	 * Entfernt einen mit {@link #addRegionChangeListener(RegionChangeListener)} hinzugefügten Listener wieder
+	 * Entfernt einen mit {@link #addRegionChangeListener(RegionChangeListener)} hinzugefÃ¼gten Listener wieder
 	 *
 	 * @param object Callback-Interface das benachrichtigt wird
 	 */
@@ -235,8 +241,8 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	}
 
 	/**
-	 * Stoppt interne Listener, die Änderungen an dieser Region überwachen. Z.B. können sich in AuswahlRegion und Auswahlbereich neue dynamische Objekte ergeben,
-	 * oder die Elemente von Mengen könnten sich ändern.
+	 * Stoppt interne Listener, die Ã„nderungen an dieser Region Ã¼berwachen. Z.B. kÃ¶nnen sich in AuswahlRegion und Auswahlbereich neue dynamische Objekte ergeben,
+	 * oder die Elemente von Mengen kÃ¶nnten sich Ã¤ndern.
 	 */
 	private void stopChangeListener() {
 		_readLock.lock();
@@ -250,7 +256,7 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	}
 
 	/**
-	 * Signalisiert allen deaktivierten referenzierten Regionen, dass diese Region geändert wurde. Wird gebraucht um Rekursionen aufzulösen. Aktiviert alle mit
+	 * Signalisiert allen deaktivierten referenzierten Regionen, dass diese Region geÃ¤ndert wurde. Wird gebraucht um Rekursionen aufzulÃ¶sen. Aktiviert alle mit
 	 * {@link #deactivateInvalidChild(DataLoader)} deaktivierten Elemente wieder.
 	 */
 	void reactivateInvalidChildren() {
@@ -267,7 +273,7 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 		}
 	}
 
-	/** Benachrichtigt alle angemeldete Listener über Änderungen an diesem Objekt */
+	/** Benachrichtigt alle angemeldete Listener Ã¼ber Ã„nderungen an diesem Objekt */
 	private void notifyRegionChanged() {
 		for(final RegionChangeListener regionChangeListener : _regionChangeListeners) {
 			regionChangeListener.regionChanged(this);
@@ -275,8 +281,8 @@ public class Region extends DataLoader implements ObjectCollectionParent {
 	}
 
 	/**
-	 * Startet interne Listener, die Änderungen an dieser Region überwachen. Z.B. können sich in AuswahlRegion und Auswahlbereich neue dynamische Objekte ergeben,
-	 * oder die Elemente von Mengen könnten sich ändern.
+	 * Startet interne Listener, die Ã„nderungen an dieser Region Ã¼berwachen. Z.B. kÃ¶nnen sich in AuswahlRegion und Auswahlbereich neue dynamische Objekte ergeben,
+	 * oder die Elemente von Mengen kÃ¶nnten sich Ã¤ndern.
 	 */
 	private void startChangeListener() {
 		_readLock.lock();
