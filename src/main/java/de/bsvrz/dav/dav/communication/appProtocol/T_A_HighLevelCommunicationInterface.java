@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -15,8 +15,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.communication.appProtocol;
@@ -25,36 +31,36 @@ import de.bsvrz.dav.dav.main.ServerHighLevelCommunication;
 import de.bsvrz.dav.dav.subscriptions.ApplicationCommunicationInterface;
 
 /**
- * Erweitert das Interface {@link de.bsvrz.dav.dav.main.ServerHighLevelCommunication}, um Funktionalität zwischen dem Transmitter und der Applikation.
+ * Erweitert das Interface {@link de.bsvrz.dav.dav.main.ServerHighLevelCommunication}, um FunktionalitÃ¤t zwischen dem Transmitter und der Applikation.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public interface T_A_HighLevelCommunicationInterface extends ServerHighLevelCommunication, ApplicationCommunicationInterface {
 
 	/**
-	 * Gibt die Id der Konfiguration zurück.
+	 * Gibt die Id der Konfiguration zurÃ¼ck.
 	 *
 	 * @return Id der Konfiguration
 	 */
 	public long getConfigurationId();
 
 	/**
-	 * Gibt den Typ der Applikation zurück.
+	 * Gibt den Typ der Applikation zurÃ¼ck.
 	 *
 	 * @return Pid des Typs der Applikation
 	 */
 	public String getApplicationTypePid();
 
 	/**
-	 * Gibt den Namen der Applikation zurück.
+	 * Gibt den Namen der Applikation zurÃ¼ck.
 	 *
 	 * @return Name der Applikation
 	 */
 	public String getApplicationName();
 
 	/**
-	 * Gibt zurück, ob es sich um die Konfiguration handelt.
+	 * Gibt zurÃ¼ck, ob es sich um die Konfiguration handelt.
 	 *
 	 * @return <code>true</code>, wenn es sich um die Konfiguration handelt, sonst <code>false</code>
 	 */

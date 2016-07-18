@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.communication.accessControl;
@@ -35,8 +41,8 @@ import java.util.*;
 
 /**
  * Klasse, die Hilfsfunktionen zum Filtern von Datenpaketen bereitstellt. Mit {@link #handleApplicationDataTelegram} soll ein ankommendes Telegram und eine
- * Liste mit Plugins übergeben werden. Diese Funktion setzt die Telegramme bei Bedarf zusammen, erstellt daraus ein Data-Objekt, übergibt dieses den Plugins,
- * und macht aus der Rückgabe der Plugins wieder ein Array aus Telegrammen. Diese Klasse verwendet Telegramme vom Typ ApplicationDataTelegram. Soll ein
+ * Liste mit Plugins Ã¼bergeben werden. Diese Funktion setzt die Telegramme bei Bedarf zusammen, erstellt daraus ein Data-Objekt, Ã¼bergibt dieses den Plugins,
+ * und macht aus der RÃ¼ckgabe der Plugins wieder ein Array aus Telegrammen. Diese Klasse verwendet Telegramme vom Typ ApplicationDataTelegram. Soll ein
  * TransmitterDataTelegram benutzt werden ist dieses vorher mit {@link de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataTelegram#getApplicationDataTelegram()
  * } zu konvertieren.
  *
@@ -46,7 +52,7 @@ import java.util.*;
 public final class AccessControlUtil {
 
 	/**
-	 * Verarbeitet zusammengehörige Telegramme durch die Plugins
+	 * Verarbeitet zusammengehÃ¶rige Telegramme durch die Plugins
 	 *
 	 * @param telegrams            Telegramme
 	 * @param accessControlPlugins Plugins
@@ -66,7 +72,7 @@ public final class AccessControlUtil {
 		final Data initialData = createData(sendDataObject, baseSubscriptionInfo, dataModel);
 		final Data data = processDataByPlugins(initialData, accessControlPlugins, baseSubscriptionInfo, userId);
 		if(initialData == data) {
-			// unverändert, einfach wieder Parameter zurückgeben
+			// unverÃ¤ndert, einfach wieder Parameter zurÃ¼ckgeben
 			return telegrams;
 		}
 		// Daten-Objekt vom Plugin wieder in ApplicationData-Telegramme zerlegen
@@ -121,7 +127,7 @@ public final class AccessControlUtil {
 			return TelegramUtility.splitToApplicationTelegrams(newSendDataObject);
 		}
 		else {
-			throw new IllegalArgumentException("Daten können nicht serialisiert werden: " + data.getClass().getName());
+			throw new IllegalArgumentException("Daten kÃ¶nnen nicht serialisiert werden: " + data.getClass().getName());
 		}
 	}
 

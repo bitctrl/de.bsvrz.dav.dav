@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -27,10 +33,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Klasse, die Basisberechtigungen enthält, die jeder Benutzer implizit zugewiesen bekommt. Es gibt keine Möglichkeit, einem Benutzer über die Parametrierung
- * diese Rechte zu nehmen. Bei Bedarf können weitere Berechtigungen hier hinzugefügt werden. Damit eine Aktion erlaubt ist, müssen Attributgruppe und Aspekt
- * übereinstimmen und die jeweilige Aktion muss über den Boolean-Parameter erlaubt sein. Die Angabe einer leeren Liste für Attributgruppen oder Aspekte bedeutet
- * wie üblich, dass alle Attributgruppen bzw. Aspekte ausgewählt sind.
+ * Klasse, die Basisberechtigungen enthÃ¤lt, die jeder Benutzer implizit zugewiesen bekommt. Es gibt keine MÃ¶glichkeit, einem Benutzer Ã¼ber die Parametrierung
+ * diese Rechte zu nehmen. Bei Bedarf kÃ¶nnen weitere Berechtigungen hier hinzugefÃ¼gt werden. Damit eine Aktion erlaubt ist, mÃ¼ssen Attributgruppe und Aspekt
+ * Ã¼bereinstimmen und die jeweilige Aktion muss Ã¼ber den Boolean-Parameter erlaubt sein. Die Angabe einer leeren Liste fÃ¼r Attributgruppen oder Aspekte bedeutet
+ * wie Ã¼blich, dass alle Attributgruppen bzw. Aspekte ausgewÃ¤hlt sind.
  *
  * @author Kappich Systemberatung
  * @version $Revision: 0000 $
@@ -42,7 +48,7 @@ class ImplicitAccessUnitManager {
 	private static final List<AccessUnit> _accessUnits = new ArrayList<AccessUnit>();
 
 	static {
-		// Neue Berechtigungen können ab hier eingefügt werden.
+		// Neue Berechtigungen kÃ¶nnen ab hier eingefÃ¼gt werden.
 
 		// Basis Anfragen (aus kb.objekteZugriffsrechteBasis)
 		_accessUnits.add(
@@ -62,7 +68,7 @@ class ImplicitAccessUnitManager {
 								"asp.information"
 						),
 						true,   // Sender
-						false,  // Empfänger
+						false,  // EmpfÃ¤nger
 						false,  // Quelle
 						true   // Senke
 				)
@@ -83,7 +89,7 @@ class ImplicitAccessUnitManager {
 								"asp.antwort"
 						),
 						true,   // Sender
-						true,    // Empfänger 
+						true,    // EmpfÃ¤nger 
 						false,   // Quelle
 						true     // Senke
 				)
@@ -99,7 +105,7 @@ class ImplicitAccessUnitManager {
 								"asp.standard"
 						),
 						true,   // Sender
-						true,   // Empfänger
+						true,   // EmpfÃ¤nger
 						true,   // Quelle
 						true    // Senke
 				)

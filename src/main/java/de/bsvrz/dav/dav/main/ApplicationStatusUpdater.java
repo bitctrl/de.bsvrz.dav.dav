@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -40,27 +46,27 @@ import java.util.*;
 public final class ApplicationStatusUpdater extends Thread {
 
 	/**
-	 * ATG, die benötigt wird um einen Datensatz zu verschicken, der alle angemeldeten Applikationen enthält. Ist diese ATG nicht vorhanden, so wird der
-	 * Datenverteiler gestartet ohne diese Funktionalität zur Verfügung zu stellen.
+	 * ATG, die benÃ¶tigt wird um einen Datensatz zu verschicken, der alle angemeldeten Applikationen enthÃ¤lt. Ist diese ATG nicht vorhanden, so wird der
+	 * Datenverteiler gestartet ohne diese FunktionalitÃ¤t zur VerfÃ¼gung zu stellen.
 	 */
 	private static final String _pidAngemeldeteApplikationen = "atg.angemeldeteApplikationen";
 
 	/**
-	 * ATG, die benötigt wird um einen Datensatz zu verschicken, der die angemeldeten Daten aller angemeldeten Applikationen enthält. Ist diese ATG nicht
-	 * vorhanden, so wird der Datenverteiler gestartet ohne diese Funktionalität zur Verfügung zu stellen.
+	 * ATG, die benÃ¶tigt wird um einen Datensatz zu verschicken, der die angemeldeten Daten aller angemeldeten Applikationen enthÃ¤lt. Ist diese ATG nicht
+	 * vorhanden, so wird der Datenverteiler gestartet ohne diese FunktionalitÃ¤t zur VerfÃ¼gung zu stellen.
 	 */
 	private static final String _pidAngemeldeteDatenidentifikationen = "atg.angemeldeteDatenidentifikationen";
 
 	/**
-	 * ATG, die benötigt wird um einen Datensatz zu verschicken, der die Telegrammlaufzeiten aller angemeldeten Applikationen enthält. Ist diese ATG nicht
-	 * vorhanden, so wird der Datenverteiler gestartet ohne diese Funktionalität zur Verfügung zu stellen.
+	 * ATG, die benÃ¶tigt wird um einen Datensatz zu verschicken, der die Telegrammlaufzeiten aller angemeldeten Applikationen enthÃ¤lt. Ist diese ATG nicht
+	 * vorhanden, so wird der Datenverteiler gestartet ohne diese FunktionalitÃ¤t zur VerfÃ¼gung zu stellen.
 	 */
 	private static final String _pidTelegrammLaufzeiten = "atg.telegrammLaufzeiten";
 
 
 	private static final Debug _debug = Debug.getLogger();
 
-	/** Enthält alle Applikationen, die an/ab gemeldet werden sollen. Die Elemente werden nach Fifo bearbeitet. */
+	/** EnthÃ¤lt alle Applikationen, die an/ab gemeldet werden sollen. Die Elemente werden nach Fifo bearbeitet. */
 	private final List<ApplicationConnection> _application = Collections.synchronizedList(new ArrayList<ApplicationConnection>());
 
 	private final SystemObject _davObject;
@@ -84,20 +90,20 @@ public final class ApplicationStatusUpdater extends Thread {
 	private final Timer _timer = new Timer("Status der Applikation zyklisch verschicken", true);
 
 	/**
-	 * Wird für eine Applikation eine neue Datenidentifikation angemeldet, so wird dies über einen TimerTask publiziert. Der TimerTask, der diese Aufgabe
-	 * übernimmt, wird hier gespeichert. Der TimerTask kann jederzeit unterbrochen werden und durch einen neuen TimerTask ersetzt werden. Auch wenn der TimerTask
-	 * bereits ausgeführt wurde befindet er sich weiterhin in dieser Map und kann durch einen neuen TimerTask ersetzt werden.
-	 * <p/>
-	 * Als Schlüssel dient die HighLevelCommu, dies entspricht der Applikation, deren Anmeldungen verschickt werden sollen. Als Value wird ein TimerTask
-	 * zurückgegeben, der alle angemeldeten Datenidentifikationen der Applikation verschickt, sobald der Thread ausgeführt wird. Der Thread kann bereits ausgeführt
-	 * worden sein oder aber noch ausgeführt werden (oder befindet sich in Bearbeitung). Wurde noch kein TimerTask angelegt, so wird <code>null</code>
-	 * zurückgegeben.
+	 * Wird fÃ¼r eine Applikation eine neue Datenidentifikation angemeldet, so wird dies Ã¼ber einen TimerTask publiziert. Der TimerTask, der diese Aufgabe
+	 * Ã¼bernimmt, wird hier gespeichert. Der TimerTask kann jederzeit unterbrochen werden und durch einen neuen TimerTask ersetzt werden. Auch wenn der TimerTask
+	 * bereits ausgefÃ¼hrt wurde befindet er sich weiterhin in dieser Map und kann durch einen neuen TimerTask ersetzt werden.
+	 * <p>
+	 * Als SchlÃ¼ssel dient die HighLevelCommu, dies entspricht der Applikation, deren Anmeldungen verschickt werden sollen. Als Value wird ein TimerTask
+	 * zurÃ¼ckgegeben, der alle angemeldeten Datenidentifikationen der Applikation verschickt, sobald der Thread ausgefÃ¼hrt wird. Der Thread kann bereits ausgefÃ¼hrt
+	 * worden sein oder aber noch ausgefÃ¼hrt werden (oder befindet sich in Bearbeitung). Wurde noch kein TimerTask angelegt, so wird <code>null</code>
+	 * zurÃ¼ckgegeben.
 	 */
 	private final Map<ApplicationCommunicationInterface, TimerTask> _threadsForDataIdentificationUpdates = new HashMap<ApplicationCommunicationInterface, TimerTask>();
 
 	/**
-	 * Key = Applikation, die bereits Daten angemeldet hat; Value = ClientSenderInterface(SourceApplicationUpdater). Damit kann später die Verbindung wieder
-	 * abgemeldet werden und es wird ein mehrfaches anmelden verhindert. Gleichzeit kann das Objekt befragt werden, ob überhaupt gesendet werden soll.
+	 * Key = Applikation, die bereits Daten angemeldet hat; Value = ClientSenderInterface(SourceApplicationUpdater). Damit kann spÃ¤ter die Verbindung wieder
+	 * abgemeldet werden und es wird ein mehrfaches anmelden verhindert. Gleichzeit kann das Objekt befragt werden, ob Ã¼berhaupt gesendet werden soll.
 	 */
 	private final Map<T_A_HighLevelCommunication, SourceApplicationUpdater> _subcribedDataIdentifications = new HashMap<T_A_HighLevelCommunication, SourceApplicationUpdater>();
 
@@ -118,27 +124,27 @@ public final class ApplicationStatusUpdater extends Thread {
 
 			setName("Applikationsstatus-Updater");
 
-			// Folgender Code wäre falsch, da getLocalDav bei Remote-Dav-Verbindungen (also Datenverteilern ohne eigener Konfiguration)
-			// Den Konfigurations-Dav ausspucken würde und nicht den hier verwendeten
+			// Folgender Code wÃ¤re falsch, da getLocalDav bei Remote-Dav-Verbindungen (also Datenverteilern ohne eigener Konfiguration)
+			// Den Konfigurations-Dav ausspucken wÃ¼rde und nicht den hier verwendeten
 //			_davObject = _connection.getLocalDav();
 
 			_davObject = connectionsManager.getDavObject();
 
-			// Als Quelle für alle angemeldeten Applikationen anmelden
+			// Als Quelle fÃ¼r alle angemeldeten Applikationen anmelden
 
 			final AttributeGroup applicationUpdaterATG = _dataModel.getAttributeGroup(_pidAngemeldeteApplikationen);
 			final Aspect applicationUpdaterAspect = _dataModel.getAspect("asp.standard");
 			_applicationUpdaterDataDescription = new DataDescription(applicationUpdaterATG, applicationUpdaterAspect);
 			_connection.subscribeSender(_applicationUpdater, _davObject, _applicationUpdaterDataDescription, SenderRole.source());
 
-			// Als Quelle für Telegrammlaufzeiten zu allen angemeldeten Applikationen anmelden
+			// Als Quelle fÃ¼r Telegrammlaufzeiten zu allen angemeldeten Applikationen anmelden
 
 			final AttributeGroup applicationTelegramRuntimeATG = _dataModel.getAttributeGroup(_pidTelegrammLaufzeiten);
 			final Aspect applicationTelegramRuntimeAspect = _dataModel.getAspect("asp.messwerte");
 			_applicationRuntimeDataDescription = new DataDescription(applicationTelegramRuntimeATG, applicationTelegramRuntimeAspect);
 			_connection.subscribeSender(_applicationRuntime, _davObject, _applicationRuntimeDataDescription, SenderRole.source());
 
-			// Datenidentifikation zum verschicken von "Datenidentifikationen, die zu einer Applikation gehören" anlegen
+			// Datenidentifikation zum verschicken von "Datenidentifikationen, die zu einer Applikation gehÃ¶ren" anlegen
 			_applicationDataDescriptionDD = new DataDescription(
 					_dataModel.getAttributeGroup(_pidAngemeldeteDatenidentifikationen), _dataModel.getAspect("asp.standard")
 			);
@@ -155,13 +161,13 @@ public final class ApplicationStatusUpdater extends Thread {
 
 
 	/**
-	 * Prüft, ob das übergebene Objekt gleich dem Objekt ist, das die Applikation des DaV darstellt, die sich selbst beim DaV anmeldet oder aber die
+	 * PrÃ¼ft, ob das Ã¼bergebene Objekt gleich dem Objekt ist, das die Applikation des DaV darstellt, die sich selbst beim DaV anmeldet oder aber die
 	 * Konfiguration.
-	 * <p/>
-	 * Wurde bisher noch kein DaV-Objekt gesucht/gefunden und das übergebene Objekt ist das DaV-Objekt, so wird das Objekt einen internen Variablen zugewiesen und
-	 * <code>true</code> zurück gegeben.
+	 * <p>
+	 * Wurde bisher noch kein DaV-Objekt gesucht/gefunden und das Ã¼bergebene Objekt ist das DaV-Objekt, so wird das Objekt einen internen Variablen zugewiesen und
+	 * <code>true</code> zurÃ¼ck gegeben.
 	 *
-	 * @param unknownObject Objekt, das vielleicht das DaV-Objekt darstellen könnte.
+	 * @param unknownObject Objekt, das vielleicht das DaV-Objekt darstellen kÃ¶nnte.
 	 *
 	 * @return true = Es handelt sich um das DaV-Objekt oder das Konfigurationsobjekt -> Das Objekt muss ausgeblendet werden; false = sonst
 	 */
@@ -190,23 +196,23 @@ public final class ApplicationStatusUpdater extends Thread {
 		}
 	}
 
-	/** Es wird ein Datensatz verschickt, der alle Applikationen enthält, die gerade am DaV angemeldet sind. */
+	/** Es wird ein Datensatz verschickt, der alle Applikationen enthÃ¤lt, die gerade am DaV angemeldet sind. */
 	private void sendApplicationUpdate() {
 		ArrayList<T_A_HighLevelCommunication> applicationConnectionsCopy = null;
 		if(_applicationUpdater.sendData()) {
-			// Es gibt einen Empfänger für die Daten
+			// Es gibt einen EmpfÃ¤nger fÃ¼r die Daten
 			applicationConnectionsCopy = new ArrayList<T_A_HighLevelCommunication>(_connectionsManager.getAllApplicationConnections());
 		}
 		if(applicationConnectionsCopy != null) {
-			// Es gibt einen Empfänger für die Daten
+			// Es gibt einen EmpfÃ¤nger fÃ¼r die Daten
 			final Data data = _connection.createData(_applicationUpdaterDataDescription.getAttributeGroup());
 
 			// Alle Applikationen eintragen, die derzeit angemeldet sind.
 			final Data.Array subscribedApplications = data.getItem("angemeldeteApplikation").asArray();
-			// Diese größe paßt vielleicht nicht. Das Applikationsobjekt für die Konfiguration und das Applikationsobjekt für den DaV muss noch entfernt werden.
+			// Diese grÃ¶ÃŸe paÃŸt vielleicht nicht. Das Applikationsobjekt fÃ¼r die Konfiguration und das Applikationsobjekt fÃ¼r den DaV muss noch entfernt werden.
 			subscribedApplications.setLength(applicationConnectionsCopy.size());
 
-			// Index, an dem ein neues Element in das Array eingefügt werden muss
+			// Index, an dem ein neues Element in das Array eingefÃ¼gt werden muss
 			int dataIndex = 0;
 
 			for(final T_A_HighLevelCommunication applicationConnection : applicationConnectionsCopy) {
@@ -227,19 +233,19 @@ public final class ApplicationStatusUpdater extends Thread {
 					dataIndex++;
 				}
 				else {
-					// Dieses Applikationsobjekt darf nicht mit verschickt werden. Also das ursprüngliche Array verkleinern.
+					// Dieses Applikationsobjekt darf nicht mit verschickt werden. Also das ursprÃ¼ngliche Array verkleinern.
 					subscribedApplications.setLength(subscribedApplications.getLength() - 1);
 				}
-			} // for, über alle angemeldeten Applikationen
+			} // for, Ã¼ber alle angemeldeten Applikationen
 
 			sendDataAsSource(data, _applicationUpdaterDataDescription);
 		}
 	}
 
-	/** Verschickt ein Telegramm, das für alle angemeldeten Applikationen die Telegrammlaufzeit vom DaV zur Applikation enthält. */
+	/** Verschickt ein Telegramm, das fÃ¼r alle angemeldeten Applikationen die Telegrammlaufzeit vom DaV zur Applikation enthÃ¤lt. */
 	private void sendApplicationTelegramRuntimeUpdate() {
 		if(_applicationRuntime.sendData()) {
-			// Es gibt einen Empfänger für die Daten
+			// Es gibt einen EmpfÃ¤nger fÃ¼r die Daten
 
 			final ArrayList<T_A_HighLevelCommunication> applicationConnections;
 			applicationConnections = new ArrayList<T_A_HighLevelCommunication>(_connectionsManager.getAllApplicationConnections());
@@ -248,7 +254,7 @@ public final class ApplicationStatusUpdater extends Thread {
 			final Data.Array subscribedApplications = data.getItem("telegrammLaufzeit").asArray();
 			subscribedApplications.setLength(applicationConnections.size());
 
-			// Index, an dem ein neues Element in das Array eingefügt werden muss
+			// Index, an dem ein neues Element in das Array eingefÃ¼gt werden muss
 			int dataIndex = 0;
 
 			for(final T_A_HighLevelCommunication applicationConnection : applicationConnections) {
@@ -276,10 +282,10 @@ public final class ApplicationStatusUpdater extends Thread {
 					dataIndex++;
 				}
 				else {
-					// Dieses Applikationsobjekt darf nicht mit verschickt werden. Also das ursprüngliche Array verkleinern.
+					// Dieses Applikationsobjekt darf nicht mit verschickt werden. Also das ursprÃ¼ngliche Array verkleinern.
 					subscribedApplications.setLength(subscribedApplications.getLength() - 1);
 				}
-			} // for, über alle angemeldeten Applikationen
+			} // for, Ã¼ber alle angemeldeten Applikationen
 
 			sendDataAsSource(data, _applicationRuntimeDataDescription);
 		}
@@ -311,9 +317,9 @@ public final class ApplicationStatusUpdater extends Thread {
 		}
 		if(updater != null) {
 			if(updater.sendData()) {
-				// Es gibt Empfänger für die Daten
+				// Es gibt EmpfÃ¤nger fÃ¼r die Daten
 
-				// Dieses Objekt besitzt alle Anmeldungen (Sender/Empfänger) und die entsprechenden Rollen(Quelle,Senke,Sender,Empfänger)
+				// Dieses Objekt besitzt alle Anmeldungen (Sender/EmpfÃ¤nger) und die entsprechenden Rollen(Quelle,Senke,Sender,EmpfÃ¤nger)
 				final Collection<? extends Subscription> subscriptionsFromRemoteStorage = _connectionsManager.getSubscriptionsManager().getAllSubscriptions(
 						application
 				);
@@ -327,7 +333,7 @@ public final class ApplicationStatusUpdater extends Thread {
 
 				subscribedApplications.setLength(subscriptionsFromRemoteStorage.size());
 
-				// Index, an dem ein neues Element in das Array eingefügt werden muss
+				// Index, an dem ein neues Element in das Array eingefÃ¼gt werden muss
 				int dataIndex = 0;
 
 				// Alle Anmeldungen der Applikation eintrage, die Daten empfangen.
@@ -344,7 +350,7 @@ public final class ApplicationStatusUpdater extends Thread {
 							role = "Senke";
 						}
 						else {
-							role = "Empfänger";
+							role = "EmpfÃ¤nger";
 						}
 
 					}
@@ -379,7 +385,7 @@ public final class ApplicationStatusUpdater extends Thread {
 					}
 				}
 
-				// Datensatz ggf. verkürzen, falls einzelne Einträge aufgrund eines Fehlers nicht eingefügt werden konnten
+				// Datensatz ggf. verkÃ¼rzen, falls einzelne EintrÃ¤ge aufgrund eines Fehlers nicht eingefÃ¼gt werden konnten
 				subscribedApplications.setLength(dataIndex);
 
 				// Es sind alle Anmeldungen am Data vermerkt, der Datensatz kann verschickt werden.
@@ -404,11 +410,11 @@ public final class ApplicationStatusUpdater extends Thread {
 	}
 
 	/**
-	 * Schreibt in den übergebenen Datensatz(atl.angemeldeteDatenidentifikation) alle Daten benötigten Daten.
+	 * Schreibt in den Ã¼bergebenen Datensatz(atl.angemeldeteDatenidentifikation) alle Daten benÃ¶tigten Daten.
 	 *
 	 * @param data                 Datensatz (atl.angemeldeteDatenidentifikation)
-	 * @param baseSubscriptionInfo Enthält das SystemObject(Id), die verwendete ATGV (Id) und die Simulationsvariante
-	 * @param role                 Verwendete Rolle, siehe auch att.rolleAnmeldung. Zulässige Werte: Quelle, Sender, Senke, Empfänger
+	 * @param baseSubscriptionInfo EnthÃ¤lt das SystemObject(Id), die verwendete ATGV (Id) und die Simulationsvariante
+	 * @param role                 Verwendete Rolle, siehe auch att.rolleAnmeldung. ZulÃ¤ssige Werte: Quelle, Sender, Senke, EmpfÃ¤nger
 	 */
 	private void inscribeDataDescription(
 			final Data data, final BaseSubscriptionInfo baseSubscriptionInfo, final String role) {
@@ -424,7 +430,7 @@ public final class ApplicationStatusUpdater extends Thread {
 	}
 
 	/**
-	 * Erstellt einen TimerTask, der alls 60 Sekunden alle angemeldeten Applikationen und deren Telegrammlaufzeiten verschickt (wenn ein Empfänger angemeldet
+	 * Erstellt einen TimerTask, der alls 60 Sekunden alle angemeldeten Applikationen und deren Telegrammlaufzeiten verschickt (wenn ein EmpfÃ¤nger angemeldet
 	 * ist).
 	 */
 	private void createPeriodicUpdateTask() {
@@ -451,13 +457,13 @@ public final class ApplicationStatusUpdater extends Thread {
 	}
 
 	/**
-	 * Meldet für eine neue Applikation eine Quelle an, die Datensätze vom mit der ATG "atg.angemeldeteDatenidentifikationen" verschickt.
-	 * <p/>
-	 * Gleichzeitig wird das Objekt in alle benötigten Datenstrukturen eingetragen.
-	 * <p/>
-	 * Hat bereits eine Anmeldung stattgefunden, wird nichts gemacht (zum Beispiel, wenn weiter DataDescription für eine Applikation angemeldet werden).
+	 * Meldet fÃ¼r eine neue Applikation eine Quelle an, die DatensÃ¤tze vom mit der ATG "atg.angemeldeteDatenidentifikationen" verschickt.
+	 * <p>
+	 * Gleichzeitig wird das Objekt in alle benÃ¶tigten Datenstrukturen eingetragen.
+	 * <p>
+	 * Hat bereits eine Anmeldung stattgefunden, wird nichts gemacht (zum Beispiel, wenn weiter DataDescription fÃ¼r eine Applikation angemeldet werden).
 	 *
-	 * @param newApplication enthält alle Daten zum anmelden.
+	 * @param newApplication enthÃ¤lt alle Daten zum anmelden.
 	 */
 	private void subscribeDataDescriptionSource(final T_A_HighLevelCommunication newApplication) {
 		synchronized(_subcribedDataIdentifications) {
@@ -480,7 +486,7 @@ public final class ApplicationStatusUpdater extends Thread {
 					}
 					catch(OneSubscriptionPerSendData oneSubscriptionPerSendData) {
 						_debug.error(
-								"Für eine Applikation kann keine Quelle angemeldet werden, die alle angemeldeten Datenidentifikationen der Applikation publiziert.",
+								"FÃ¼r eine Applikation kann keine Quelle angemeldet werden, die alle angemeldeten Datenidentifikationen der Applikation publiziert.",
 								oneSubscriptionPerSendData
 						);
 					}
@@ -490,12 +496,12 @@ public final class ApplicationStatusUpdater extends Thread {
 	}
 
 	/**
-	 * Meldet die Datensätze der ATG "atg.angemeldeteDatenidentifikationen" wieder ab und entfernt die Objekte aus allen Datenstrukturen. Wurden die Daten bereits
+	 * Meldet die DatensÃ¤tze der ATG "atg.angemeldeteDatenidentifikationen" wieder ab und entfernt die Objekte aus allen Datenstrukturen. Wurden die Daten bereits
 	 * abgemeldet wird nichts gemacht.
-	 * <p/>
+	 * <p>
 	 * Eventuell angemeldete TimerTasks werden unterbrochen und entfernt.
 	 *
-	 * @param removedApplication Objekt, deren Quellenanmeldung zurückgenommen werden soll.
+	 * @param removedApplication Objekt, deren Quellenanmeldung zurÃ¼ckgenommen werden soll.
 	 */
 	private void unsubscribeDataDescriptionSource(final T_A_HighLevelCommunication removedApplication) {
 		final SourceApplicationUpdater updater;
@@ -503,7 +509,7 @@ public final class ApplicationStatusUpdater extends Thread {
 			updater = _subcribedDataIdentifications.remove(removedApplication);
 		}
 		if(updater != null) {
-			// Das Objekt war noch vorhanden, also können die Daten abgemeldet werden.
+			// Das Objekt war noch vorhanden, also kÃ¶nnen die Daten abgemeldet werden.
 			final AttributeGroup attributeGroup = _dataModel.getAttributeGroup(_pidAngemeldeteDatenidentifikationen);
 			final Aspect aspect = _dataModel.getAspect("asp.standard");
 
@@ -515,7 +521,7 @@ public final class ApplicationStatusUpdater extends Thread {
 		}
 
 		// Falls es noch einen TimerTask gibt, der die angemeldeten Datenidentifikationen verschicken will, wird dieser beendet.
-		// Dies ist nötig, weil die Applikation sich vom DaV abgemeldet hat.
+		// Dies ist nÃ¶tig, weil die Applikation sich vom DaV abgemeldet hat.
 		synchronized(_threadsForDataIdentificationUpdates) {
 			final TimerTask taskForDataIdentificationUpdate = _threadsForDataIdentificationUpdates.remove(removedApplication);
 			if(taskForDataIdentificationUpdate != null) {
@@ -535,7 +541,7 @@ public final class ApplicationStatusUpdater extends Thread {
 			synchronized(_applicationConnections) {
 				// Solange warten, bis es eine Applikation gibt, die bearbeitet werden muss
 				while(_application.size() == 0) {
-					// Wenn <code>_applicationConnections</code> sich ändert, wird in _application die Applikation abgelegt, die geändert wurde.
+					// Wenn <code>_applicationConnections</code> sich Ã¤ndert, wird in _application die Applikation abgelegt, die geÃ¤ndert wurde.
 					try {
 						_applicationConnections.wait();
 					}
@@ -553,28 +559,28 @@ public final class ApplicationStatusUpdater extends Thread {
 			final T_A_HighLevelCommunication newApplicationConnection = newApplicationDetected.getApplicationConnection();
 
 			if(newApplicationDetected.isAdded()) {
-				// 1) Es wurde eine Applikation hinzugefügt -> Quelle für die angemeldetenDatenidentifikationen der Applikation anmelden.
+				// 1) Es wurde eine Applikation hinzugefÃ¼gt -> Quelle fÃ¼r die angemeldetenDatenidentifikationen der Applikation anmelden.
 				subscribeDataDescriptionSource(newApplicationConnection);
 			}
 			else {
-				// 1) Quelle für angemeldetenDatenidentifikationen dieser Applikation abmelden und den TimerTask beenden(falls vorhanden)
+				// 1) Quelle fÃ¼r angemeldetenDatenidentifikationen dieser Applikation abmelden und den TimerTask beenden(falls vorhanden)
 				unsubscribeDataDescriptionSource(newApplicationConnection);
 			}
 
-			// Alle benachrichtigen, dass eine Applikation hinzugefügt oder entfernt wurde
+			// Alle benachrichtigen, dass eine Applikation hinzugefÃ¼gt oder entfernt wurde
 			sendApplicationUpdate();
 		}
 	}
 
 	/**
-	 * Fügt eine neue Applikation den Datenstrukturen hinzu und der Thread, der Aktualisierungsdatensätze verschickt, wird aufgeweckt.
+	 * FÃ¼gt eine neue Applikation den Datenstrukturen hinzu und der Thread, der AktualisierungsdatensÃ¤tze verschickt, wird aufgeweckt.
 	 *
 	 * @param applicationConnection Neue Applikation
 	 */
 	public void applicationAdded(final T_A_HighLevelCommunication applicationConnection) {
 		synchronized(_applicationConnections) {
 			_application.add(new ApplicationConnection(applicationConnection, true));
-			// Es wurde eine Applikation hinzugefügt, der Thread muss aufwachen und ein Telegramm verschicken
+			// Es wurde eine Applikation hinzugefÃ¼gt, der Thread muss aufwachen und ein Telegramm verschicken
 			_applicationConnections.notifyAll();
 		}
 	}
@@ -594,8 +600,8 @@ public final class ApplicationStatusUpdater extends Thread {
 
 	/**
 	 * Diese Methode wird aufgerufen, wenn eine Applikation eine neue Datenidentifikation anmeldet.
-	 * <p/>
-	 * Für diese Applikation wird ein Datensatz verschickt, der alle angemeldeten Datenidentifikationen enthält.
+	 * <p>
+	 * FÃ¼r diese Applikation wird ein Datensatz verschickt, der alle angemeldeten Datenidentifikationen enthÃ¤lt.
 	 *
 	 * @param application Applikation, die neue Daten anmeldet.
 	 */
@@ -605,8 +611,8 @@ public final class ApplicationStatusUpdater extends Thread {
 
 	/**
 	 * Diese Methode wird aufgerufen, wenn eine Applikation eine  Datenidentifikation abmeldet.
-	 * <p/>
-	 * Für diese Applikation wird ein Datensatz verschickt, der alle angemeldeten Datenidentifikationen enthält.
+	 * <p>
+	 * FÃ¼r diese Applikation wird ein Datensatz verschickt, der alle angemeldeten Datenidentifikationen enthÃ¤lt.
 	 *
 	 * @param application Applikation, die eine Datenidentifikation abmeldet.
 	 */
@@ -616,11 +622,11 @@ public final class ApplicationStatusUpdater extends Thread {
 
 	/**
 	 * Wird aufgerufen, wenn eine Applikation einen Datenidentifikation an/abmeldet. Es wird ein TimerTask angelegt, der nach einer gewissen Zeit alle angemeldeten
-	 * Datenidentifikationen der übergebene Applikation publiziert. Gibt es bereits einen TimerTask, der diese Aufgabe übernehmen möchte, so wird dieser gestoppt
+	 * Datenidentifikationen der Ã¼bergebene Applikation publiziert. Gibt es bereits einen TimerTask, der diese Aufgabe Ã¼bernehmen mÃ¶chte, so wird dieser gestoppt
 	 * und durch einen neuen TimerTask ersetzt, der wieder eine gewisse Zeit wartet.
-	 * <p/>
-	 * Dadruch wird verhindert, dass sehr viele Anmeldungen eine Flut von Update-Telegrammen auslöst. Jede neue Anmeldung verzögert das Update-Telegramm, erst wenn
-	 * alle Anmeldungen durchgeführt wurden, wird das Telegramm verschickt.
+	 * <p>
+	 * Dadruch wird verhindert, dass sehr viele Anmeldungen eine Flut von Update-Telegrammen auslÃ¶st. Jede neue Anmeldung verzÃ¶gert das Update-Telegramm, erst wenn
+	 * alle Anmeldungen durchgefÃ¼hrt wurden, wird das Telegramm verschickt.
 	 *
 	 * @param application Applikation, die neue Daten an oder abmeldet.
 	 */
@@ -629,9 +635,9 @@ public final class ApplicationStatusUpdater extends Thread {
 			final TimerTask taskForThisApplication = _threadsForDataIdentificationUpdates.get(application);
 
 			if(taskForThisApplication != null) {
-				// Es gibt bereits einen Task, dieser kann bereits abgelaufen sein oder sich noch in Bearbeitung befinden.
-				// (Auch wenn der Task bereits ausgeführt wurde, schadet dieser Aufruf nicht)
-				taskForThisApplication.cancel();
+				if(taskForThisApplication.scheduledExecutionTime() > System.currentTimeMillis())
+				// Es gibt bereits einen Task fÃ¼r die Zukunft, also hier abbrechen
+				return;
 			}
 
 			// Es muss ein neuer Task angelegt werden
@@ -642,14 +648,13 @@ public final class ApplicationStatusUpdater extends Thread {
 						sendDataDescriptionUpdate(application);
 					}
 					catch(Exception e) {
-						_debug.warning("Probleme beim Versenden von Zustandsinformation über angemeldete Datenidentifikationen", e);
+						_debug.warning("Probleme beim Versenden von Zustandsinformation Ã¼ber angemeldete Datenidentifikationen", e);
 					}
 				}
 			};
 			_threadsForDataIdentificationUpdates.put(application, task);
-			// In 5 Sekunden den Task starten, findet eine weitere Änderung statt, wird dieser Task mit cancel gestoppt und ein neuer angelegt
-//			_timer.schedule(task, 5000);
-			task.run();
+			// In 5 Sekunden den Task starten, findet eine weitere Ã„nderung statt, wird dieser Task mit cancel gestoppt und ein neuer angelegt
+			_timer.schedule(task, 5000);
 		}
 	}
 
@@ -661,7 +666,7 @@ public final class ApplicationStatusUpdater extends Thread {
 
 		/**
 		 * @param applicationConnection Verbindung der Applikation
-		 * @param added                 <code>true</code>, wenn die Verbindung zum Datenverteiler hinzugeüfgt wurde. <code>false</code>, sonst.
+		 * @param added                 <code>true</code>, wenn die Verbindung zum Datenverteiler hinzugeÃ¼fgt wurde. <code>false</code>, sonst.
 		 */
 		public ApplicationConnection(final T_A_HighLevelCommunication applicationConnection, final boolean added) {
 			_applicationConnection = applicationConnection;
@@ -702,7 +707,7 @@ public final class ApplicationStatusUpdater extends Thread {
 			synchronized(this) {
 
 				if(_state != ClientSenderInterface.START_SENDING && state == ClientSenderInterface.START_SENDING) {
-					// Der Zustand wird von "nicht senden" auf "senden" geändert -> Daten verschicken
+					// Der Zustand wird von "nicht senden" auf "senden" geÃ¤ndert -> Daten verschicken
 					if(dataDescription.getAttributeGroup().getPid().equals(_pidAngemeldeteApplikationen)) {
 						final Thread helper = new Thread("StatusinfoversandApplikationen") {
 							@Override
@@ -742,7 +747,7 @@ public final class ApplicationStatusUpdater extends Thread {
 								@Override
 								public void run() {
 									try {
-										_sender.sendDataDescriptionUpdate((T_A_HighLevelCommunication)application);
+										_sender.sendDataDescriptionUpdate(application);
 									}
 									catch(Exception e) {
 										_debug.warning("Fehler beim Versand der Statusinformation bzgl. der Anmeldungen einer Applikation", e);

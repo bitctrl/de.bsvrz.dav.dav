@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,45 +14,42 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
-import de.bsvrz.dav.daf.main.ClientDavConnection;
-import de.bsvrz.dav.daf.main.ClientReceiverInterface;
-import de.bsvrz.dav.daf.main.ClientSenderInterface;
-import de.bsvrz.dav.daf.main.Data;
-import de.bsvrz.dav.daf.main.DataDescription;
-import de.bsvrz.dav.daf.main.ReceiveOptions;
-import de.bsvrz.dav.daf.main.ReceiverRole;
-import de.bsvrz.dav.daf.main.ResultData;
-import de.bsvrz.dav.daf.main.config.Aspect;
-import de.bsvrz.dav.daf.main.config.AttributeGroup;
-import de.bsvrz.dav.daf.main.config.ConfigurationObject;
-import de.bsvrz.dav.daf.main.config.SystemObject;
+import de.bsvrz.dav.daf.main.*;
+import de.bsvrz.dav.daf.main.config.*;
 import de.bsvrz.dav.daf.main.impl.CommunicationConstant;
 import de.bsvrz.dav.daf.main.impl.config.DafDataModel;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterConnectionInfo;
+import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterInfo;
 import de.bsvrz.dav.dav.communication.appProtocol.T_A_HighLevelCommunication;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunicationInterface;
 import de.bsvrz.sys.funclib.debug.Debug;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Diese Klasse stellt das Bindeglied zwischen dem {@link LowLevelConnectionsManager} und den Funktionen der oberen Ebene wie dem {@link
- * HighLevelApplicationManager}, {@link HighLevelTransmitterManager} und dem {@link TelegramManager} dar. Zusätzlich bietet diese Klasse Funktionen von
+ * HighLevelApplicationManager}, {@link HighLevelTransmitterManager} und dem {@link TelegramManager} dar. ZusÃ¤tzlich bietet diese Klasse Funktionen von
  * allgemeinem Interesse zur Verbindungsverwaltung, wie z.B. das Herausfinden einer Datenverteiler- oder Applikations-Verbindung von einer Id, das Terminieren
  * des Datenverteilers, das Terminieren von Verbindungen usw., zudem bindet diese Klasse den {@link TerminationQueryReceiver} ein, der clientseitige
  * Terminierungsanfragen entgegennimmt.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11478 $
+ * @version $Revision$
  */
 public final class HighLevelConnectionsManager implements HighLevelConnectionsManagerInterface {
 
@@ -60,6 +57,9 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 
 	/** Klasse die Anwendungsverbindungen verwaltet und Telegramme verarbeitet */
 	private final HighLevelApplicationManager _highLevelApplicationManager;
+	
+	/** Timer fÃ¼r die Benachrichtigung Ã¼ber verbundene Datenverteiler */
+	private final Timer _timer;
 
 	/**
 	 * Klasse, die Datenverteiler-Verbindungen verwaltet, Telegramme verarbeitet und Anmeldelisten, Beste-Wege usw. verwaltet. Ist null bis eine lokale
@@ -74,13 +74,14 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	private volatile ClientDavConnection _connection;
 
 	/**
-	 * Der zugehörige Telegramm-Manager, der dafür sorgt, dass ankommende Anmelde, Abmelde und Daten-Telegramme (evtl. als Zentraldatenverteiler) entsprechend
+	 * Der zugehÃ¶rige Telegramm-Manager, der dafÃ¼r sorgt, dass ankommende Anmelde, Abmelde und Daten-Telegramme (evtl. als Zentraldatenverteiler) entsprechend
 	 * verarbeitet werden. Dazu bindet der TelegramManager auch den {@link HighLevelSubscriptionsManager} ein.
 	 */
 	private final TelegramManager _telegramManager;
 
 	/** Referenz auf den {@link LowLevelConnectionsManager}, der die einzelnen Applikations- und Datenverteiler-Verbindungen auf unterer Ebene speichert. */
 	private final LowLevelConnectionsManagerInterface _lowLevelConnectionsManager;
+	private final ServerDavParameters.UserRightsChecking _userRightsChecking;
 
 	/** Typ-Pid der lokalen Datenverteilerverbindung */
 	private final String _transmitterTypePid;
@@ -95,8 +96,8 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	private final String _userPassword;
 
 	/**
-	 * ATG, die benötigt wird um Terminierungsanfragen für Applikationen und Dav-Verbindungen zu erhalten. Ist diese ATG nicht vorhanden, so wird der
-	 * Datenverteiler gestartet ohne diese Funktionalität zur Verfügung zu stellen.
+	 * ATG, die benÃ¶tigt wird um Terminierungsanfragen fÃ¼r Applikationen und Dav-Verbindungen zu erhalten. Ist diese ATG nicht vorhanden, so wird der
+	 * Datenverteiler gestartet ohne diese FunktionalitÃ¤t zur VerfÃ¼gung zu stellen.
 	 */
 	private static final String _pidTerminierung = "atg.terminierung";
 
@@ -106,7 +107,9 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	 */
 	private ConfigurationObject _davObject;
 
-	private ListsManager _listsManager;
+	private final ListsManager _listsManager;
+	
+	private final List<TransmitterStatusPublisher> _transmitterStatusPublishers = new CopyOnWriteArrayList<TransmitterStatusPublisher>();
 
 	/**
 	 * Initialisiert den HighLevelConnectionsManager
@@ -116,6 +119,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	 */
 	public HighLevelConnectionsManager(final LowLevelConnectionsManagerInterface lowLevelConnectionsManager, final ServerDavParameters.UserRightsChecking userRightsChecking) {
 		_lowLevelConnectionsManager = lowLevelConnectionsManager;
+		_userRightsChecking = userRightsChecking;
 		_transmitterTypePid = _lowLevelConnectionsManager.getClientDavParameters().getApplicationTypePid();
 		_transmitterApplicationName = _lowLevelConnectionsManager.getClientDavParameters().getApplicationName();
 		_userName = _lowLevelConnectionsManager.getServerDavParameters().getUserName();
@@ -123,6 +127,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		_telegramManager = new TelegramManager(this, userRightsChecking);
 		_highLevelApplicationManager = new HighLevelApplicationManager(this);
 		_listsManager = new ListsManager(this);
+		_timer = new Timer("TransmitterStatusPublisher", true);
 	}
 
 	/**
@@ -138,10 +143,19 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		publishReleaseInfo();
 		_highLevelApplicationManager.setConfigurationAvailable(
 				selfClientDavConnection,
-		         _lowLevelConnectionsManager.getServerDavParameters().getConfigAreaPidForApplicationObjects()
+				_lowLevelConnectionsManager.getServerDavParameters().getConfigAreaPidForApplicationObjects()
 		);
 		_highLevelTransmitterManager = new HighLevelTransmitterManager(this, _listsManager);
 		_telegramManager.setConfigurationAvailable(selfClientDavConnection, _highLevelApplicationManager.getApplicationStatusUpdater());
+		// Status fÃ¼r verbundene Datenverteiler verÃ¶ffentlichen
+		_transmitterStatusPublishers.add(new DebugTransmitterPublisher(_davObject));
+		_transmitterStatusPublishers.add(new DavTransmitterPublisher(_connection, _davObject));
+		
+		// Status der RechteprÃ¼fung verÃ¶ffentlichen
+		new DavAccessControlPublisher(_connection, _davObject, _userRightsChecking);
+		
+		// EmprÃ¤nger fÃ¼r deaktivierte Dav-Dav-Verbindungen erstellen
+		new DisabledTransmitterConnectionsReceiver(_lowLevelConnectionsManager, _connection, _davObject);
 	}
 
 	/** Initialisiert die Anfragen zur Terminierung. Dazu muss die eigene Datenverteilerverbindung bestehen. */
@@ -164,7 +178,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		}
 		else {
 			_debug.warning(
-					"Die Attributgruppe zum Empfangen von Terminierungsanfragen ist nicht vorhanden. Der Datenverteiler wird ohne diese Funktion gestartet. Für diese Funktion ist der Bereich kb.systemModellGlobal in Version 24 oder größer notwendig."
+					"Die Attributgruppe zum Empfangen von Terminierungsanfragen ist nicht vorhanden. Der Datenverteiler wird ohne diese Funktion gestartet. FÃ¼r diese Funktion ist der Bereich kb.systemModellGlobal in Version 24 oder grÃ¶ÃŸer notwendig."
 			);
 		}
 	}
@@ -175,7 +189,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 			final AttributeGroup infoAtg = _dataModel.getAttributeGroup("atg.distributionspaketReleaseInfo");
 			if(infoAtg == null) {
 				_debug.info(
-						"Informationen zum Distributionspaket des Datenverteilers können nicht publiziert werden, weil das Datenmodell "
+						"Informationen zum Distributionspaket des Datenverteilers kÃ¶nnen nicht publiziert werden, weil das Datenmodell "
 						+ "(kb.systemModellGlobal) noch nicht aktualisiert wurde."
 				);
 			}
@@ -209,9 +223,9 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 				data.getTextValue("Version").setText(revision);
 				data.getTextValue("Stand").setText(compileTime);
 				data.getTextValue("Lizenz").setText(licence);
-				data.getTextValue("Abhängigkeiten").setText(dependsOnCompiled);
-				data.getTextValue("QuellcodeAbhängigkeiten").setText(dependsOnSource);
-				data.getTextValue("BibliothekAbhängigkeiten").setText(dependsOnLib);
+				data.getTextValue("AbhÃ¤ngigkeiten").setText(dependsOnCompiled);
+				data.getTextValue("QuellcodeAbhÃ¤ngigkeiten").setText(dependsOnSource);
+				data.getTextValue("BibliothekAbhÃ¤ngigkeiten").setText(dependsOnLib);
 				final ResultData result = new ResultData(_davObject, dataDescription, System.currentTimeMillis(), data);
 				_debug.info("Informationen zum Distributionspaket des Datenverteilers werden publiziert", result);
 				final ClientSenderInterface senderInterface = new ClientSenderInterface() {
@@ -232,7 +246,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt die Applikationsverwaltung zurück
+	 * Gibt die Applikationsverwaltung zurÃ¼ck
 	 *
 	 * @return Applikationsverwaltung
 	 */
@@ -241,7 +255,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt die Verwaltung für andere Datenverteilerverbindungen zurück
+	 * Gibt die Verwaltung fÃ¼r andere Datenverteilerverbindungen zurÃ¼ck
 	 *
 	 * @return Datenverteiler-Verwaltung
 	 *
@@ -258,7 +272,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Wird aufgerufen, wenn die Verbindung zu einer Applikation terminiert wurde. Hierbei werden verbliebene Anmeldungen entfernt und verschiedene Aufräumarbeiten erledigt.
+	 * Wird aufgerufen, wenn die Verbindung zu einer Applikation terminiert wurde. Hierbei werden verbliebene Anmeldungen entfernt und verschiedene AufrÃ¤umarbeiten erledigt.
 	 *
 	 * @param communication Applikationsverbindung
 	 */
@@ -269,7 +283,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Wird aufgerufen, wenn die Verbindung zu einem datenverteiler terminiert wurde. Hierbei werden verbliebene Anmeldungen entfernt und verschiedene Aufräumarbeiten erledigt.
+	 * Wird aufgerufen, wenn die Verbindung zu einem Datenverteiler terminiert wurde. Hierbei werden verbliebene Anmeldungen entfernt und verschiedene AufrÃ¤umarbeiten erledigt.
 	 *
 	 * @param communication Datenverteiler-Verbindung
 	 */
@@ -280,7 +294,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt die ID der Konfiguration mit der gegebenen Pid zurück
+	 * Gibt die ID der Konfiguration mit der gegebenen Pid zurÃ¼ck
 	 *
 	 * @param configurationPid Die Pid der Konfiguration
 	 *
@@ -313,42 +327,42 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		return -1L;
 	}
 
-	/** @return Gibt die Typ-Pid des lokalen Applikationsobjektes zurück */
+	/** @return Gibt die Typ-Pid des lokalen Applikationsobjektes zurÃ¼ck */
 	@Override
 	public String getTransmitterTypePid() {
 		return _transmitterTypePid;
 	}
 
-	/** @return Gibt den Namen der lokalen Applikation zurück */
+	/** @return Gibt den Namen der lokalen Applikation zurÃ¼ck */
 	@Override
 	public String getTransmitterApplicationName() {
 		return _transmitterApplicationName;
 	}
 
-	/** @return Gibt die Id dieses Datenverteilers zurück */
+	/** @return Gibt die Id dieses Datenverteilers zurÃ¼ck */
 	@Override
 	public long getTransmitterId() {
 		return _lowLevelConnectionsManager.getTransmitterId();
 	}
 
-	/** @return Gibt den Benutzernamen zurück, der z.B. bei der Authentifizierung bei anderen Datenverteilern benutzt wird */
+	/** @return Gibt den Benutzernamen zurÃ¼ck, der z.B. bei der Authentifizierung bei anderen Datenverteilern benutzt wird */
 	@Override
 	public String getUserName() {
 		return _userName;
 	}
 
-	/** @return Gibt das Passwort zurück, das z.B. für die Authentifizierung bei anderen Datenverteilern benutzt wird */
+	/** @return Gibt das Passwort zurÃ¼ck, das z.B. fÃ¼r die Authentifizierung bei anderen Datenverteilern benutzt wird */
 	@Override
 	public String getUserPassword() {
 		return _userPassword;
 	}
 
 	/**
-	 * Gibt das gespeicherte Passwort für einen bestimmten Benutzer aus der Passwort-Datei zurück
+	 * Gibt das gespeicherte Passwort fÃ¼r einen bestimmten Benutzer aus der Passwort-Datei zurÃ¼ck
 	 *
 	 * @param userName Benutzername
 	 *
-	 * @return Passwort oder null falls kein Passwort für diesen benutzer ermittelt werden konnte
+	 * @return Passwort oder null falls kein Passwort fÃ¼r diesen benutzer ermittelt werden konnte
 	 */
 	@Override
 	public String getStoredPassword(final String userName) {
@@ -356,7 +370,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt das gewicht zwischen der Verbindung zwischen diesem Datenverteiler und einem anderen direkt verbundenen Datenverteiler zurück.
+	 * Gibt das gewicht zwischen der Verbindung zwischen diesem Datenverteiler und einem anderen direkt verbundenen Datenverteiler zurÃ¼ck.
 	 *
 	 * @param transmitterId ID des anderen Datenverteilers
 	 *
@@ -368,7 +382,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt das TransmitterConnectionInfo-Objekt zu einem Datenverteiler zurück
+	 * Gibt das TransmitterConnectionInfo-Objekt zu einem Datenverteiler zurÃ¼ck
 	 *
 	 * @param connectedTransmitterId Verbundener Datenverteiler
 	 *
@@ -380,7 +394,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Bestimmt die Verbindungsinformationen für eine Verbindung vom angegebenen Datenverteiler zu diesem Datenverteiler.
+	 * Bestimmt die Verbindungsinformationen fÃ¼r eine Verbindung vom angegebenen Datenverteiler zu diesem Datenverteiler.
 	 *
 	 * @param connectedTransmitterId ID des DAV
 	 *
@@ -392,7 +406,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt den TelegramManager zurück
+	 * Gibt den TelegramManager zurÃ¼ck
 	 *
 	 * @return TelegramManager
 	 */
@@ -426,7 +440,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt alle Applikationsverbindungen zurück
+	 * Gibt alle Applikationsverbindungen zurÃ¼ck
 	 *
 	 * @return alle Applikationsverbindungen
 	 */
@@ -436,7 +450,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt alle Datenverteilerverbindungen zurück
+	 * Gibt alle Datenverteilerverbindungen zurÃ¼ck
 	 *
 	 * @return alle Datenverteilerverbindungen
 	 */
@@ -449,7 +463,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	 * Beendet den Datenverteiler
 	 *
 	 * @param isError Zum signalisieren, dass ein Fehler aufgetreten ist: true, sonst false
-	 * @param message Nach Bedarf eine Fehlermeldung o.ä. zur Ursache des Terminierungsbefehls
+	 * @param message Nach Bedarf eine Fehlermeldung o.Ã¤. zur Ursache des Terminierungsbefehls
 	 */
 	@Override
 	public void shutdown(final boolean isError, final String message) {
@@ -457,7 +471,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	}
 
 	/**
-	 * Gibt eine Liste mit den per Kommandozeile festgelegten Zugriffssteuerungs-Plugin-Klassennamen zurück
+	 * Gibt eine Liste mit den per Kommandozeile festgelegten Zugriffssteuerungs-Plugin-Klassennamen zurÃ¼ck
 	 *
 	 * @return Liste mit den Zugriffssteuerungs-Plugin-Klassennamen
 	 */
@@ -508,5 +522,33 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		if(_telegramManager != null){
 			_telegramManager.getSubscriptionsManager().initializeUser(userId);
 		}
+	}
+
+	/**
+	 * Benachrichtigung Ã¼ber den Status der konfigurierten Transmitter-Verbindungen
+	 * <p>
+	 * Als Key werden die konfigurierten Verbindungsinformationen gespeichert (siehe {@link de.bsvrz.dav.daf.main.impl.ConfigurationManager#getTransmitterConnectionInfo(long)}).
+	 * <p>
+	 * Als Values wird der Verbindungsstatus gespeichert plus eine eventuelle Fehlernachricht.
+	 *
+	 * @param connections Konfigurierte Verbindungen
+	 */
+	public synchronized void updateTransmitterCommunicationStates(final Map<TransmitterInfo, CommunicationStateAndMessage> connections) {
+		final TreeSet<TransmitterStatus> tmp = new TreeSet<TransmitterStatus>();
+		for(Map.Entry<TransmitterInfo, CommunicationStateAndMessage> entry : connections.entrySet()) {
+			long transmitterId = entry.getKey().getTransmitterId();
+			CommunicationStateAndMessage stateAndMessage = entry.getValue();
+			tmp.add(new TransmitterStatus(transmitterId, stateAndMessage.getAddress(), stateAndMessage.getState(), stateAndMessage.getMessage()));
+		}
+		TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+				for(TransmitterStatusPublisher transmitterStatusPublisher : _transmitterStatusPublishers) {
+					transmitterStatusPublisher.update(tmp);
+				}
+			}
+		};
+		// Benachrichtigung in einem eigenen Thread versenden (hierfÃ¼r wird der Einfachheit halber ein Timer missbraucht)
+		_timer.schedule(task, 0);
 	}
 }

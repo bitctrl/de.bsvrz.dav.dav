@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -26,7 +32,7 @@ import de.bsvrz.dav.daf.main.config.SystemObjectType;
 import java.util.Collection;
 
 /**
- * Kapselt einen Block wie "AuswahlBereich", "AuswahlObjekte" etc. Entspricht aber nicht direkt den DatenmodellBlöcken, da je nach gesetzten Parametern
+ * Kapselt einen Block wie "AuswahlBereich", "AuswahlObjekte" etc. Entspricht aber nicht direkt den DatenmodellBlÃ¶cken, da je nach gesetzten Parametern
  * optimierte Klassen benutzt werden
   *
  * @author Kappich Systemberatung
@@ -35,7 +41,7 @@ import java.util.Collection;
 public interface ObjectSelectionBlock {
 
 	/**
-	 * Prüft ob das übergebene Objekt in diesem Block enthalten ist
+	 * PrÃ¼ft ob das Ã¼bergebene Objekt in diesem Block enthalten ist
 	 *
 	 * @param object Testobjekt
 	 *
@@ -44,7 +50,7 @@ public interface ObjectSelectionBlock {
 	boolean contains(SystemObject object);
 
 	/**
-	 * Gibt alle Objekte in dem Block zurück. Der Aufruf sollte, falls möglich, vermieden werden, da der Vorgang je nach Definition sehr lange dauern kann
+	 * Gibt alle Objekte in dem Block zurÃ¼ck. Der Aufruf sollte, falls mÃ¶glich, vermieden werden, da der Vorgang je nach Definition sehr lange dauern kann
 	 *
      * @param type Liste mit Systemobjekttypen die beachtet werden sollen.
 	 * @return Liste mit Systemobjekten
@@ -52,8 +58,8 @@ public interface ObjectSelectionBlock {
 	Collection<SystemObject> getAllObjects(final Collection<? extends SystemObjectType> type);
 
 	/**
-	 * Gibt alle Objekttypen zurück, die in diesem Block betrachtet werden, bzw. nach denen gefiltert wird. Alle mit {@link #getAllObjects(java.util.Collection)}
-	 * zurückgelieferten Objekte sind zwingend von diesen Typen, umgekehrt ist allerdings nicht sichergestellt, dass zu allen hier zurückgelieferten Typen auch
+	 * Gibt alle Objekttypen zurÃ¼ck, die in diesem Block betrachtet werden, bzw. nach denen gefiltert wird. Alle mit {@link #getAllObjects(java.util.Collection)}
+	 * zurÃ¼ckgelieferten Objekte sind zwingend von diesen Typen, umgekehrt ist allerdings nicht sichergestellt, dass zu allen hier zurÃ¼ckgelieferten Typen auch
 	 * Objekte vorhanden sind.
 	 *
 	 * @return Liste mit allen Typen
@@ -61,21 +67,21 @@ public interface ObjectSelectionBlock {
 	Collection<SystemObjectType> getAllObjectTypes();
 
 	/**
-	 * Erstellt einen Listener, der Objekte über das Ändern dieses Blocks benachrichtigt
+	 * Erstellt einen Listener, der Objekte Ã¼ber das Ã„ndern dieses Blocks benachrichtigt
 	 *
 	 * @param object Listener
 	 */
 	void addChangeListener(ObjectCollectionChangeListener object);
 
 	/**
-	 * Entfernt einen Listener, der Objekte über das Ändern dieses Blocks benachrichtigt
+	 * Entfernt einen Listener, der Objekte Ã¼ber das Ã„ndern dieses Blocks benachrichtigt
 	 *
 	 * @param object Listener
 	 */
 	void removeChangeListener(ObjectCollectionChangeListener object);
 
 	/**
-	 * Markiert das Objekt als unbenutzt, sodass angemeldete Listener etc. abgemeldet werden können
+	 * Markiert das Objekt als unbenutzt, sodass angemeldete Listener etc. abgemeldet werden kÃ¶nnen
 	 */
 	void dispose();
 }

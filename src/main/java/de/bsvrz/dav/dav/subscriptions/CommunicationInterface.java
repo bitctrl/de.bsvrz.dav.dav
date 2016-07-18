@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.subscriptions;
@@ -23,7 +29,7 @@ package de.bsvrz.dav.dav.subscriptions;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ApplicationDataTelegram;
 
 /**
- * Basis-Interface für eine Netzwerkverbindung Dav-Dav oder Dav-App
+ * Basis-Interface fÃ¼r eine Netzwerkverbindung Dav-Dav oder Dav-App
  *
  * @author Kappich Systemberatung
  * @version $Revision: 0000 $
@@ -31,22 +37,22 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ApplicationDataTelegram
 public interface CommunicationInterface {
 
 	/**
-	 * Gibt die Id des verbundenen Benutzers zurück
+	 * Gibt die Id des verbundenen Benutzers zurÃ¼ck
 	 * @return die Id des verbundenen Benutzers
 	 */
 	long getRemoteUserId();
 
 	/**
-	 * Versendet ein Daten-Telegramm übr diese Verbindung
+	 * Versendet ein Daten-Telegramm Ã¼ber diese Verbindung
 	 * @param telegram Telegramm
 	 * @param toCentralDistributor
 	 * true: In Richtung des Zentraldatenverteilers, beim Sender-Senke-Datenfluss.
-	 * false: Aus Richtung des Zentraldatenverteilers, beim Quelle-Empfänger-Datenfluss.
+	 * false: Aus Richtung des Zentraldatenverteilers, beim Quelle-EmpfÃ¤nger-Datenfluss.
 	 */
 	void sendData(ApplicationDataTelegram telegram, boolean toCentralDistributor);
 
 	/**
-	 * Gibt die Id der Verbindung bzw. des Kommunikationspartners zurück.
+	 * Gibt die Id der Verbindung bzw. des Kommunikationspartners zurÃ¼ck.
 	 * <ul>
 	 *     <li>Bei Applikationen: Applikations-Id</li>
 	 *     <li>Bei Datenverteilern: Datenverteiler-Id</li>

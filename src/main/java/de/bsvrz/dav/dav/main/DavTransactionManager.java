@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -37,11 +43,11 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Klasse, die Transaktionen auf Dav-Seite verwaltet (Anmeldungen und Abmeldungen der inneren Datenidentifikationen, Einfügen von DataIndizes in innere
- * Datensätze)
+ * Klasse, die Transaktionen auf Dav-Seite verwaltet (Anmeldungen und Abmeldungen der inneren Datenidentifikationen, EinfÃ¼gen von DataIndizes in innere
+ * DatensÃ¤tze)
  *
  * @author Kappich Systemberatung
- * @version $Revision: 12414 $
+ * @version $Revision$
  */
 public class DavTransactionManager {
 
@@ -54,12 +60,12 @@ public class DavTransactionManager {
 	private final Map<Long, AttributeGroupUsage> _transactionAttributeGroupUsages;
 
 	/**
-	 * Map Transaktionsanmeldung->Innere Anmeldungen für Quellen
+	 * Map Transaktionsanmeldung->Innere Anmeldungen fÃ¼r Quellen
 	 */
 	private final Map<Subscription, List<Subscription>> _sourceSubscriptions = new HashMap<Subscription, List<Subscription>>();
 
 	/**
-	 * Map Transaktionsanmeldung->Innere Anmeldungen für Senken
+	 * Map Transaktionsanmeldung->Innere Anmeldungen fÃ¼r Senken
 	 */
 	private final Map<Subscription, List<Subscription>> _drainSubscriptions = new HashMap<Subscription, List<Subscription>>();
 
@@ -79,7 +85,7 @@ public class DavTransactionManager {
 		_telegramManager = telegramManager;
 		final SystemObjectType transactionType = _connection.getDataModel().getType("typ.transaktion");
 		if(transactionType == null){
-			_debug.warning("Der Typ für Transaktionsattributgruppen wurde nicht gefunden. Transaktionen sind deaktiviert.");
+			_debug.warning("Der Typ fÃ¼r Transaktionsattributgruppen wurde nicht gefunden. Transaktionen sind deaktiviert.");
 			_disabled = true;
 			_transactionAttributeGroupUsages = null;
 			return;
@@ -97,14 +103,14 @@ public class DavTransactionManager {
 	}
 
 	/**
-	 * Wird vom Subscriptionsmanager aufgerufen, wenn ein Telegram im Zentraldatenverteiler verarbeitet wird. Hier wird geprüft, ob es sich um ein
-	 * Transaktionstelegramm handelt und es werden entsprechende Aktionen durchgeführt (Datenindex eintragen, innere Telegramme an herkömmliche Empfänger
+	 * Wird vom Subscriptionsmanager aufgerufen, wenn ein Telegram im Zentraldatenverteiler verarbeitet wird. Hier wird geprÃ¼ft, ob es sich um ein
+	 * Transaktionstelegramm handelt und es werden entsprechende Aktionen durchgefÃ¼hrt (Datenindex eintragen, innere Telegramme an herkÃ¶mmliche EmpfÃ¤nger
 	 * verschicken)
 	 *
-	 * @param telegrams Liste mit zusammengehörigen Telegrammen, die einen Datensatz darstellen
+	 * @param telegrams Liste mit zusammengehÃ¶rigen Telegrammen, die einen Datensatz darstellen
 	 * @param isSource  Kommt der Datensatz von der lokalen Quelle? (Sonst lokale Senke)
 	 *
-	 * @return eine neue Liste mit Telegrammen wenn diese verändert wurden, sonst der telegrams-parameter.
+	 * @return eine neue Liste mit Telegrammen wenn diese verÃ¤ndert wurden, sonst der telegrams-parameter.
 	 */
 	public List<ApplicationDataTelegram> handleTelegrams(final List<ApplicationDataTelegram> telegrams, final boolean isSource) {
 		if(_disabled) return telegrams;
@@ -130,7 +136,7 @@ public class DavTransactionManager {
 	/**
 	 * Verarbeitet einen inneren Datensatz als Zentraldatenverteiler
 	 * @param dataset Inneren Datensatz
-	 * @param simulationVariant Simulationsvariante der Übertragung
+	 * @param simulationVariant Simulationsvariante der Ãœbertragung
 	 * @param isSource Handelt es sich um eine Quelle? (Sonst Senke)
 	 */
 	private void handleDataset(final Data dataset, final short simulationVariant, final boolean isSource) {
@@ -146,7 +152,7 @@ public class DavTransactionManager {
 		);
 		dataset.getUnscaledValue("Datenindex").set(dataIndex);
 		if(isSource) {
-			// Wenn Quelle, innere Datensätze zusätzlich selbst verschicken
+			// Wenn Quelle, innere DatensÃ¤tze zusÃ¤tzlich selbst verschicken
 			final BaseSubscriptionInfo info = new BaseSubscriptionInfo(
 					object.getId(), attributeGroup.getAttributeGroupUsage(aspect).getId(), simulationVariant
 			);
@@ -162,8 +168,8 @@ public class DavTransactionManager {
 	}
 
 	/**
-	 * Wird von der Senke aufgerufen, die sich im Datenverteiler auf die inneren Datensätze von einer Transaktions-Senken-Anmeldung angemeldet hat. Die Funktion
-	 * sorgt dafür, dass der innere Datensatz in einem Transaktionsdatensatz verpackt wird und an die Transaktionssenke übermittelt wird.
+	 * Wird von der Senke aufgerufen, die sich im Datenverteiler auf die inneren DatensÃ¤tze von einer Transaktions-Senken-Anmeldung angemeldet hat. Die Funktion
+	 * sorgt dafÃ¼r, dass der innere Datensatz in einem Transaktionsdatensatz verpackt wird und an die Transaktionssenke Ã¼bermittelt wird.
 	 *
 	 * @param result                  ResultData aus dem inneren Datensatz
 	 * @param transactionSubscription Anmeldung der Transaktionssenke
@@ -171,7 +177,7 @@ public class DavTransactionManager {
 	public void handleIncomingDrainData(final ResultData result, final Subscription transactionSubscription) {
 		try {
 			// Hier an der Transaktions-API vorbei senden, da auch bei der Anmeldung die API umgangen wurde.
-			// Daher wird hier nicht mehr auf enthaltene Datensätze usw. geprüft.
+			// Daher wird hier nicht mehr auf enthaltene DatensÃ¤tze usw. geprÃ¼ft.
 			_connection.sendData(
 					new TransactionResultData(
 							new TransactionDataDescription(transactionSubscription.getObject(), transactionSubscription.getDataDescription()),
@@ -201,7 +207,7 @@ public class DavTransactionManager {
 
 	/**
 	 * Hinfsfunktion, die ein Data-Objekt in Telgramme zerlegt.
-	 * @param sendDataObject Ursprüngliches SendData-Objekt zur Rekonstruktion der Informationen
+	 * @param sendDataObject UrsprÃ¼ngliches SendData-Objekt zur Rekonstruktion der Informationen
 	 * @param data Data-Objekt mit den neuen Daten
 	 * @return ApplicationDataTelegram-Array
 	 */
@@ -222,7 +228,7 @@ public class DavTransactionManager {
 			return createTelegramsFromBytes(bytes, baseSubscriptionInfo, dalayedDataFlag, dataIndex, dataTime, errorFlag, attributesIndicator);
 		}
 		else {
-			throw new IllegalArgumentException("Daten können nicht serialisiert werden: " + data.getClass().getName());
+			throw new IllegalArgumentException("Daten kÃ¶nnen nicht serialisiert werden: " + data.getClass().getName());
 		}
 	}
 
@@ -230,7 +236,7 @@ public class DavTransactionManager {
 	 * Erstellt aus Daten-Bytes ein ApplicationDataTelegram-Array
 	 * @param bytes Daten-Bytes
 	 * @param baseSubscriptionInfo Anmelde-info
-	 * @param delayedDataFlag Flag für nachgelieferte Daten
+	 * @param delayedDataFlag Flag fÃ¼r nachgelieferte Daten
 	 * @param dataIndex DatenIndex
 	 * @param dataTime DatenZeit
 	 * @param errorFlag Fehler-Flag
@@ -253,7 +259,7 @@ public class DavTransactionManager {
 
 	/**
 	 * Wird vom DavRequester aufgerufen um eine Transaktionsquelle anzumelden
-	 * @param bytes Serialisierte Info über Datenanmeldung
+	 * @param bytes Serialisierte Info Ã¼ber Datenanmeldung
 	 * @throws IOException
 	 * @throws OneSubscriptionPerSendData
 	 */
@@ -268,11 +274,11 @@ public class DavTransactionManager {
 	 * @throws OneSubscriptionPerSendData  Fehler bei der Anmeldung (Z.B. es ist schon eine Senke vorhanden)
 	 */
 	public void handleSubscribeTransactionSource(final ClientSubscriptionInformation subscriptions) throws OneSubscriptionPerSendData {
-		if(_disabled) throw new IllegalStateException("Der Datenverteiler unterstützt keine Transaktionen");
+		if(_disabled) throw new IllegalStateException("Der Datenverteiler unterstÃ¼tzt keine Transaktionen");
 		final Subscription transactionSubscription = subscriptions.getTransactionSubscription();
 		addSubscription(_sourceSubscriptions, transactionSubscription, subscriptions.getInnerSubscriptions());
 
-		// Empfänger anmelden um Sendesteuerung beim Client zu starten
+		// EmpfÃ¤nger anmelden um Sendesteuerung beim Client zu starten
 		final InnerTransactionDataReceiver receiver = new InnerTransactionDataReceiver(null);
 		_connection.subscribeReceiver(
 				receiver, transactionSubscription.getObject(), transactionSubscription.getDataDescription(), ReceiveOptions.normal(), ReceiverRole.receiver()
@@ -296,7 +302,7 @@ public class DavTransactionManager {
 
 	/**
 	 * Wird vom DavRequester aufgerufen um eine Transaktionssenke anzumelden
-	 * @param bytes Serialisierte Info über Datenanmeldung
+	 * @param bytes Serialisierte Info Ã¼ber Datenanmeldung
 	 * @throws IOException
 	 * @throws OneSubscriptionPerSendData
 	 */
@@ -312,7 +318,7 @@ public class DavTransactionManager {
 	 * @throws OneSubscriptionPerSendData Fehler bei der Anmeldung (Z.B. es ist schon eine Senke vorhanden)
 	 */
 	public void handleSubscribeTransactionDrain(final ClientSubscriptionInformation subscriptions) throws OneSubscriptionPerSendData {
-		if(_disabled) throw new IllegalStateException("Der Datenverteiler unterstützt keine Transaktionen");
+		if(_disabled) throw new IllegalStateException("Der Datenverteiler unterstÃ¼tzt keine Transaktionen");
 		final Subscription transactionSubscription = subscriptions.getTransactionSubscription();
 		addSubscription(_drainSubscriptions, transactionSubscription, subscriptions.getInnerSubscriptions());
 
@@ -340,22 +346,22 @@ public class DavTransactionManager {
 	}
 
 	/**
-	 * Fügt entweder den Quell oder den Senken-Anmeldungen eine Transaktions-Anmeldung hinzu
-	 * @param subscriptionListMap Liste, in die die Anmeldung hinzugefügt werden soll
+	 * FÃ¼gt entweder den Quell oder den Senken-Anmeldungen eine Transaktions-Anmeldung hinzu
+	 * @param subscriptionListMap Liste, in die die Anmeldung hinzugefÃ¼gt werden soll
 	 * @param transactionSubscription Transaktionsanmeldung
 	 * @param innerSubscriptions Innere Anmeldungen
-	 * @throws OneSubscriptionPerSendData Es gibt bereits eine Anmeldung für diese Transaktion
+	 * @throws OneSubscriptionPerSendData Es gibt bereits eine Anmeldung fÃ¼r diese Transaktion
 	 */
 	private void addSubscription(
 			final Map<Subscription, List<Subscription>> subscriptionListMap, final Subscription transactionSubscription, final List<Subscription> innerSubscriptions)
 			throws OneSubscriptionPerSendData {
 		final List<Subscription> item = subscriptionListMap.get(transactionSubscription);
-		if(item != null) throw new OneSubscriptionPerSendData("Es gibt bereits eine Anmeldung für diese Transaktion.");
+		if(item != null) throw new OneSubscriptionPerSendData("Es gibt bereits eine Anmeldung fÃ¼r diese Transaktion.");
 		subscriptionListMap.put(transactionSubscription, innerSubscriptions);
 	}
 
 	/**
-	 * Hilfsfunktion, die das Bytearray, was vom Client kommt und die Anmeldedaten für eine Transaktion enthält, deserialisiert
+	 * Hilfsfunktion, die das Bytearray, was vom Client kommt und die Anmeldedaten fÃ¼r eine Transaktion enthÃ¤lt, deserialisiert
 	 * @param bytes Bytearray
 	 * @return Subscriptions-Objekt
 	 * @throws IOException Sollte nicht auftreten
@@ -379,7 +385,7 @@ public class DavTransactionManager {
 			return new ClientSubscriptionInformation(new Subscription(new BaseSubscriptionInfo(objectId, atgUsage, simulationVariant)), list);
 		}
 		catch(IOException e) {
-			throw new IllegalArgumentException("Ungültiges Byte-Array", e);
+			throw new IllegalArgumentException("UngÃ¼ltiges Byte-Array", e);
 		}
 		finally {
 			dataInputStream.close();
@@ -387,7 +393,7 @@ public class DavTransactionManager {
 	}
 
 	/**
-	 * Wird vom Subscriptionsmanager aufgerufen, um zu signalisieren, dass eine Datenanmeldung ungültig geworden ist. Daraufhin werden hier alle
+	 * Wird vom Subscriptionsmanager aufgerufen, um zu signalisieren, dass eine Datenanmeldung ungÃ¼ltig geworden ist. Daraufhin werden hier alle
 	 * Transaktionsanmeldungen und Anmeldungen der inneren Daten zu dieser Transaktion entfernt.
 	 *
 	 * @param baseSubscriptionInfo Datenanmelde-Information
@@ -399,13 +405,13 @@ public class DavTransactionManager {
 		if(_transactionAttributeGroupUsages.containsKey(usageIdentification)) {
 			final Subscription subscription = new Subscription(baseSubscriptionInfo);
 			if(isSender) {
-				// Transaktionsempfänger für Sendesteuerung abmelden
+				// TransaktionsempfÃ¤nger fÃ¼r Sendesteuerung abmelden
 				final InnerTransactionDataReceiver receiver = _myOwnDataDrains.remove(subscription);
 				if(receiver != null) {
 					_connection.unsubscribeReceiver(receiver, subscription.getObject(), subscription.getDataDescription());
 				}
 				
-				// Quellen für innere Daten abmelden
+				// Quellen fÃ¼r innere Daten abmelden
 				final List<Subscription> subscriptions = _sourceSubscriptions.remove(subscription);
 				if(subscriptions != null) unsubscribeMySources(subscriptions);
 			}
@@ -416,7 +422,7 @@ public class DavTransactionManager {
 					_connection.unsubscribeSender(sender, subscription.getObject(), subscription.getDataDescription());
 				}
 
-				// Senken für innere Daten abmelden
+				// Senken fÃ¼r innere Daten abmelden
 				final List<Subscription> subscriptions = _drainSubscriptions.remove(subscription);
 				if(subscriptions != null) unsubscribeMyDrains(subscriptions);
 			}
@@ -450,7 +456,7 @@ public class DavTransactionManager {
 	}
 
 	/**
-	 * Objekt dass die Anmeldeinformation für Transaktionssenken/quellen vom Client kapselt
+	 * Objekt dass die Anmeldeinformation fÃ¼r Transaktionssenken/quellen vom Client kapselt
 	 */
 	private final class ClientSubscriptionInformation {
 
@@ -478,7 +484,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt eine Liste mit inneren Anmeldungen zurück
+		 * Gibt eine Liste mit inneren Anmeldungen zurÃ¼ck
 		 * @return eine Liste mit inneren Anmeldungen
 		 */
 		public List<Subscription> getInnerSubscriptions() {
@@ -486,7 +492,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt die Transaktionsanmeldung zurück
+		 * Gibt die Transaktionsanmeldung zurÃ¼ck
 		 * @return Transaktionsanmeldung
 		 */
 		public Subscription getTransactionSubscription() {
@@ -535,7 +541,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt das Objekt zurück
+		 * Gibt das Objekt zurÃ¼ck
 		 * @return Objekt
 		 */
 		public SystemObject getObject() {
@@ -543,7 +549,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt die Attributgruppe zurück
+		 * Gibt die Attributgruppe zurÃ¼ck
 		 * @return Attributgruppe
 		 */
 		public AttributeGroup getAttributeGroup() {
@@ -551,7 +557,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt den Aspekt zurück
+		 * Gibt den Aspekt zurÃ¼ck
 		 * @return Aspekt
 		 */
 		public Aspect getAspect() {
@@ -559,7 +565,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt die Simulationsvariante zurück
+		 * Gibt die Simulationsvariante zurÃ¼ck
 		 * @return Simulationsvariante
 		 */
 		public short getSimulationVariant() {
@@ -567,7 +573,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt die Attributgruppenverwendung zurück
+		 * Gibt die Attributgruppenverwendung zurÃ¼ck
 		 * @return Attributgruppenverwendung
 		 */
 		public AttributeGroupUsage getAttributeGroupUsage() {
@@ -575,7 +581,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt die DataDescription zurück
+		 * Gibt die DataDescription zurÃ¼ck
 		 * @return DataDescription
 		 */
 		public DataDescription getDataDescription() {
@@ -583,7 +589,7 @@ public class DavTransactionManager {
 		}
 
 		/**
-		 * Gibt ein äquivalentes BaseSubscriptionInfo zurück
+		 * Gibt ein Ã¤quivalentes BaseSubscriptionInfo zurÃ¼ck
 		 * @return BaseSubscriptionInfo
 		 */
 		public BaseSubscriptionInfo getBaseSubscriptionInfo() {
@@ -638,8 +644,8 @@ public class DavTransactionManager {
 	}
 
 	/**
-	 * Wird benutzt um sich als Senke auf einen inneren Datensatz einer Transaktions-Senke anzumelden. Ankommende Datensätze werden an den DavTransactionManager
-	 * weitergegeben und dort in einen Transaktionsdatensatz verpackt. Falls _transactionSubscription null ist wird der Empfänger nur für das Triggern der
+	 * Wird benutzt um sich als Senke auf einen inneren Datensatz einer Transaktions-Senke anzumelden. Ankommende DatensÃ¤tze werden an den DavTransactionManager
+	 * weitergegeben und dort in einen Transaktionsdatensatz verpackt. Falls _transactionSubscription null ist wird der EmpfÃ¤nger nur fÃ¼r das Triggern der
 	 * Sendesteuerung gebraucht und ankommende Daten interessieren nicht.
 	 */
 	private class InnerTransactionDataReceiver implements ClientReceiverInterface {
@@ -654,7 +660,7 @@ public class DavTransactionManager {
 		public void update(final ResultData[] results) {
 			if(_transactionSubscription == null) return;
 			for(final ResultData result : results) {
-				// Es ergibt keinen Sinn, "Keine Quelle"-Datensätze in Transaktiosndatensätze zu verpacken und an die Senke zu senden.
+				// Es ergibt keinen Sinn, "Keine Quelle"-DatensÃ¤tze in TransaktiosndatensÃ¤tze zu verpacken und an die Senke zu senden.
 				if(result.getDataState() != DataState.NO_SOURCE) handleIncomingDrainData(result, _transactionSubscription);
 			}
 		}

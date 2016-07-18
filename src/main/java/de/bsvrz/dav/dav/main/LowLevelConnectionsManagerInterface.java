@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -30,15 +36,15 @@ import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 import java.util.Collection;
 
 /**
- * Interface für die Verwaltung der Verbindungen
+ * Interface fÃ¼r die Verwaltung der Verbindungen
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11475 $
+ * @version $Revision$
  */
 public interface LowLevelConnectionsManagerInterface {
 
 	/**
-	 * Gibt die eigene Datenverteiler-id zurück
+	 * Gibt die eigene Datenverteiler-id zurÃ¼ck
 	 * @return die eigene Datenverteiler-id
 	 */
 	long getTransmitterId();
@@ -50,36 +56,36 @@ public interface LowLevelConnectionsManagerInterface {
 	void shutdown(boolean error, String message);
 
 	/**
-	 * Gibt die eigene ClientDavConnection zurück
+	 * Gibt die eigene ClientDavConnection zurÃ¼ck
 	 * @return die eigene ClientDavConnection
 	 */
 	SelfClientDavConnection getSelfClientDavConnection();
 
 	/**
-	 * Gibt das eigene Datenverteiler-Objekt zurück
+	 * Gibt das eigene Datenverteiler-Objekt zurÃ¼ck
 	 * @return das eigene Datenverteiler-Objekt
 	 */
 	SystemObject getMyTransmitter();
 
 	/**
-	 * entfernt die angegebene Verbindung
+	 * entfernt die angegebene Verbindung weil diese terminiert wurde
 	 * @param connection
 	 */
 	void removeConnection(T_A_HighLevelCommunication connection);
 	/**
-	 * entfernt die angegebene Verbindung
+	 * entfernt die angegebene Verbindung weil diese terminiert wurde
 	 * @param connection
 	 */
 	void removeConnection(T_T_HighLevelCommunication connection);
 
 	/**
-	 * Gibt die Pid der lokalen Konfiguration zurück
+	 * Gibt die Pid der lokalen Konfiguration zurÃ¼ck
 	 * @return die Pid der lokalen Konfiguration
 	 */
 	String getLocalModeConfigurationPid();
 
 	/**
-	 * Gibt die Id der lokalen Konfiguration zurück
+	 * Gibt die Id der lokalen Konfiguration zurÃ¼ck
 	 * @return die Id der lokalen Konfiguration
 	 */
 	long getLocalModeConfigurationId();
@@ -87,37 +93,37 @@ public interface LowLevelConnectionsManagerInterface {
 	LowLevelAuthenticationInterface getLowLevelAuthentication();
 
 	/**
-	 * Setzt die Parameter für eien lokale Konfiguration
+	 * Setzt die Parameter fÃ¼r eien lokale Konfiguration
 	 * @param configurationPid Pid der Konfiguration
 	 * @param configurationId Id der Konfiguration
 	 */
 	void setLocalModeParameter(String configurationPid, long configurationId);
 
 	/**
-	 * Wird aufgerufen, wenn die lokale konfiguration verfügbar ist
+	 * Wird aufgerufen, wenn die lokale konfiguration verfÃ¼gbar ist
 	 */
 	void setLocalConfigurationAvailable();
 
 	/**
-	 * Gibt die ServerDavParameters zurück
+	 * Gibt die ServerDavParameters zurÃ¼ck
 	 * @return die ServerDavParameters
 	 */
 	ServerDavParameters getServerDavParameters();
 
 	/**
-	 * Gibt die ClientDavParameters für die lokale Dav-Applikation zurück
+	 * Gibt die ClientDavParameters fÃ¼r die lokale Dav-Applikation zurÃ¼ck
 	 * @return die ClientDavParameters
 	 */
 	ClientDavParameters getClientDavParameters();
 
 	/**
-	 * Gibt die angegebene Dav-Dav-Verbindung zurück
+	 * Gibt die angegebene Dav-Dav-Verbindung zurÃ¼ck
 	 * @param transmitterId Id den verbundenen Transmitters
 	 * @return Existierende Verbindung mit dieser Id oder null falls nicht vorhanden
 	 */
 	T_T_HighLevelCommunication getTransmitterConnection(long transmitterId);
 	/**
-	 * Gibt die angegebene Applikationsverbindung zurück
+	 * Gibt die angegebene Applikationsverbindung zurÃ¼ck
 	 * @param applicationId Id der verbundenen Applikation
 	 * @return Existierende Verbindung mit dieser Id oder null falls nicht vorhanden
 	 */
@@ -133,7 +139,7 @@ public interface LowLevelConnectionsManagerInterface {
 	short getWeight(long transmitterId);
 
 	/**
-	 * Bestimmt die Verbindungsinformationen für eine Verbindung von diesem Datenverteiler zum angegebenen Datenverteiler.
+	 * Bestimmt die Verbindungsinformationen fÃ¼r eine Verbindung von diesem Datenverteiler zum angegebenen Datenverteiler.
 	 *
 	 * @param connectedTransmitterId ID des DAV
 	 *
@@ -142,7 +148,7 @@ public interface LowLevelConnectionsManagerInterface {
 	TransmitterConnectionInfo getTransmitterConnectionInfo(long connectedTransmitterId);
 
 	/**
-	 * Bestimmt die Verbindungsinformationen für eine Verbindung vom angegebenen Datenverteiler zu diesem Datenverteiler.
+	 * Bestimmt die Verbindungsinformationen fÃ¼r eine Verbindung vom angegebenen Datenverteiler zu diesem Datenverteiler.
 	 *
 	 * @param connectedTransmitterId ID des DAV
 	 *
@@ -151,42 +157,56 @@ public interface LowLevelConnectionsManagerInterface {
 	TransmitterConnectionInfo getRemoteTransmitterConnectionInfo(long connectedTransmitterId);
 
 	/**
-	 * Wird aufgerufen, sobald die ID einer Verbindung bekannt ist
+	 * Wird aufgerufen, sobald die ID einer Verbindung (sicher) bekannt ist (nach erfolgreicher Authentifizierung)
 	 * @param communication Verbindung
 	 */
 	void updateApplicationId(T_A_HighLevelCommunication communication);
+	
 	/**
-	 * Wird aufgerufen, sobald die ID einer Verbindung bekannt ist
+	 * Wird aufgerufen, sobald die ID einer Verbindung (sicher) bekannt ist (nach erfolgreicher Authentifizierung)
 	 * @param communication Verbindung
 	 */
 	void updateTransmitterId(T_T_HighLevelCommunication communication);
 
 	/**
-	 * Gibt alle Appliaktionsverbindungen zurück
+	 * Gibt alle Appliaktionsverbindungen zurÃ¼ck
 	 * @return alle Appliaktionsverbindungen
 	 */
 	Collection<T_A_HighLevelCommunication> getApplicationConnections();
 
 	/**
-	 * Gibt alle Datenverteilerverbindungen zurück
+	 * Gibt alle Datenverteilerverbindungen zurÃ¼ck
 	 * @return alle Datenverteilerverbindungen
 	 */
 	Collection<T_T_HighLevelCommunication> getTransmitterConnections();
 
 	/**
-	 * Gibt <tt>true</tt> zurück, wenn der Datenverteiler sich gerade beendet
+	 * Gibt <tt>true</tt> zurÃ¼ck, wenn der Datenverteiler sich gerade beendet
 	 * @return <tt>true</tt>, wenn der Datenverteiler sich gerade beendet, sonst <tt>false</tt>
 	 */
 	boolean isClosing();
 
 	/**
-	 * Loggt einen Benutzer ein, bzw. prüft die übergebenen Daten.
+	 * Loggt einen Benutzer ein, bzw. prÃ¼ft die Ã¼bergebenen Daten.
 	 * @param userName Benutzername
 	 * @param userPassword Benutzerpasswort
 	 * @param authentificationText
 	 * @param authentificationProcess
 	 * @param applicationTypePid Applikations-Typ-Pid
-	 * @return Benutzerid, falls erfolgreich eingeloggt, sonst -1. (0 ist der spezielle Benutzer für Datenverteiler und Konfiguration)
+	 * @return Benutzerid, falls erfolgreich eingeloggt, sonst -1. (0 ist der spezielle Benutzer fÃ¼r Datenverteiler und Konfiguration)
 	 */
 	long login(String userName, byte[] userPassword, String authentificationText, AuthentificationProcess authentificationProcess, String applicationTypePid);
+
+	/**
+	 * Wird aufgerufen, wenn sich der Status einer verbundenen Dav-Dav-Verbindung geÃ¤ndert hat um beispielsweise die "atg.datenverteilerKommunikationsZustand" zu aktualisieren
+	 */
+	void updateCommunicationState();
+
+	/**
+	 * Setzt die Datenverteiler (Ã¼ber deren IDs), zu denen keine Verbindung aufgenommen werden sollen, weil diese temporÃ¤r deaktiviert wurden (Ã¼ber atg.deaktivierteVerbindungen)
+	 * @param disabledConnections Deaktivierte Datenverteiler-IDs
+	 */
+	void setDisabledTransmitterConnections(Collection<Long> disabledConnections);
+
+	boolean isDisabledConnection(long remoteTransmitterId);
 }

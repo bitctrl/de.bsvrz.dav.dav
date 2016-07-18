@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -15,8 +15,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -27,20 +33,20 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataTelegram
 import java.util.*;
 
 /**
- * Diese Klasse stellt eine Methode zur Verfügung, mit der alle Teiltelegramme eines Datensatzes gesammelt werden können. Wurden alle Teiltelegramme empfangen,
- * so werden diese zurückgegeben und der Datensatz kann rekonstruiert werden.
+ * Diese Klasse stellt eine Methode zur VerfÃ¼gung, mit der alle Teiltelegramme eines Datensatzes gesammelt werden kÃ¶nnen. Wurden alle Teiltelegramme empfangen,
+ * so werden diese zurÃ¼ckgegeben und der Datensatz kann rekonstruiert werden.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public class SplittedTransmitterTelegramsTable {
 
 
 	/**
 	 * Sammelt alle Teiltelegramme einer <code>BaseSubscriptionInfo</code>.
-	 * <p/>
+	 * <p>
 	 * Als Key dient die <code>BaseSubscriptionInfo</code>, der Value ist eine Hashtable (im folgenden als Hashtable' bezeichnet).
-	 * <p/>
+	 * <p>
 	 * Die Hashtable' benutzt als Key die laufende Nummer des Datensatzes, als Value wird eine Liste<TransmitterDataTelegram> gespeichert. In dieser Liste werden
 	 * die Teiltelegramme gespeichert.
 	 */
@@ -52,15 +58,15 @@ public class SplittedTransmitterTelegramsTable {
 	}
 
 	/**
-	 * Diese Methode sammelt alle Teiltelegramme. Wurden alle Teiltelegramme empfangen, werden diese zurückgegeben.
+	 * Diese Methode sammelt alle Teiltelegramme. Wurden alle Teiltelegramme empfangen, werden diese zurÃ¼ckgegeben.
 	 *
-	 * @param telegram Teiltelegramm, das ein Telegramm vervollständigen soll oder ein komplettes Telegramm, das als Ganzes übergeben wurde und somit nicht
+	 * @param telegram Teiltelegramm, das ein Telegramm vervollstÃ¤ndigen soll oder ein komplettes Telegramm, das als Ganzes Ã¼bergeben wurde und somit nicht
 	 *                 zusammengebaut werden muss.
 	 *
-	 * @return Alle Teiltelegramme, aus denen ein vollständiges Telegramm rekonstruiert werden kann (und damit ein Datenatz) oder aber <code>null</code>.
-	 *         <code>null</code> bedeutet, dass noch nicht alle Teiltelegramme empfangen wurden die nötig sind, um das gesamte Telegramm zusammen zu bauen.
+	 * @return Alle Teiltelegramme, aus denen ein vollstÃ¤ndiges Telegramm rekonstruiert werden kann (und damit ein Datenatz) oder aber <code>null</code>.
+	 *         <code>null</code> bedeutet, dass noch nicht alle Teiltelegramme empfangen wurden die nÃ¶tig sind, um das gesamte Telegramm zusammen zu bauen.
 	 *
-	 * @throws IllegalArgumentException Das übergebene Telegramm konnte keinem bisher empfangenen Teil zugeordnet werden oder war <code>null</code>.
+	 * @throws IllegalArgumentException Das Ã¼bergebene Telegramm konnte keinem bisher empfangenen Teil zugeordnet werden oder war <code>null</code>.
 	 */
 	final TransmitterDataTelegram[] put(TransmitterDataTelegram telegram) {
 		if(telegram == null) {
@@ -69,7 +75,7 @@ public class SplittedTransmitterTelegramsTable {
 		int totalTelegramCount = telegram.getTotalTelegramsCount();
 		int index = telegram.getTelegramNumber();
 		if(index >= totalTelegramCount) {
-			throw new IllegalArgumentException("Der Telegramm-Index ist grösser als die maximale Anzahl der zerstückelten Telegramme dieses Datensatzes");
+			throw new IllegalArgumentException("Der Telegramm-Index ist grÃ¶sser als die maximale Anzahl der zerstÃ¼ckelten Telegramme dieses Datensatzes");
 		}
 		if((index == 0) && (totalTelegramCount == 1)) {
 			return (new TransmitterDataTelegram[]{telegram});
@@ -105,7 +111,7 @@ public class SplittedTransmitterTelegramsTable {
 							return null;
 						}
 						if(i != tmpTelegram.getTelegramNumber()) {
-							throw new IllegalArgumentException("Falsche Daten in der Cache-Tabelle der zerstückelten Telegramme");
+							throw new IllegalArgumentException("Falsche Daten in der Cache-Tabelle der zerstÃ¼ckelten Telegramme");
 						}
 					}
 					table.remove(subKey);

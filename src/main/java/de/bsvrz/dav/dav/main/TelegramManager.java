@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -47,12 +53,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Diese Klasse verarbeitet ankommende Datentelegramme, prüft ob der Absender erlaubt war die Daten zu verschicken (Anmeldung gültig),
+ * Diese Klasse verarbeitet ankommende Datentelegramme, prÃ¼ft ob der Absender erlaubt war die Daten zu verschicken (Anmeldung gÃ¼ltig),
  * wendet eventuelle {@link AccessControlPlugin}s auf die Telegramme an und gibt sie dann an das passende {@link SubscriptionInfo}-Objekt
- * weiter, welches die Telegramme an interessierte Empfänger weiterleitet.
+ * weiter, welches die Telegramme an interessierte EmpfÃ¤nger weiterleitet.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11478 $
+ * @version $Revision$
  */
 public class TelegramManager implements TelegramManagerTransactionInterface {
 
@@ -72,7 +78,7 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 
 	private final ServerDavParameters.UserRightsChecking _userRightsChecking;
 
-	/** Liste mit Plugins, die den Datenverkehr abfangen und filtern um die Zugriffsrechte zu prüfen */
+	/** Liste mit Plugins, die den Datenverkehr abfangen und filtern um die Zugriffsrechte zu prÃ¼fen */
 	private final Collection<AccessControlPlugin> _accessControlPlugins = new ArrayList<AccessControlPlugin>();
 
 	private Map<Long, List<AccessControlPlugin>> _pluginFilterMap;
@@ -85,7 +91,7 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 	/**
 	 * Erstellt einen neuen TelegramManager
 	 * @param connectionsManager Verbindungsverwaltung
-	 * @param userRightsChecking  Welche Art von Rechteprüfung durchgeführt werden soll
+	 * @param userRightsChecking  Welche Art von RechteprÃ¼fung durchgefÃ¼hrt werden soll
 	 */
 	public TelegramManager(final HighLevelConnectionsManagerInterface connectionsManager, final ServerDavParameters.UserRightsChecking userRightsChecking) {
 		_connectionsManager = connectionsManager;
@@ -94,10 +100,10 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 	}
 
 	/**
-	 * Initialisiert Funktionen, die von der Konfiguration anhängen (z.B. Rechteprüfung)
+	 * Initialisiert Funktionen, die von der Konfiguration abhÃ¤ngen (z.B. RechteprÃ¼fung)
 	 *
 	 * @param selfClientDavConnection eigene Datenverteiler-Verbindung
-	 * @param applicationStatusUpdater Klasse, die angemeldete Datensätze verschickt
+	 * @param applicationStatusUpdater Klasse, die angemeldete DatensÃ¤tze verschickt
 	 */
 	public void setConfigurationAvailable(
 			final SelfClientDavConnection selfClientDavConnection, final ApplicationStatusUpdater applicationStatusUpdater) {
@@ -109,7 +115,7 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 	}
 
 	/**
-	 * Initialisiert die angegebenen Zugriffssteuerungs-Plugins, die den Datenverkehr filtern und so zusätzliche Rechteprüfungen vornehmen können
+	 * Initialisiert die angegebenen Zugriffssteuerungs-Plugins, die den Datenverkehr filtern und so zusÃ¤tzliche RechteprÃ¼fungen vornehmen kÃ¶nnen
 	 *
 	 * @param accessControlPlugins Liste mit Plugin-Klassen-Namen
 	 */
@@ -133,16 +139,16 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 				_debug.warning("Konnte Plugin-Instanz nicht erstellen (Pluginklasse darf nicht abstrakt oder Interface sein): " + pluginClassName, e);
 			}
 			catch(IllegalAccessException e) {
-				_debug.warning("Konnte Plugin-Instanz nicht erstellen (Konstruktor nicht öffentlich?): " + pluginClassName, e);
+				_debug.warning("Konnte Plugin-Instanz nicht erstellen (Konstruktor nicht Ã¶ffentlich?): " + pluginClassName, e);
 			}
 		}
 		_accessControlPluginsInitialized = true;
 	}
 
 	/**
-	 * Gibt eine Map zurück, die als Key die AttributeGroupUsage-ID speichert und als Value alle zuständigen Plugins in einer Liste enthält
+	 * Gibt eine Map zurÃ¼ck, die als Key die AttributeGroupUsage-ID speichert und als Value alle zustÃ¤ndigen Plugins in einer Liste enthÃ¤lt
 	 *
-	 * @return eine unveränderliche Map vom Typ <code>Map<Long, List<AccessControlPluginInterface>></code> (leer falls die Rechteprüfung deaktivert ist).
+	 * @return eine unverÃ¤nderliche Map vom Typ <code>Map<Long, List<AccessControlPluginInterface>></code> (leer falls die RechteprÃ¼fung deaktivert ist).
 	 */
 	public Map<Long, List<AccessControlPlugin>> getPluginFilterMap() {
 		if(_userRightsChecking != ServerDavParameters.UserRightsChecking.NewDataModel) return Collections.emptyMap();
@@ -177,7 +183,7 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 
 	/**
 	 * Verarbeitet ein eingehendes Datentelegram von einem anderen Datenverteiler
-	 * @param communication Verbindung über die das Telegramm eingeht
+	 * @param communication Verbindung Ã¼ber die das Telegramm eingeht
 	 * @param transmitterDataTelegram Telegram
 	 */
 	public void handleDataTelegram(final CommunicationInterface communication, final TransmitterDataTelegram transmitterDataTelegram) {
@@ -186,9 +192,9 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 
 	/**
 	 * Verarbeitet ein eingehendes Datentelegram
-	 * @param communication Verbindung über die das Telegramm eingeht
+	 * @param communication Verbindung Ã¼ber die das Telegramm eingeht
 	 * @param applicationDataTelegram Telegram
-	 * @param toCentralDistributor wenn das Telegramm noch nicht beim Zentraldatenverteiler behandelt wurde, also der Datenindex noch nicht vernünftig gesetzt wurde
+	 * @param toCentralDistributor wenn das Telegramm noch nicht beim Zentraldatenverteiler behandelt wurde, also der Datenindex noch nicht vernÃ¼nftig gesetzt wurde
 	 */
 	public void handleDataTelegram(final CommunicationInterface communication, final ApplicationDataTelegram applicationDataTelegram, final boolean toCentralDistributor) {
 		final BaseSubscriptionInfo baseSubscriptionInfo = applicationDataTelegram.getBaseSubscriptionInfo();
@@ -197,10 +203,10 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 		// Wenn es zu dem BaseSubscriptionInfo keine Anmeldungen gibt, nichts tun.
 		if(subscriptionInfo == null) return;
 
-		// Für Anmeldeumleitungen den zuletzt empfangenen DatenIndex merken
+		// FÃ¼r Anmeldeumleitungen den zuletzt empfangenen DatenIndex merken
 		subscriptionInfo.updatePendingSubscriptionDataIndex(communication, applicationDataTelegram.getDataNumber());
 
-		// Wenn das Telegramm von keinem gültigen Sender gesendet wurde, nichts machen (außer vorher die evtl. vorhandenen Umleitungen aktualisieren)
+		// Wenn das Telegramm von keinem gÃ¼ltigen Sender gesendet wurde, nichts machen (auÃŸer vorher die evtl. vorhandenen Umleitungen aktualisieren)
 		if(!subscriptionInfo.isValidSender(communication)){
 			return;
 		}
@@ -225,10 +231,10 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 	}
 
 	/**
-	 * Prüft, ob eine userId zu einem "normalen" Benutzer gehört. Rechteprüfungs-Plugins haben u.U. sonst Probleme, weil zu der BenutzerId kein Benutzerobjekt
-	 * gehört. Davon abgesehen ist Rechteprüfung für diese Benutzer sowieso normalerweise deaktiviert.
+	 * PrÃ¼ft, ob eine userId zu einem "normalen" Benutzer gehÃ¶rt. RechteprÃ¼fungs-Plugins haben u.U. sonst Probleme, weil zu der BenutzerId kein Benutzerobjekt
+	 * gehÃ¶rt. Davon abgesehen ist RechteprÃ¼fung fÃ¼r diese Benutzer sowieso normalerweise deaktiviert.
 	 * @param remoteUserId Benutzer-Id
-	 * @return True wenn normaler benutzer für den Rechte geprüft werden sollen.
+	 * @return True wenn normaler benutzer fÃ¼r den Rechte geprÃ¼ft werden sollen.
 	 */
 	private boolean isValidRemoteUser(final long remoteUserId) {
 		return remoteUserId != _connectionsManager.getTransmitterId() && remoteUserId != 0;
@@ -236,9 +242,9 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 
 	/**
 	 * Verarbeitet Datentelegramem als Zentraldatenverteiler
-	 * @param telegrams Aggregierte Liste mit zusammengehörigen Datentelegrammen
-	 * @param subscriptionInfo Objekt, das die dazugehörigen Anmeldungen verwaltet und an das die Daten gesendet werden.
-	 * @param communication Verbindung über die der Emfang erfolgt (zur Rechteprüfung)
+	 * @param telegrams Aggregierte Liste mit zusammengehÃ¶rigen Datentelegrammen
+	 * @param subscriptionInfo Objekt, das die dazugehÃ¶rigen Anmeldungen verwaltet und an das die Daten gesendet werden.
+	 * @param communication Verbindung Ã¼ber die der Emfang erfolgt (zur RechteprÃ¼fung)
 	 */
 	private void handleTelegramsAsCentralDistributor(
 			final List<ApplicationDataTelegram> telegrams, final SubscriptionInfo subscriptionInfo, final CommunicationInterface communication) {
@@ -252,9 +258,9 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 				telegram.setDataIndex(dataIndex);
 			}
 
-			// An Empfänger verschicken
+			// An EmpfÃ¤nger verschicken
 			if(_davTransactionManager != null) {
-				// Der _davTransactionManager ist erst != null wenn eine Verbindung zur Konfiguration besteht. Vorher können keine Transaktionen benutzt werden.
+				// Der _davTransactionManager ist erst != null wenn eine Verbindung zur Konfiguration besteht. Vorher kÃ¶nnen keine Transaktionen benutzt werden.
 				List<ApplicationDataTelegram> modifiedTransactionTelegram = _davTransactionManager.handleTelegrams(
 						telegrams, subscriptionInfo.hasSource()
 				);
@@ -267,9 +273,9 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 	}
 
 	public static void dumpTelegrams(final List<ApplicationDataTelegram> telegrams,  final DafDataModel dataModel) {
-		System.out.println("Verarbeite Daten-Telegramm. Länge: " + telegrams.size());
+		System.out.println("Verarbeite Daten-Telegramm. LÃ¤nge: " + telegrams.size());
 		if(dataModel == null) {
-			System.out.println("Daten: Nicht verfügbar.");
+			System.out.println("Daten: Nicht verfÃ¼gbar.");
 			return;
 		}
 		final AttributeGroup atg = dataModel.getAttributeGroupUsage(
@@ -304,7 +310,7 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 	}
 
 	/**
-	 * Berechnet für eine Anmeldung den nächsten Datenindex und gibt diesen zurück
+	 * Berechnet fÃ¼r eine Anmeldung den nÃ¤chsten Datenindex und gibt diesen zurÃ¼ck
 	 */
 	@Override
 	public long getNextDataIndex(final BaseSubscriptionInfo info) {
@@ -313,7 +319,7 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 
 	/**
 	 * Benachrichtigt den _davTransactionManager dass eine lokale Anmeldung nicht mehr vorhanden ist. Der Transaktionsmanager meldet daraufhin eventuell vorhandene
-	 * innere Datensätze ab.
+	 * innere DatensÃ¤tze ab.
 	 * @param sendingSubscription Sender-Anmeldung
 	 */
 	public void notifySubscriptionRemoved(final LocalSendingSubscription sendingSubscription) {
@@ -324,8 +330,8 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 
 	/**
 	 * Benachrichtigt den _davTransactionManager dass eine lokale Anmeldung nicht mehr vorhanden ist. Der Transaktionsmanager meldet daraufhin eventuell vorhandene
-	 * innere Datensätze ab.
-	 * @param receivingSubscription Empfänger-Anmeldung
+	 * innere DatensÃ¤tze ab.
+	 * @param receivingSubscription EmpfÃ¤nger-Anmeldung
 	 */
 	public void notifySubscriptionRemoved(final LocalReceivingSubscription receivingSubscription) {
 		// Der _davTransactionManager ist erst != null wenn eine Verbindung zur Konfiguration besteht

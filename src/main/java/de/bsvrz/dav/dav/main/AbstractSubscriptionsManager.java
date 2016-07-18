@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -53,8 +59,8 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Gibt zu einer baseSubscriptionInfo die zugehörige Anmeldungsinfo zurück oder erstellt diese falls sie nicht existiert. Nachdem die Benutzung des Objekts
-	 * beendet ist, muss {@link de.bsvrz.dav.dav.subscriptions.SubscriptionInfo#close()} aufgerufen werden, damit eventuelle Aufräumarbeiten erledigt werden können.
+	 * Gibt zu einer baseSubscriptionInfo die zugehÃ¶rige Anmeldungsinfo zurÃ¼ck oder erstellt diese falls sie nicht existiert. Nachdem die Benutzung des Objekts
+	 * beendet ist, muss {@link de.bsvrz.dav.dav.subscriptions.SubscriptionInfo#close()} aufgerufen werden, damit eventuelle AufrÃ¤umarbeiten erledigt werden kÃ¶nnen.
 	 *
 	 * @param baseSubscriptionInfo baseSubscriptionInfo
 	 *
@@ -75,8 +81,8 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Gibt zu einer baseSubscriptionInfo die zugehörige Anmeldungsinfo zurück. Nachdem die Benutzung des Objekts
-	 * beendet ist, muss (sofern Rückgabewert != null) {@link de.bsvrz.dav.dav.subscriptions.SubscriptionInfo#close()} aufgerufen werden, damit eventuelle Aufräumarbeiten erledigt werden können.
+	 * Gibt zu einer baseSubscriptionInfo die zugehÃ¶rige Anmeldungsinfo zurÃ¼ck. Nachdem die Benutzung des Objekts
+	 * beendet ist, muss (sofern RÃ¼ckgabewert != null) {@link de.bsvrz.dav.dav.subscriptions.SubscriptionInfo#close()} aufgerufen werden, damit eventuelle AufrÃ¤umarbeiten erledigt werden kÃ¶nnen.
 	 *
 	 * @param baseSubscriptionInfo baseSubscriptionInfo
 	 *
@@ -92,7 +98,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Gibt zu einer baseSubscriptionInfo die zugehörige Anmeldungsinfo zurück.
+	 * Gibt zu einer baseSubscriptionInfo die zugehÃ¶rige Anmeldungsinfo zurÃ¼ck.
 	 *
 	 * @param baseSubscriptionInfo baseSubscriptionInfo
 	 *
@@ -136,7 +142,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	public void removeLocalSendSubscription(final ApplicationCommunicationInterface application, final BaseSubscriptionInfo baseSubscriptionInfo) {
 		final SubscriptionInfo subscriptionInfo = openExistingSubscriptionInfo(baseSubscriptionInfo);
 		if(subscriptionInfo == null) {
-			_debug.warning("Erhalte Abmeldeauftrag für Datenidentifikation, die nicht angemeldet ist: " + baseSubscriptionInfo);
+			_debug.warning("Erhalte Abmeldeauftrag fÃ¼r Datenidentifikation, die nicht angemeldet ist: " + baseSubscriptionInfo);
 			return;
 		}
 		try {
@@ -148,7 +154,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Meldet einen lokalen Empfänger oder eine lokale Senke an
+	 * Meldet einen lokalen EmpfÃ¤nger oder eine lokale Senke an
 	 *
 	 * @param application             Verbindung
 	 * @param receiveSubscriptionInfo Anmeldeparameter
@@ -171,7 +177,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Meldet einen lokalen Empfänger oder eine lokale Senke ab. Gibt eine Warnung aus, falls die angegebene Anmeldung nicht besteht
+	 * Meldet einen lokalen EmpfÃ¤nger oder eine lokale Senke ab. Gibt eine Warnung aus, falls die angegebene Anmeldung nicht besteht
 	 *
 	 * @param application          Verbindung
 	 * @param baseSubscriptionInfo Objekt und Attributgruppenverwendung
@@ -179,7 +185,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	public void removeLocalReceiveSubscriptions(final ApplicationCommunicationInterface application, final BaseSubscriptionInfo baseSubscriptionInfo) {
 		final SubscriptionInfo subscriptionInfo = openExistingSubscriptionInfo(baseSubscriptionInfo);
 		if(subscriptionInfo == null) {
-			_debug.warning("Erhalte Abmeldeauftrag für Datenidentifikation, die nicht angemeldet ist: " + baseSubscriptionInfo);
+			_debug.warning("Erhalte Abmeldeauftrag fÃ¼r Datenidentifikation, die nicht angemeldet ist: " + baseSubscriptionInfo);
 			return;
 		}
 		try {
@@ -191,7 +197,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Prüft von allen Anmeldungen die den Benutzer betreffen die Rechte erneut
+	 * PrÃ¼ft von allen Anmeldungen die den Benutzer betreffen die Rechte erneut
 	 *
 	 * @param userId Id des Benutzers
 	 */
@@ -217,7 +223,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Meldet einen lokalen Empfänger oder eine lokale Senke ab.
+	 * Meldet einen lokalen EmpfÃ¤nger oder eine lokale Senke ab.
 	 *
 	 * @param application      Anwendung
 	 * @param subscriptionInfo subscriptionInfo
@@ -306,7 +312,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Gibt den nächsten Datenindex für die angegebene Anmeldung zurück und zählt den Index entsprechend hoch
+	 * Gibt den nÃ¤chsten Datenindex fÃ¼r die angegebene Anmeldung zurÃ¼ck und zÃ¤hlt den Index entsprechend hoch
 	 * @param subscriptionInfo Anmeldung
 	 * @return Datenindex
 	 */
@@ -358,10 +364,10 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Gibt eine HashBagMap zurück, die angibt, über welche lokalen Datenverteilerverbindungen welche Zentraldatenverteiler am besten erreicht werden.
-	 * Die Keys der Rückgabe sind die lokalen Verbindungen, die Values sind die über diesen Key erreichbaren Zentraldatenverteiler zum angegebenen
-	 * BaseSubscriptionInfo. Ein Zentraldatenverteiler kommt immer nur in einem Key-Value-paar vor, selbst wenn er über mehrere lokale Verbindungen zu
-	 * erreichen ist. Es wird hierbei die optimale lokale Verbindung ausgewählt (Siehe {@link BestWayManager}).
+	 * Gibt eine HashBagMap zurÃ¼ck, die angibt, Ã¼ber welche lokalen Datenverteilerverbindungen welche Zentraldatenverteiler am besten erreicht werden.
+	 * Die Keys der RÃ¼ckgabe sind die lokalen Verbindungen, die Values sind die Ã¼ber diesen Key erreichbaren Zentraldatenverteiler zum angegebenen
+	 * BaseSubscriptionInfo. Ein Zentraldatenverteiler kommt immer nur in einem Key-Value-paar vor, selbst wenn er Ã¼ber mehrere lokale Verbindungen zu
+	 * erreichen ist. Es wird hierbei die optimale lokale Verbindung ausgewÃ¤hlt (Siehe {@link BestWayManager}).
 	 *
 	 * @param baseSubscriptionInfo Anmeldeinformation
 	 *
@@ -372,10 +378,10 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	}
 
 	/**
-	 * Gibt eine HashBagMap zurück, die angibt, über welche lokalen Datenverteilerverbindungen welche Zentraldatenverteiler am besten erreicht werden.
-	 * Die Keys der Rückgabe sind die lokalen Verbindungen, die Values sind die über diesen Key erreichbaren Zentraldatenverteiler. Ein Zentraldatenverteiler kommt
-	 * immer nur in einem Key-Value-paar vor, selbst wenn er über mehrere lokale Verbindungen zu
-	 * erreichen ist. Es wird hierbei die optimale lokale Verbindung ausgewählt (Siehe {@link de.bsvrz.dav.dav.main.BestWayManager}).
+	 * Gibt eine HashBagMap zurÃ¼ck, die angibt, Ã¼ber welche lokalen Datenverteilerverbindungen welche Zentraldatenverteiler am besten erreicht werden.
+	 * Die Keys der RÃ¼ckgabe sind die lokalen Verbindungen, die Values sind die Ã¼ber diesen Key erreichbaren Zentraldatenverteiler. Ein Zentraldatenverteiler kommt
+	 * immer nur in einem Key-Value-paar vor, selbst wenn er Ã¼ber mehrere lokale Verbindungen zu
+	 * erreichen ist. Es wird hierbei die optimale lokale Verbindung ausgewÃ¤hlt (Siehe {@link de.bsvrz.dav.dav.main.BestWayManager}).
 	 *
 	 * @param potentialCentralDistributors IDs der Zentraldatenverteiler, welche erreicht werden sollen
 	 *
@@ -389,7 +395,7 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 				wayMap.add(bestConnectionToRemoteDav, dav);
 			}
 		}
-		// wayMap enthält jetzt eine Map wo die lokal verbundenen Datenverteilern den evtl. dahinterliegenden potentiellen Zentraldatenverteilern zugeordnet
+		// wayMap enthÃ¤lt jetzt eine Map wo die lokal verbundenen Datenverteilern den evtl. dahinterliegenden potentiellen Zentraldatenverteilern zugeordnet
 		// sind.
 		return wayMap;
 	}

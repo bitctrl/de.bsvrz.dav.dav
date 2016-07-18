@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -15,8 +15,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -26,7 +32,6 @@ import de.bsvrz.dav.daf.communication.dataRepresentation.datavalue.ByteAttribute
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.daf.main.ClientDavInterface;
 import de.bsvrz.dav.daf.main.Data;
-import de.bsvrz.dav.daf.main.DataState;
 import de.bsvrz.dav.daf.main.ResultData;
 import de.bsvrz.dav.daf.main.config.*;
 import de.bsvrz.dav.daf.main.config.ObjectSet;
@@ -38,13 +43,13 @@ import java.util.*;
  * Verwaltet die Rechte eines Benutzers.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 12975 $
+ * @version $Revision$
  */
 public class OldUserInfo extends AbstractUserInfo {
 
 	protected static final String USER_ATTRIBUTE_GROUP_PID = "atg.benutzerParameter";
 
-	private static final String ROLE_ACTIVITIES_SET_NAME = "Aktivitäten";
+	private static final String ROLE_ACTIVITIES_SET_NAME = "AktivitÃ¤ten";
 
 	private static final String ACTIVITY_ATTRIBUTE_GROUP_SET_NAME = "Attributgruppen";
 
@@ -61,8 +66,8 @@ public class OldUserInfo extends AbstractUserInfo {
 	private static final String AUTHENTIFICATION_CLASS_ASPECT_PID = "asp.parameterSoll";
 
 	/**
-	 * Damit die Software auch mit älteren Versionen des Datenmodells arbeitet, wird hier neben dem korrekten Namen der Menge auch der ursprüngliche, falsch
-	 * geschriebene Name der Menge unterstützt.
+	 * Damit die Software auch mit Ã¤lteren Versionen des Datenmodells arbeitet, wird hier neben dem korrekten Namen der Menge auch der ursprÃ¼ngliche, falsch
+	 * geschriebene Name der Menge unterstÃ¼tzt.
 	 */
 	private static final String REGION_CONTAINER_SET_BAD_NAME = "Zusammmenstellungen";
 
@@ -75,20 +80,18 @@ public class OldUserInfo extends AbstractUserInfo {
 	/** Der Verbindungsmanager */
 	private UserRightsChangeHandler _userRightsChangeHandler;
 
-	private ArrayList<AuthenticationUnit> _authentificationUnits;
-
 	/** Erster Durchlauf */
 	private boolean _firstTime = true;
-
-	/** Eine interne Klasse zur Aktualisierung der Benutzerrechten */
-	private AuthenticationClassUpdater _updater;
+	
+	/** Eine interne Klasse zur Aktualisierung der Benutzerrechten oder null falls nicht nicht gesetzt */
+	private AuthenticationClassUpdater _updater = null;
 
 	private long _userId;
 
 	private SystemObject _user;
 
 	/**
-	 * * @param userId              Id des Benutzers. Über die Id wird das Objekt des Benutzers vom Datenverteiler angefordert.
+	 * * @param userId              Id des Benutzers. Ãœber die Id wird das Objekt des Benutzers vom Datenverteiler angefordert.
 	 * @param connection         Verbindung zum Datenverteiler
 	 * @param userRightsChangeHandler Wird zum an/abmelden von Daten benutzt.    @deprecated Klasse wurde durch {@link ExtendedUserInfo} ersetzt, wird aber noch bei alten Datenmodell-Versionen verwendet
 	 * @param accessControlManager
@@ -98,8 +101,9 @@ public class OldUserInfo extends AbstractUserInfo {
 			long userId, ClientDavInterface connection, UserRightsChangeHandler userRightsChangeHandler, final AccessControlManager accessControlManager) {
 		super(accessControlManager, connection, USER_ATTRIBUTE_GROUP_PID);
 		_userRightsChangeHandler = userRightsChangeHandler;
-		_authentificationUnits = new ArrayList<AuthenticationUnit>();
 
+		SystemObject baseAuthenticationUnit = connection.getDataModel().getObject("berechtigungsklasse.basis");
+		
 		_userId = userId;
 
 		_user = connection.getDataModel().getObject(_userId);
@@ -117,47 +121,6 @@ public class OldUserInfo extends AbstractUserInfo {
 		return _userId;
 	}
 
-	void updateAuthenticationUnit(
-			final Data data) {
-		try {
-			final Data.Array roleRegionPairs = data.getArray("rollenRegionenPaare");
-			final int numberOfPairs = roleRegionPairs.getLength();
-			for(int i = 0; i < numberOfPairs; ++i) {
-				final Data roleRegionPair = roleRegionPairs.getItem(i);
-				ConfigurationObject role = (ConfigurationObject)roleRegionPair.getReferenceValue("rolle").getSystemObject();
-				ConfigurationObject region = (ConfigurationObject)roleRegionPair.getReferenceValue("region").getSystemObject();
-				if((role != null) && (region != null)) {
-					Region regionWrapper = new Region(getRegionObjects(region));
-					Activity[] activities = getRoleActivities(role);
-					AuthenticationUnit unit = new AuthenticationUnit(regionWrapper, activities);
-					_authentificationUnits.add(unit);
-				}
-			}
-		}
-		catch(ConfigurationException ex) {
-			ex.printStackTrace();
-		}
-		finally {
-			synchronized(_userRightsChangeHandler) {
-				_userRightsChangeHandler.notifyAll();
-				if(_firstTime) {
-					_firstTime = false;
-				}
-				else {
-					try {
-						_userRightsChangeHandler.handleUserRightsChanged(getUserId());
-					}
-					catch(Exception e) {
-						_debug.warning("Fehler beim Ändern der Zugriffsrechte des Benutzers " + getUser(), e);
-					}
-					finally {
-						_debug.info("Zugriffsrechte des Benutzers " + getUser() + " haben sich geändert.");
-					}
-				}
-			}
-		}
-	}
-
 	private static boolean isValidResult(final ResultData resultData) {
 		if(resultData == null) {
 			return false;
@@ -170,45 +133,43 @@ public class OldUserInfo extends AbstractUserInfo {
 
 	@Override
 	public final boolean maySubscribeData(BaseSubscriptionInfo info, byte state) {
-		// Die folgenden 2 Zeilen werden gebraucht, damit der Dav nicht in der folgenden Schleife hängenbleibt.
-		// Mit dem alten Code war das kein größeres Problem, da damals _initComplete auch ohne Daten true war.
-		waitForInitialization();
-		if(getDataState() != DataState.DATA) return false;
-
-		if(_updater != null) {
-			_updater.waitForInitialization();
+		final UserAction action;
+		switch(state) {
+			case 0:
+				action = UserAction.SENDER;
+				break;
+			case 1:
+				action = UserAction.RECEIVER;
+				break;
+			case 2:
+				action = UserAction.SOURCE;
+				break;
+			case 3:
+				action = UserAction.DRAIN;
+				break;
+			default:
+				_debug.warning("Unbekannte Aktion: " + state);
+				return false;
 		}
+		return maySubscribeData(info, action);
+	}
 
-		long id = info.getObjectID();
-		AttributeGroupUsage atgUsage = getConnection().getDataModel().getAttributeGroupUsage(info.getUsageIdentification());
-		if(atgUsage == null) return false;
-		final AttributeGroup attributeGroup = atgUsage.getAttributeGroup();
-		final Aspect aspect = atgUsage.getAspect();
-
-		long attributeGroupId = attributeGroup.getId();
-		long aspectId = aspect.getId();
-
-		for(int i = _authentificationUnits.size() - 1; i > -1; --i) {
-			AuthenticationUnit unit = _authentificationUnits.get(i);
-			if(unit != null) {
-				if(unit.isAllowed(id, attributeGroupId, aspectId, state)) {
-					return true;
-				}
-			}
-		}
-		return false;
+	private List<AuthenticationClassUpdater> getUpdaters() {
+		if(_updater != null) return Collections.singletonList(_updater);
+		return Collections.emptyList();
 	}
 
 	@Override
 	public boolean maySubscribeData(final SystemObject object, final AttributeGroup attributeGroup, final Aspect aspect, final UserAction action) {
-		// Die folgenden 2 Zeilen werden gebraucht, damit der Dav nicht in der folgenden Schleife hängenbleibt.
-		// Mit dem alten Code war das kein größeres Problem, da damals _initComplete auch ohne Daten true war.
-		waitForInitialization();
-		if(getDataState() != DataState.DATA) return false;
 
-		if(_updater != null) {
-			_updater.waitForInitialization();
+		waitForInitialization();
+		
+		for(AuthenticationClassUpdater updater : getUpdaters()) {
+			updater.waitForInitialization();
 		}
+
+		// Falls die Rechte implizit erlaubt sind, erlauben wir die Aktion
+		if(ImplicitAccessUnitManager.isAllowed(attributeGroup.getPid(), aspect.getPid(), action)) return true;
 
 		long id = object.getId();
 		long attributeGroupId = attributeGroup.getId();
@@ -227,12 +188,12 @@ public class OldUserInfo extends AbstractUserInfo {
 			throw new IllegalArgumentException("Unbekannte Aktion: " + action);
 		}
 
-
-		for(int i = _authentificationUnits.size() - 1; i > -1; --i) {
-			AuthenticationUnit unit = _authentificationUnits.get(i);
-			if(unit != null) {
-				if(unit.isAllowed(id, attributeGroupId, aspectId, state)) {
-					return true;
+		for(AuthenticationClassUpdater updater : getUpdaters()) {
+			for(AuthenticationUnit unit : updater.getUnits()) {
+				if(unit != null) {
+					if(unit.isAllowed(id, attributeGroupId, aspectId, state)) {
+						return true;
+					}
 				}
 			}
 		}
@@ -254,18 +215,46 @@ public class OldUserInfo extends AbstractUserInfo {
 		}else{
 			throw new IllegalArgumentException("Unbekannte Aktion: " + action);
 		}
-		return maySubscribeData(info, state);
+
+		waitForInitialization();
+
+		for(AuthenticationClassUpdater updater : getUpdaters()) {
+			updater.waitForInitialization();
+		}
+
+		long id = info.getObjectID();
+		AttributeGroupUsage atgUsage = getConnection().getDataModel().getAttributeGroupUsage(info.getUsageIdentification());
+		if(atgUsage == null) return false;
+		final AttributeGroup attributeGroup = atgUsage.getAttributeGroup();
+		final Aspect aspect = atgUsage.getAspect();
+
+		// Falls die Rechte implizit erlaubt sind, erlauben wir die Aktion
+		if(ImplicitAccessUnitManager.isAllowed(attributeGroup.getPid(), aspect.getPid(), action)) return true;
+
+		long attributeGroupId = attributeGroup.getId();
+		long aspectId = aspect.getId();
+
+		for(AuthenticationClassUpdater updater : getUpdaters()) {
+			for(AuthenticationUnit unit : updater.getUnits()) {
+				if(unit != null) {
+					if(unit.isAllowed(id, attributeGroupId, aspectId, state)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public boolean mayCreateModifyRemoveObject(final ConfigurationArea area, final SystemObjectType type) {
-		// Die alte Benutzerverwaltung erlaubt kein Beschränken von Objekt-Aktionen
+		// Die alte Benutzerverwaltung erlaubt kein BeschrÃ¤nken von Objekt-Aktionen
 		return true;
 	}
 
 	@Override
 	public boolean mayModifyObjectSet(final ConfigurationArea area, final ObjectSetType type) {
-		// Die alte Benutzerverwaltung erlaubt kein Beschränken von Veränderungen an Mengen
+		// Die alte Benutzerverwaltung erlaubt kein BeschrÃ¤nken von VerÃ¤nderungen an Mengen
 		return true;
 	}
 
@@ -381,13 +370,13 @@ public class OldUserInfo extends AbstractUserInfo {
 			}
 			ObjectSet setsSet = region.getObjectSet(REGION_CONTAINER_SET_NAME);
 			if(setsSet == null) {
-				// Damit die Software auch mit älteren Versionen des Datenmodells arbeitet, wird hier neben dem
-				// korrekten Namen der Menge auch der ursprüngliche, falsch geschriebene Name der Menge unterstützt.
+				// Damit die Software auch mit Ã¤lteren Versionen des Datenmodells arbeitet, wird hier neben dem
+				// korrekten Namen der Menge auch der ursprÃ¼ngliche, falsch geschriebene Name der Menge unterstÃ¼tzt.
 				setsSet = region.getObjectSet(REGION_CONTAINER_SET_BAD_NAME);
 				if(setsSet != null) {
 					_debug.warning(
 							"In der Region " + region + " wird die Menge 'Zusammmenstellungen' mit 3 'm' verwendet. Bitte kb.systemModellGlobal "
-							+ "aktualisieren und Mengenname ändern! "
+							+ "aktualisieren und Mengenname Ã¤ndern! "
 					);
 				}
 			}
@@ -444,22 +433,22 @@ public class OldUserInfo extends AbstractUserInfo {
 
 	@Override
 	public void deactivateInvalidChild(final DataLoader node) {
-		// Alte BenutzerInfo-Klasse unterstützt keine Rekursion, Implementierung nicht notwendig.
+		// Alte BenutzerInfo-Klasse unterstÃ¼tzt keine Rekursion, Implementierung nicht notwendig.
 		throw new UnsupportedOperationException("removeInvalidChild nicht implementiert");
 	}
 
 	/**
-	 * Speichert unterschiedliche Objekte (ATG, Aspekte, Objekte) und stellt eine Methode zur Verfügung, mit der geprüft werden kann, ob ein bestimmtes Objekt
+	 * Speichert unterschiedliche Objekte (ATG, Aspekte, Objekte) und stellt eine Methode zur VerfÃ¼gung, mit der geprÃ¼ft werden kann, ob ein bestimmtes Objekt
 	 * vorhanden ist.
 	 */
 	private class InfoHolder {
 
-		/** true, wenn die im Konstruktor übergebene Liste null oder leer ist; false, sonst. */
+		/** true, wenn die im Konstruktor Ã¼bergebene Liste null oder leer ist; false, sonst. */
 		private boolean all;
 
-		// Diese Variable sollte durch ein HashSet ersetzt werden, da nur ein "Contains" benötigt wird.
+		// Diese Variable sollte durch ein HashSet ersetzt werden, da nur ein "Contains" benÃ¶tigt wird.
 
-		/** Speichert die Objekte der im Konstruktor übergebenen Liste. Als Schlüssel dient das Objekt, als Value wird ebenfalls das Objekt eingetragen. */
+		/** Speichert die Objekte der im Konstruktor Ã¼bergebenen Liste. Als SchlÃ¼ssel dient das Objekt, als Value wird ebenfalls das Objekt eingetragen. */
 		private Hashtable<Object, Object> table;
 
 		public InfoHolder(ArrayList list) {
@@ -479,10 +468,10 @@ public class OldUserInfo extends AbstractUserInfo {
 		}
 
 		/**
-		 * @param o Objekt, das vorhanden sein soll. Wurde im Konstruktor eine leere Liste bzw. <code>null</code> übergeben.
+		 * @param o Objekt, das vorhanden sein soll. Wurde im Konstruktor eine leere Liste bzw. <code>null</code> Ã¼bergeben.
 		 *
-		 * @return true, wenn a) Das übergebene Objekt in der Liste vorhanden ist, die im Konstruktor übergeben wurde. b) Im Konstruktor eine leere Liste oder
-		 *         <code>null</code> übergeben wurde. In allen anderen Fällen wird <code>false</code> zurückgegeben.
+		 * @return true, wenn a) Das Ã¼bergebene Objekt in der Liste vorhanden ist, die im Konstruktor Ã¼bergeben wurde. b) Im Konstruktor eine leere Liste oder
+		 *         <code>null</code> Ã¼bergeben wurde. In allen anderen FÃ¤llen wird <code>false</code> zurÃ¼ckgegeben.
 		 */
 		public final boolean isAllowed(Object o) {
 			if(o == null) {
@@ -496,7 +485,7 @@ public class OldUserInfo extends AbstractUserInfo {
 	}
 
 	/**
-	 * Diese Klasse stellt eine Rolle/Aktivität dar. Es wird eine Methode zur Verfügung gestellt, mit der geprüft werden kann, ob eine übergebene Rolle/Aktivität
+	 * Diese Klasse stellt eine Rolle/AktivitÃ¤t dar. Es wird eine Methode zur VerfÃ¼gung gestellt, mit der geprÃ¼ft werden kann, ob eine Ã¼bergebene Rolle/AktivitÃ¤t
 	 * erlaubt ist.
 	 */
 	private class Activity {
@@ -504,17 +493,17 @@ public class OldUserInfo extends AbstractUserInfo {
 		/** read  ==> bit index 0 is set (mode & 0x01) write ==> bit index 1 is set (mode & 0x02) main  ==> bit index 2 is set (mode & 0x04) */
 		private final byte _mode;
 
-		/** Alle erlaubten ATG´s dieser Rolle. */
+		/** Alle erlaubten ATGÅ½s dieser Rolle. */
 		private final InfoHolder _attributeGroups;
 
 		/** Alle erlaubten Aspekte dieser Rolle. */
 		private final InfoHolder _aspects;
 
 		/**
-		 * @param atgs  Alle ATG´s, die in dieser Rolle erlaubt sind. Sollen alle ATG´s erlaubt sein, so kann <code>null</code> oder eine leere Liste übergeben
+		 * @param atgs  Alle ATGÅ½s, die in dieser Rolle erlaubt sind. Sollen alle ATGÅ½s erlaubt sein, so kann <code>null</code> oder eine leere Liste Ã¼bergeben
 		 *              werden.
-		 * @param asps  Alle erlaubten Aspekte dieser Rolle. Sollen alle Aspekte erlaubt sein, so kann <code>null</code> oder eine leere Liste übergeben werden.
-		 * @param _mode 0: Als Sender 1: Als Empfänger 2: Als Quelle 3: Als Senke
+		 * @param asps  Alle erlaubten Aspekte dieser Rolle. Sollen alle Aspekte erlaubt sein, so kann <code>null</code> oder eine leere Liste Ã¼bergeben werden.
+		 * @param _mode 0: Als Sender 1: Als EmpfÃ¤nger 2: Als Quelle 3: Als Senke
 		 */
 		public Activity(ArrayList atgs, ArrayList asps, byte _mode) {
 			_attributeGroups = new InfoHolder(atgs);
@@ -523,13 +512,13 @@ public class OldUserInfo extends AbstractUserInfo {
 		}
 
 		/**
-		 * Prüft, ob die übergebenen Parameter mit der Rolle/Aktivität erlaubt sind.
+		 * PrÃ¼ft, ob die Ã¼bergebenen Parameter mit der Rolle/AktivitÃ¤t erlaubt sind.
 		 *
 		 * @param atg  ATG
 		 * @param asp  Aspekt
-		 * @param mode 0: Als Sender 1: Als Empfänger 2: Als Quelle 3: Als Senke
+		 * @param mode 0: Als Sender 1: Als EmpfÃ¤nger 2: Als Quelle 3: Als Senke
 		 *
-		 * @return <code>true</code>, wenn die übergenen Parameter mit der Rolle/Aktivität erlaubt sind, sonst <code>false</code>.
+		 * @return <code>true</code>, wenn die Ã¼bergenen Parameter mit der Rolle/AktivitÃ¤t erlaubt sind, sonst <code>false</code>.
 		 */
 		public final boolean isAllowed(Object atg, Object asp, byte mode) {
 			switch(mode) {
@@ -565,7 +554,7 @@ public class OldUserInfo extends AbstractUserInfo {
 		}
 	}
 
-	/** Diese Klasse stellt eine Region dar und stellt eine Methode zur Verfügung, mit der die Zugehörigkeit anderer Objekte zu der Region geprüft werden kann. */
+	/** Diese Klasse stellt eine Region dar und stellt eine Methode zur VerfÃ¼gung, mit der die ZugehÃ¶rigkeit anderer Objekte zu der Region geprÃ¼ft werden kann. */
 	private class Region {
 
 		private final InfoHolder _objects;
@@ -573,19 +562,19 @@ public class OldUserInfo extends AbstractUserInfo {
 		/**
 		 * Objekte, die eine Region definieren.
 		 *
-		 * @param objs Alle Objekte, die zu einer Region gehören. Eine leere Liste oder <code>null</code> wird als "Wildcard" interpretiert (alles ist erlaubt).
+		 * @param objs Alle Objekte, die zu einer Region gehÃ¶ren. Eine leere Liste oder <code>null</code> wird als "Wildcard" interpretiert (alles ist erlaubt).
 		 */
 		public Region(ArrayList objs) {
 			_objects = new InfoHolder(objs);
 		}
 
 		/**
-		 * Diese Methode prüft, ob ein Objekt zu einer Region gehört.
+		 * Diese Methode prÃ¼ft, ob ein Objekt zu einer Region gehÃ¶rt.
 		 *
 		 * @param obj Objekt, das Teil einer Region sein soll.
 		 *
-		 * @return <code>true</code>, wenn das übergebene Objekt in der Liste, die im Konstruktor übergeben wurde, zu finden ist. Wurde im Konstruktor eine leere
-		 *         Liste oder <code>null</code> übergeben, wird immer <code>true</code> zurückgegeben. In allen anderen Fällen wird <code>false</code> zurückgegeben.
+		 * @return <code>true</code>, wenn das Ã¼bergebene Objekt in der Liste, die im Konstruktor Ã¼bergeben wurde, zu finden ist. Wurde im Konstruktor eine leere
+		 *         Liste oder <code>null</code> Ã¼bergeben, wird immer <code>true</code> zurÃ¼ckgegeben. In allen anderen FÃ¤llen wird <code>false</code> zurÃ¼ckgegeben.
 		 */
 		public final boolean isAllowed(Object obj) {
 			return _objects.isAllowed(obj);
@@ -593,27 +582,27 @@ public class OldUserInfo extends AbstractUserInfo {
 	}
 
 	/**
-	 * Diese Klasse stellt eine Rollen/Regionen-Paar Kombination dar. Sie stellt eine Methode zur Verfügung, mit der geprüft werden kann ob ein Objekt, ein
-	 * ATG+Aspekt und ein Anmeldung als Senke/Quelle/Empfänger/Sender erlaubt ist.
+	 * Diese Klasse stellt eine Rollen/Regionen-Paar Kombination dar. Sie stellt eine Methode zur VerfÃ¼gung, mit der geprÃ¼ft werden kann ob ein Objekt, ein
+	 * ATG+Aspekt und ein Anmeldung als Senke/Quelle/EmpfÃ¤nger/Sender erlaubt ist.
 	 */
 	private class AuthenticationUnit {
 
 		/** Region */
 		private Region _region;
 
-		/** Rolle/Aktivität */
+		/** Rolle/AktivitÃ¤t */
 		private Activity[] _activities;
 
 		/**
 		 * @param region     Region
-		 * @param activities Alle Aktivitäten/Rollen. Wird eine leere Liste übergeben, wird {@link #isAllowed} immer <code>false</code> zurück geben.
+		 * @param activities Alle AktivitÃ¤ten/Rollen. Wird eine leere Liste Ã¼bergeben, wird {@link #isAllowed} immer <code>false</code> zurÃ¼ck geben.
 		 */
 		public AuthenticationUnit(Region region, Activity[] activities) {
 			if(region == null) {
 				throw new IllegalArgumentException("Region Argument ist null");
 			}
 			if(activities == null) {
-				throw new IllegalArgumentException("Aktivitäten Argument ist null");
+				throw new IllegalArgumentException("AktivitÃ¤ten Argument ist null");
 			}
 			_region = region;
 			_activities = activities;
@@ -652,26 +641,24 @@ public class OldUserInfo extends AbstractUserInfo {
 				}
 			}
 		}else {
-			_debug.warning("Für den Benutzer " + getUser() + " liegen keine Daten vor", USER_ATTRIBUTE_GROUP_PID);
+			_debug.warning("FÃ¼r den Benutzer " + getUser() + " liegen keine Daten vor", USER_ATTRIBUTE_GROUP_PID);
 		}
 	}
 
 	@Override
 	protected List<DataLoader> getChildObjects() {
-		if(_updater != null) {
-			return Collections.<DataLoader>singletonList(_updater);
-		}
-		else {
-			return Collections.emptyList();
-		}
+		return new ArrayList<DataLoader>(getUpdaters());
 	}
 
 
 	private class AuthenticationClassUpdater extends DataLoader {
 
+		@SuppressWarnings("VolatileArrayField")
+		private volatile AuthenticationUnit[] _authentificationUnits = new AuthenticationUnit[0];
+		
 		/**
-		 * Meldet sich als Empfänger auf das Objekt an, das die Berechtigungsklasse für den Benutzer darstellt. Sobald es Änderungen gibt (Regionen und/oder Aktionen
-		 * ändern sich), werden diese Änderungen am Java-Objekt, das die Berechtigungsklasse darstellt, übernommen.
+		 * Meldet sich als EmpfÃ¤nger auf das Objekt an, das die Berechtigungsklasse fÃ¼r den Benutzer darstellt. Sobald es Ã„nderungen gibt (Regionen und/oder Aktionen
+		 * Ã¤ndern sich), werden diese Ã„nderungen am Java-Objekt, das die Berechtigungsklasse darstellt, Ã¼bernommen.
 		 *
 		 * @param _authenticationClass Datenverteilerobjekt, das eine Berechtigungsklasse darstellt.
 		 */
@@ -686,22 +673,60 @@ public class OldUserInfo extends AbstractUserInfo {
 
 		@Override
 		public void deactivateInvalidChild(final DataLoader node) {
-			// Alte BenutzerInfo-Klasse unterstützt keine Rekursion, Implementierung nicht notwendig.
+			// Alte BenutzerInfo-Klasse unterstÃ¼tzt keine Rekursion, Implementierung nicht notwendig.
 			throw new UnsupportedOperationException("removeInvalidChild nicht implementiert");
 		}
 
 		@Override
 		protected void update(final Data data) {
 			if(data == null){
-				_debug.warning("Für die Bereichtigungsklasse " + getAuthenticationClass() + " liegen keine Daten vor", AUTHENTIFICATION_CLASS_ATTRIBUTE_GROUP_PID);
+				_debug.warning("FÃ¼r die Bereichtigungsklasse " + getAuthenticationClass() + " liegen keine Daten vor", AUTHENTIFICATION_CLASS_ATTRIBUTE_GROUP_PID);
 				return;
 			}
-			updateAuthenticationUnit(data);
+			try {
+				final Data.Array roleRegionPairs = data.getArray("rollenRegionenPaare");
+				final int numberOfPairs = roleRegionPairs.getLength();
+				ArrayList<AuthenticationUnit> tmp = new ArrayList<>();
+				for(int i = 0; i < numberOfPairs; ++i) {
+					final Data roleRegionPair = roleRegionPairs.getItem(i);
+					ConfigurationObject role = (ConfigurationObject)roleRegionPair.getReferenceValue("rolle").getSystemObject();
+					ConfigurationObject region = (ConfigurationObject)roleRegionPair.getReferenceValue("region").getSystemObject();
+					if((role != null) && (region != null)) {
+						Region regionWrapper = new Region(getRegionObjects(region));
+						Activity[] activities = getRoleActivities(role);
+						AuthenticationUnit unit = new AuthenticationUnit(regionWrapper, activities);
+						tmp.add(unit);
+					}
+				}
+				_authentificationUnits = tmp.toArray(new AuthenticationUnit[tmp.size()]);
+			}
+			catch(ConfigurationException ex) {
+				ex.printStackTrace();
+			}
+			finally {
+				synchronized(_userRightsChangeHandler) {
+					_userRightsChangeHandler.notifyAll();
+					if(_firstTime) {
+						_firstTime = false;
+					}
+					else {
+						try {
+							_userRightsChangeHandler.handleUserRightsChanged(getUserId());
+						}
+						catch(Exception e) {
+							OldUserInfo.this._debug.warning("Fehler beim Ã„ndern der Zugriffsrechte des Benutzers " + getUser(), e);
+						}
+						finally {
+							OldUserInfo.this._debug.info("Zugriffsrechte des Benutzers " + getUser() + " haben sich geÃ¤ndert.");
+						}
+					}
+				}
+			}
 		}
 
 		@Override
 		protected Collection<DataLoader> getChildObjects() {
-			// Alle Kindobjekte werden direkt hier als Unterklassen gespeichert, keine Sonderbehandlung nötig
+			// Alle Kindobjekte werden direkt hier als Unterklassen gespeichert, keine Sonderbehandlung nÃ¶tig
 			return Collections.emptyList();
 		}
 
@@ -729,6 +754,10 @@ public class OldUserInfo extends AbstractUserInfo {
 
 		public final long getAssociatedUserId() {
 			return getUser().getId();
+		}
+
+		public AuthenticationUnit[] getUnits() {
+			return _authentificationUnits;
 		}
 	}
 }

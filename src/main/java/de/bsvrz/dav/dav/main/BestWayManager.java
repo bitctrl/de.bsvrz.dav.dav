@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 by Kappich Systemberatung, Aachen
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -16,8 +16,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -30,7 +36,7 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterBestWayUpdat
  * Verbindungsverwaltung darauf zugreifen kann. Die eigentliche Verwaltung wird in der Klasse RoutingTable realisiert.
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public class BestWayManager implements BestWayManagerInterface {
 
@@ -41,8 +47,8 @@ public class BestWayManager implements BestWayManagerInterface {
 	private RoutingTable _routingTable;
 
 	/**
-	 * Erzeugt eine Instanz dieser Komponente und hält für die interne Kommunikation eine Referenz auf die Verbindungsverwaltung fest. Eine Instanz der
-	 * RoutingTable wird erzeugt und für die Weginformationsverwaltung bereitgestellt
+	 * Erzeugt eine Instanz dieser Komponente und hÃ¤lt fÃ¼r die interne Kommunikation eine Referenz auf die Verbindungsverwaltung fest. Eine Instanz der
+	 * RoutingTable wird erzeugt und fÃ¼r die Weginformationsverwaltung bereitgestellt
 	 *
 	 * @param transmitterId Eigene Id des Datenverteilers
 	 * @param distribution Die Verbindungsverwaltung des Datenverteilers
@@ -56,8 +62,8 @@ public class BestWayManager implements BestWayManagerInterface {
 	/**
 	 * {@inheritDoc}
 	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, um den besten Weg zu einem Datenverteiler zu bestimmen. Sie ruft die findBestConnection-
-	 * Methode der RoutingTable auf und gibt die ID des Datenverteilers zurück, über den der optimale Weg läuft. Wenn kein Weg zum spezifizierten Datenverteiler
-	 * existiert, wird <code>-1</code> zurückgegeben.
+	 * Methode der RoutingTable auf und gibt die ID des Datenverteilers zurÃ¼ck, Ã¼ber den der optimale Weg lÃ¤uft. Wenn kein Weg zum spezifizierten Datenverteiler
+	 * existiert, wird <code>-1</code> zurÃ¼ckgegeben.
 	 */
 	@Override
 	public final long getBestWay(long destinationDavId) {
@@ -68,9 +74,9 @@ public class BestWayManager implements BestWayManagerInterface {
 	/**
 	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, wenn eine neue Verbindung zu einem Datenverteiler aufgebaut wurde. Zuerst wird die
 	 * addConnection-Methode der RoutingTable aufgerufen, um einen neuen Eintrag in der Wegverwaltungstabelle zu erzeugen. Danach wird die addEntry-Methode der
-	 * Anmeldelistenverwaltung aufgerufen, um für den neuen Datenverteiler eine entsprechende Anmeldungsliste anzulegen.
+	 * Anmeldelistenverwaltung aufgerufen, um fÃ¼r den neuen Datenverteiler eine entsprechende Anmeldungsliste anzulegen.
 	 *
-	 * @param connection Verbindung, repräsentiert einen Eintrag in der RoutingTable
+	 * @param connection Verbindung, reprÃ¤sentiert einen Eintrag in der RoutingTable
 	 */
 	public void addWay(RoutingConnectionInterface connection) {
 		if(connection == null) {
@@ -88,7 +94,7 @@ public class BestWayManager implements BestWayManagerInterface {
 	 * handleDisconnection-Methode der Zuliefererdatenverwaltung aufgerufen, um aus der Zuliefererdatenverwaltungstabelle den Zulieferereintrag der spezifizierten
 	 * Verbindung zu entfernen.
 	 *
-	 * @param connection Verbindung, repräsentiert einen Eintrag in der RoutingTable
+	 * @param connection Verbindung, reprÃ¤sentiert einen Eintrag in der RoutingTable
 	 */
 	final void handleDisconnection(RoutingConnectionInterface connection) {
 		if(connection == null) {
@@ -100,12 +106,12 @@ public class BestWayManager implements BestWayManagerInterface {
 
 	/**
 	 * Diese Methode wird von der Protokollsteuerung aufgerufen, wenn eine neue Weginformationsnachricht angekommen ist. Zuerst wird die update-Methode der
-	 * RoutingTable aufgerufen, um die besten Wege der spezifizierten Verbindungen in der Wegverwaltungstabelle zu aktualisieren. Da eine Änderung der besten Wege
-	 * auch eine Änderung der Zulieferer eines Antrags bei der Zuliefererdatenverwaltung hervorrufen kann, wird pro Änderung die addEntry-Methode der
+	 * RoutingTable aufgerufen, um die besten Wege der spezifizierten Verbindungen in der Wegverwaltungstabelle zu aktualisieren. Da eine Ã„nderung der besten Wege
+	 * auch eine Ã„nderung der Zulieferer eines Antrags bei der Zuliefererdatenverwaltung hervorrufen kann, wird pro Ã„nderung die addEntry-Methode der
 	 * Zuliefererdatenverwaltung aufgerufen.
 	 *
-	 * @param connection               Verbindung, repräsentiert durch Eintrag in der routingTable
-	 * @param transmitterBestWayUpdate Telegramm zur Aktualisierung der Matrix der günstigsten Wege
+	 * @param connection               Verbindung, reprÃ¤sentiert durch Eintrag in der routingTable
+	 * @param transmitterBestWayUpdate Telegramm zur Aktualisierung der Matrix der gÃ¼nstigsten Wege
 	 */
 	public final void update(RoutingConnectionInterface connection, TransmitterBestWayUpdate transmitterBestWayUpdate) {
 		if((connection == null) || (transmitterBestWayUpdate == null)) {

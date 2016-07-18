@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -15,8 +15,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -33,10 +39,10 @@ import java.net.ConnectException;
 import java.net.Socket;
 
 /**
- * Klasse zum Start des Datenverteilers ohne grafische Oberfläche.
+ * Klasse zum Start des Datenverteilers ohne grafische OberflÃ¤che.
  * 
  * @author Kappich Systemberatung
- * @version $Revision: 11549 $
+ * @version $Revision$
  */
 public class Transmitter {
 	
@@ -49,8 +55,8 @@ public class Transmitter {
 	public Transmitter(String[] args) throws Exception {
 		ArgumentList arguments = new ArgumentList(args);
 		String debugName = arguments.fetchArgument("-debugName=Datenverteiler").asString();
-		// debugname = "" heißt, es handelt sich um einen Datenverteiler der zusammen mit anderem Code im selben Prozess gestartet
-		// wird. Hier soll der Debug-Level, Debug-Name usw. nicht überschrieben werden.
+		// debugname = "" heiÃŸt, es handelt sich um einen Datenverteiler der zusammen mit anderem Code im selben Prozess gestartet
+		// wird. Hier soll der Debug-Level, Debug-Name usw. nicht Ã¼berschrieben werden.
 		if(debugName.length() > 0){
 			Debug.init(debugName, arguments);
 		}
@@ -64,13 +70,13 @@ public class Transmitter {
 				Socket socket = new Socket("127.0.0.1", tcpPort);
 				socket.close();
 				// Verbindung zu einem vorher gestarteten Datenverteiler konnte aufgebaut werden.
-				// Also dürfen die Lock-Dateien nicht gelöscht werden und der Datenverteiler wird beendet.
-				throw new Exception("Es läuft bereits ein Server mit der Portnummer " + tcpPort + " auf diesem Rechner. Datenverteiler kann nicht gestartet werden.");
+				// Also dÃ¼rfen die Lock-Dateien nicht gelÃ¶scht werden und der Datenverteiler wird beendet.
+				throw new Exception("Es lÃ¤uft bereits ein Server mit der Portnummer " + tcpPort + " auf diesem Rechner. Datenverteiler kann nicht gestartet werden.");
 			}
 			catch(ConnectException e) {
 				// Verbindung zu einem vorher gestarteten Datenverteiler konnte nicht aufgebaut werden.
-				// Also können eventuell vorhandene Lockdateien gelöscht werden.
-				_debug.warning("Lock-Dateien werden gelöscht");
+				// Also kÃ¶nnen eventuell vorhandene Lockdateien gelÃ¶scht werden.
+				_debug.warning("Lock-Dateien werden gelÃ¶scht");
 				File[] lockFiles = removeLockFiles.listFiles(
 						new FilenameFilter() {
 							@Override
@@ -80,9 +86,9 @@ public class Transmitter {
 						}
 				);
 				for(File lockFile : lockFiles) {
-					// Zur Sicherheit werden nur leere Dateien gelöscht
+					// Zur Sicherheit werden nur leere Dateien gelÃ¶scht
 					if(lockFile.isFile() && lockFile.length() == 0) {
-						_debug.warning("- Lock-Datei " + lockFile.getCanonicalPath() + " wird gelöscht");
+						_debug.warning("- Lock-Datei " + lockFile.getCanonicalPath() + " wird gelÃ¶scht");
 						lockFile.delete();
 					}
 				}
@@ -171,7 +177,7 @@ public class Transmitter {
 					_debug.error("Schwerwiegender Laufzeitfehler: " + t + " hat sich wegen eines Errors beendet, Prozess wird terminiert", e);
 				}
 				catch(Throwable ignored) {
-					// Weitere Fehler während der Ausgaben werden ignoriert, damit folgendes exit() auf jeden Fall ausgeführt wird.
+					// Weitere Fehler wÃ¤hrend der Ausgaben werden ignoriert, damit folgendes exit() auf jeden Fall ausgefÃ¼hrt wird.
 				}
 				System.exit(1);
 			}

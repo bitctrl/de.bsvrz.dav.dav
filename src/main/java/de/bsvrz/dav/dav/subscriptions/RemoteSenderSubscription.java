@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.subscriptions;
@@ -32,7 +38,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Anmeldung eines entfernten Senders auf diesen Datenverteiler (der möglicherweise Zentraldatenverteiler ist)
+ * Anmeldung eines entfernten Senders auf diesen Datenverteiler (der mÃ¶glicherweise Zentraldatenverteiler ist)
  *
  * @author Kappich Systemberatung
  * @version $Revision: 11462 $
@@ -97,8 +103,8 @@ public class RemoteSenderSubscription implements RemoteSendingSubscription {
 				break;
 		}
 		if(!_potentialCentralDistributors.contains(centralTransmitterId)){
-			// Es ist möglicherweise ein anderer Datenverteiler zuständig als angegeben.
-			// Hier ein "nicht verantwortlich" zurückmelden, damit keine "Schleifen" entstehen
+			// Es ist mÃ¶glicherweise ein anderer Datenverteiler zustÃ¤ndig als angegeben.
+			// Hier ein "nicht verantwortlich" zurÃ¼ckmelden, damit keine "Schleifen" entstehen
 			receip = ConnectionState.TO_REMOTE_NOT_RESPONSIBLE;
 		}
 		if(receip == _lastSendState) return;
@@ -171,7 +177,7 @@ public class RemoteSenderSubscription implements RemoteSendingSubscription {
 	public String toString() {
 		return "Eingehende Anmeldung (" +_senderState + ") als " +  "Sender" +
 				" auf " + _subscriptionsManager.subscriptionToString(_baseSubscriptionInfo) +
-				" über " + _transmitterCommunication +
+				" Ã¼ber " + _transmitterCommunication +
 		       " (Benutzer=" + _subscriptionsManager.objectToString(getUserId()) + ")";
 	}
 }

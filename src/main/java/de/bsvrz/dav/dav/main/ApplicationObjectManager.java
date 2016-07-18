@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -28,10 +34,10 @@ import de.bsvrz.sys.funclib.debug.Debug;
 import java.util.List;
 
 /**
- * Klasse, die Applikationsobjekte für die verbundenen Anwendungen erstellt
+ * Klasse, die Applikationsobjekte fÃ¼r die verbundenen Anwendungen erstellt
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11477 $
+ * @version $Revision$
  */
 public class ApplicationObjectManager {
 
@@ -50,7 +56,7 @@ public class ApplicationObjectManager {
 	 *
 	 * @param connectionsManager HighLevelConnectionsManagerInterface
 	 * @param connection Loakle Datenverteilerverbindung
-	 * @param configAreaPidForApplicationObjects Pid des Konfigurationsbereichs für Applikationsobjekte wie in ServerDavParameters angegeben
+	 * @param configAreaPidForApplicationObjects Pid des Konfigurationsbereichs fÃ¼r Applikationsobjekte wie in ServerDavParameters angegeben
 	 */
 	public ApplicationObjectManager(
 			final HighLevelConnectionsManagerInterface connectionsManager,
@@ -72,12 +78,12 @@ public class ApplicationObjectManager {
 		else {
 			_appObjectConfigurationArea = _dataModel.getConfigurationArea(configAreaPidForApplicationObjects);
 			if(_appObjectConfigurationArea == null) {
-				_debug.warning("Angegebener Konfigurationsbereich für Applikationsobjekte '" + configAreaPidForApplicationObjects + "' nicht gefunden. "
+				_debug.warning("Angegebener Konfigurationsbereich fÃ¼r Applikationsobjekte '" + configAreaPidForApplicationObjects + "' nicht gefunden. "
 				               + "Es wird der Defaultbereich der Konfiguration verwendet");
 				_appObjectConfigurationArea = defaultConfigArea;
 			}
 			if(!_appObjectConfigurationArea.getConfigurationAuthority().equals(connection.getLocalConfigurationAuthority())) {
-				_debug.warning("Angegebener Konfigurationsbereich für Applikationsobjekte '" + configAreaPidForApplicationObjects + "' ist nicht änderbar. "
+				_debug.warning("Angegebener Konfigurationsbereich fÃ¼r Applikationsobjekte '" + configAreaPidForApplicationObjects + "' ist nicht Ã¤nderbar. "
 				               + "Es wird der Defaultbereich der Konfiguration verwendet");
 				_appObjectConfigurationArea = defaultConfigArea;
 			}
@@ -98,12 +104,12 @@ public class ApplicationObjectManager {
 		}
 	}
 
-	/** Erstellt ein Applikations-Objekt und gibt die Id zurück
+	/** Erstellt ein Applikations-Objekt und gibt die Id zurÃ¼ck
 	 *
 	 * @param typePid Pid des Typs der Applikation
 	 * @param name Name der Applikation
 	 * @return Applikations-Id oder -1 bei Fehler
-	 * @throws ConfigurationChangeException Fehler bei Konfigurationsänderung
+	 * @throws ConfigurationChangeException Fehler bei KonfigurationsÃ¤nderung
 	 */
 	public long createApplication(final String typePid, final String name) throws ConfigurationChangeException {
 		if(_dataModel != null) {
@@ -169,11 +175,11 @@ public class ApplicationObjectManager {
 			return;
 		}
 		_canWriteApplicationSet = false;
-		_debug.warning("Beim Ändern der Menge \"Applikationen\" am Datenverteiler trat ein Problem auf. Bitte verwaltung=\"" + _dataModel.getConfigurationAuthority().getPid() + "\" bei der Menge eintragen.");
+		_debug.warning("Beim Ã„ndern der Menge \"Applikationen\" am Datenverteiler trat ein Problem auf. Bitte verwaltung=\"" + _dataModel.getConfigurationAuthority().getPid() + "\" bei der Menge eintragen.");
 	}
 
 	/**
-	 * Löscht ein Applikationsobjekt
+	 * LÃ¶scht ein Applikationsobjekt
 	 * @param applicationId Applikations-Id
 	 */
 	public void removeApplication(final long applicationId) {
@@ -184,7 +190,7 @@ public class ApplicationObjectManager {
 				removeApplicationFromObjectSet(applicationObject);
 			}
 			catch(Exception e) {
-				_debug.fine("Applikationsobjekt " + applicationObject + " konnte nicht nicht gelöscht werden", e);
+				_debug.fine("Applikationsobjekt " + applicationObject + " konnte nicht nicht gelÃ¶scht werden", e);
 			}
 		}
 	}

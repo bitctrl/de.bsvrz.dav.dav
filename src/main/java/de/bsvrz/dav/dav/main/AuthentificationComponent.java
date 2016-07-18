@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 by Kappich Systemberatung, Aachen
- * Copyright 2004 by Kappich+Kniß Systemberatung, Aachen
+ * Copyright 2004 by Kappich+KniÃŸ Systemberatung, Aachen
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -15,8 +15,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.main;
@@ -26,33 +32,33 @@ import de.bsvrz.dav.daf.communication.lowLevel.AuthentificationProcess;
 import java.util.*;
 
 /**
- * Diese Klasse enthält die Komponenten zur Authentifizierung eines Benutzers/Applikation.
+ * Diese Klasse enthÃ¤lt die Komponenten zur Authentifizierung eines Benutzers/Applikation.
  *
  * TBD: Authentification ist kein englisches Wort. Umbenennen in Authentication?
  *
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public class AuthentificationComponent {
 
 	/**
 	 * Speichert zu dem Namen einer Applikation einen Zufallstext, der mit {@link #getAuthentificationText(String)} erzeugt wurde.
-	 * <p/>
-	 * Als Schlüssel dient der Name der Applikation, als Value wird der Zufallstext zurückgegeben.
+	 * <p>
+	 * Als SchlÃ¼ssel dient der Name der Applikation, als Value wird der Zufallstext zurÃ¼ckgegeben.
 	 */
 	private Hashtable<String, String> _table;
 
 	/** Das Authentifikationsverfahren */
 	private AuthentificationProcess _authentificationProcess;
 
-	/** @param authentificationProcess Verschlüsslungsverfahren, das benutzt wird um Authentifizierungsdaten zu prüfen. */
+	/** @param authentificationProcess VerschlÃ¼sslungsverfahren, das benutzt wird um Authentifizierungsdaten zu prÃ¼fen. */
 	public AuthentificationComponent(AuthentificationProcess authentificationProcess) {
 		_table = new Hashtable<String, String>();
 		_authentificationProcess = authentificationProcess;
 	}
 
 	/**
-	 * Gibt den Authentifikationsprozess zurück, der benutzt wird um die Authentifizierung eines Benutzers zu prüfen.
+	 * Gibt den Authentifikationsprozess zurÃ¼ck, der benutzt wird um die Authentifizierung eines Benutzers zu prÃ¼fen.
 	 *
 	 * @return authentificationProcess der Authentifikationsprozess
 	 */
@@ -61,11 +67,11 @@ public class AuthentificationComponent {
 	}
 
 	/**
-	 * Generiert für eine Applikation einen Zufallstext und speichert diesen.
+	 * Generiert fÃ¼r eine Applikation einen Zufallstext und speichert diesen.
 	 *
-	 * @param applicationName Name der Applikation, für den ein Zufallstext erzeugt werden soll.
+	 * @param applicationName Name der Applikation, fÃ¼r den ein Zufallstext erzeugt werden soll.
 	 *
-	 * @return Zufallstext. Jeder Aufruf der Methode, mit der selben Applikation, gibt den selben Zufallstext zurück.
+	 * @return Zufallstext. Jeder Aufruf der Methode, mit der selben Applikation, gibt den selben Zufallstext zurÃ¼ck.
 	 */
 	public synchronized final String getAuthentificationText(String applicationName) {
 		String text = _table.get(applicationName);
@@ -77,18 +83,18 @@ public class AuthentificationComponent {
 	}
 
 	/**
-	 * Diese Methode verschlüsselt mit dem Passwort der Appliktion den Zufallstext, der zu einer Applikation gehört. Danach wird geprüft, ob der übergebene
-	 * verschlüsselte Text <code>encryptedRandomText</code> mit dem gerade erzeugten verschlüsselten Text übereinstimmt.
-	 * <p/>
-	 * Ist dies der Fall, so wird <code>true</code> zurückgegeben.
-	 * <p/>
-	 * Die Methode löscht in jedem Fall bei Beendigung den Zufallstext, der zu einer Applikation gehört. Ein zweiter Anmeldeversuch mit dem selben Zufallstext ist
-	 * also nicht möglich und wird immer zum Ergebnis <code>false</code> führen, auch wenn das Passwort richtig ist.
+	 * Diese Methode verschlÃ¼sselt mit dem Passwort der Appliktion den Zufallstext, der zu einer Applikation gehÃ¶rt. Danach wird geprÃ¼ft, ob der Ã¼bergebene
+	 * verschlÃ¼sselte Text <code>encryptedRandomText</code> mit dem gerade erzeugten verschlÃ¼sselten Text Ã¼bereinstimmt.
+	 * <p>
+	 * Ist dies der Fall, so wird <code>true</code> zurÃ¼ckgegeben.
+	 * <p>
+	 * Die Methode lÃ¶scht in jedem Fall bei Beendigung den Zufallstext, der zu einer Applikation gehÃ¶rt. Ein zweiter Anmeldeversuch mit dem selben Zufallstext ist
+	 * also nicht mÃ¶glich und wird immer zum Ergebnis <code>false</code> fÃ¼hren, auch wenn das Passwort richtig ist.
 	 *
-	 * @param applicationName     Name der Applikation, die sich authentifizieren möchte.
-	 * @param password            Das unverschlüsseltes Passwort der Applikation, die sich authentifizieren möchte.
-	 * @param encryptedRandomText Verschlüsselter Zufallstext der Applikation, die sich authentifizieren will. Der Zufallstext wurde mit einem Passwort
-	 *                            verschlüsselt.
+	 * @param applicationName     Name der Applikation, die sich authentifizieren mÃ¶chte.
+	 * @param password            Das unverschlÃ¼sseltes Passwort der Applikation, die sich authentifizieren mÃ¶chte.
+	 * @param encryptedRandomText VerschlÃ¼sselter Zufallstext der Applikation, die sich authentifizieren will. Der Zufallstext wurde mit einem Passwort
+	 *                            verschlÃ¼sselt.
 	 *
 	 * @return <code>true</code>, die Authentifizierung war erfolgreich; <code>false</code> sonst
 	 *

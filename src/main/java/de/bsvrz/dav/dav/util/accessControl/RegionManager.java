@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-Stra√üe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -24,25 +30,25 @@ import de.bsvrz.dav.daf.main.config.SystemObject;
 
 /**
  * @author Kappich Systemberatung
- * @version $Revision: 11481 $
+ * @version $Revision$
  */
 public interface RegionManager {
 
 	/**
-	 * Gibt die Region-Klasse zur¸ck die zu dem angeforderten Systemobjekt gehˆrt.
+	 * Gibt die Region-Klasse zur√ºck die zu dem angeforderten Systemobjekt geh√∂rt.
 	 *
-	 * @param systemObject Systemobjekt, das eine Region repr‰sentiert
+	 * @param systemObject Systemobjekt, das eine Region repr√§sentiert
 	 *
-	 * @return Region-Klasse die Abfragen auf eine Region ermˆglicht
+	 * @return Region-Klasse die Abfragen auf eine Region erm√∂glicht
 	 */
 	Region getRegion(SystemObject systemObject);
 
 	/**
-	 * Wird aufgerufen un dem AccessControlManager zu informieren, dass ein verwaltetes Objekt sich ge‰ndert hat. Der AccessControlManager wird daraufhin nach
+	 * Wird aufgerufen un dem AccessControlManager zu informieren, dass ein verwaltetes Objekt sich ge√§ndert hat. Der AccessControlManager wird daraufhin nach
 	 * Benutzer-Objekten suchen, die dieses Objekt verwenden und an den {@link de.bsvrz.dav.dav.main.HighLevelSubscriptionsManager} eine Benachrichtigung senden, dass
-	 * sich die Rechte des Benutzers ge‰ndert haben und eventuelle vorhandene Anmeldungen entfernt werden m¸ssen.
+	 * sich die Rechte des Benutzers ge√§ndert haben und eventuelle vorhandene Anmeldungen entfernt werden m√ºssen.
 	 *
-	 * @param object Objekt das sich ge‰ndert hat
+	 * @param object Objekt das sich ge√§ndert hat
 	 */
 	void objectChanged(DataLoader object);
 

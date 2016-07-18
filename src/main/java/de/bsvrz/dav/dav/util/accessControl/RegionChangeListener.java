@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,15 +14,21 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-StraÃŸe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
 
 /**
- * Listener-Interface das für die Benachrichtigung über Änderungen der Liste der ausgewählten Objekte in Regionen benutzt wird. Die ausgewählten Objekte in
- * Regionen können sich z.B. ändern, wenn ein neues Dynamisches Objekt angelegt wird, eine dynamische Menge sich ändert, oder die Definition der Region geändert
+ * Listener-Interface das fÃ¼r die Benachrichtigung Ã¼ber Ã„nderungen der Liste der ausgewÃ¤hlten Objekte in Regionen benutzt wird. Die ausgewÃ¤hlten Objekte in
+ * Regionen kÃ¶nnen sich z.B. Ã¤ndern, wenn ein neues Dynamisches Objekt angelegt wird, eine dynamische Menge sich Ã¤ndert, oder die Definition der Region geÃ¤ndert
  * wird
  *
  * @author Kappich Systemberatung
@@ -31,9 +37,9 @@ package de.bsvrz.dav.dav.util.accessControl;
 interface RegionChangeListener {
 
 	/**
-	 * Wird aufgerufen, wenn sich eine Region geändert hat
+	 * Wird aufgerufen, wenn sich eine Region geÃ¤ndert hat
 	 *
-	 * @param region Region, die sich geändert hat
+	 * @param region Region, die sich geÃ¤ndert hat
 	 */
 	void regionChanged(Region region);
 }

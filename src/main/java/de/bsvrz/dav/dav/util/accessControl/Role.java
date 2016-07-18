@@ -3,9 +3,9 @@
  * 
  * This file is part of de.bsvrz.dav.dav.
  * 
- * de.bsvrz.dav.dav is free software; you can redistribute it and/or modify
+ * de.bsvrz.dav.dav is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * de.bsvrz.dav.dav is distributed in the hope that it will be useful,
@@ -14,8 +14,14 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with de.bsvrz.dav.dav; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with de.bsvrz.dav.dav.  If not, see <http://www.gnu.org/licenses/>.
+
+ * Contact Information:
+ * Kappich Systemberatung
+ * Martin-Luther-Stra√üe 14
+ * 52062 Aachen, Germany
+ * phone: +49 241 4090 436 
+ * mail: <info@kappich.de>
  */
 
 package de.bsvrz.dav.dav.util.accessControl;
@@ -39,19 +45,19 @@ import java.util.*;
  */
 class Role extends DataLoader {
 
-	private static final String ATG_ROLE = "atg.rollenAktivit‰t";
+	private static final String ATG_ROLE = "atg.rollenAktivit√§t";
 
 	private static final String ASPECT_PID = "asp.parameterSoll";
 
 	private final AccessControlManager _accessControlManager;
 
-	/** Daten-Anmeldungs-Aktivit‰ten */
+	/** Daten-Anmeldungs-Aktivit√§ten */
 	private final List<ActivityData> _activitiesData = new ArrayList<ActivityData>();
 
-	/** Objekterstellungs/-modifizierungs/-lˆschungs-Aktivi‰ten */
+	/** Objekterstellungs/-modifizierungs/-l√∂schungs-Aktivi√§ten */
 	private final List<ActivityObject> _activitiesObject = new ArrayList<ActivityObject>();
 
-	/** ObjektMengen-Ver‰nderungs-Aktivit‰ten */
+	/** ObjektMengen-Ver√§nderungs-Aktivit√§ten */
 	private final List<ActivityObjectSet> _activitiesObjectSet = new ArrayList<ActivityObjectSet>();
 
 	/** Rollen von denen die Berechtigungen geerbt werden */
@@ -66,7 +72,7 @@ class Role extends DataLoader {
 	/**
 	 * Erstellt eine neue Rolle
 	 *
-	 * @param systemObject         Systemobjekt, das die Daten dieser Rolle enth‰lt
+	 * @param systemObject         Systemobjekt, das die Daten dieser Rolle enth√§lt
 	 * @param connection           Verbindung zum Datenverteiler
 	 * @param accessControlManager Klasse, die Berechtigungsobjekte verwaltet
 	 */
@@ -78,7 +84,7 @@ class Role extends DataLoader {
 	}
 
 	/**
-	 * Pr¸ft den Berechtigungsstatus f¸r eine angegebene Datenanmeldung
+	 * Pr√ºft den Berechtigungsstatus f√ºr eine angegebene Datenanmeldung
 	 *
 	 * @param atg    Attributgruppe
 	 * @param asp    Aspekt
@@ -93,9 +99,9 @@ class Role extends DataLoader {
 		_readLock.lock();
 		try{
 			// Verhalten dieser Funktion:
-			// Standardm‰ﬂig wird keine Aussage angenommen.
-			// in Aktivit‰tDaten werden dann die Aktivit‰ten ¸berlagert nach der Reihenfolge Keine Aussage < Erlaubt < Verboten
-			// Falls in Aktivit‰tDaten keine Aussage gemacht werden kann, werden die untergeordneten Rollen beachtet und Additiv vereinigt.
+			// Standardm√§√üig wird keine Aussage angenommen.
+			// in Aktivit√§tDaten werden dann die Aktivit√§ten √ºberlagert nach der Reihenfolge Keine Aussage < Erlaubt < Verboten
+			// Falls in Aktivit√§tDaten keine Aussage gemacht werden kann, werden die untergeordneten Rollen beachtet und Additiv vereinigt.
 
 			Role.PermissionState currentState = Role.PermissionState.IMPLICIT_FORBIDDEN;
 			for(final ActivityData activity : _activitiesData) {
@@ -110,8 +116,8 @@ class Role extends DataLoader {
 				for(final Role innerRole : _innerRoles) {
 					final Role.PermissionState p = innerRole.getPermission(atg, asp, action);
 					if(p.getPriority() > currentState.getPriority() && p != Role.PermissionState.EXPLICIT_FORBIDDEN) {
-						// Falls die innere Rolle Role.PermissionState.EXPLICIT_FORBIDDEN zur¸ckgibt muss das ignoriert werden,
-						// da sich verschachtelte Rollen nur Additiv erg‰nzen sollen
+						// Falls die innere Rolle Role.PermissionState.EXPLICIT_FORBIDDEN zur√ºckgibt muss das ignoriert werden,
+						// da sich verschachtelte Rollen nur Additiv erg√§nzen sollen
 						currentState = p;
 					}
 				}
@@ -134,7 +140,7 @@ class Role extends DataLoader {
 	}
 
 	/**
-	 * Pr¸ft den Berechtigungsstatus f¸r die Erstellung/Ver‰nderung/Lˆschung von Objekten
+	 * Pr√ºft den Berechtigungsstatus f√ºr die Erstellung/Ver√§nderung/L√∂schung von Objekten
 	 *
 	 * @param area Konfigurationsbereich
 	 * @param type Objekttyp
@@ -148,9 +154,9 @@ class Role extends DataLoader {
 		_readLock.lock();
 		try{
 			// Verhalten dieser Funktion:
-			// Standardm‰ﬂig wird keine Aussage angenommen.
-			// in Aktivit‰tObjekte werden dann die Aktivit‰ten ¸berlagert nach der Reihenfolge Keine Aussage < Erlaubt < Verboten
-			// Falls in Aktivit‰tObjekte keine Aussage gemacht werden kann, werden die untergeordneten Rollen beachtet und Additiv vereinigt.
+			// Standardm√§√üig wird keine Aussage angenommen.
+			// in Aktivit√§tObjekte werden dann die Aktivit√§ten √ºberlagert nach der Reihenfolge Keine Aussage < Erlaubt < Verboten
+			// Falls in Aktivit√§tObjekte keine Aussage gemacht werden kann, werden die untergeordneten Rollen beachtet und Additiv vereinigt.
 
 			Role.PermissionState currentState = Role.PermissionState.IMPLICIT_FORBIDDEN;
 			for(final ActivityObject activity : _activitiesObject) {
@@ -165,8 +171,8 @@ class Role extends DataLoader {
 				for(final Role innerRole : _innerRoles) {
 					final Role.PermissionState p = innerRole.getPermissionObjectChange(area, type);
 					if(p.getPriority() > currentState.getPriority() && p != Role.PermissionState.EXPLICIT_FORBIDDEN) {
-						// Falls die innere Rolle Role.PermissionState.EXPLICIT_FORBIDDEN zur¸ckgibt muss das ignoriert werden,
-						// da sich verschachtelte Rollen nur Additiv erg‰nzen sollen
+						// Falls die innere Rolle Role.PermissionState.EXPLICIT_FORBIDDEN zur√ºckgibt muss das ignoriert werden,
+						// da sich verschachtelte Rollen nur Additiv erg√§nzen sollen
 						currentState = p;
 					}
 				}
@@ -189,7 +195,7 @@ class Role extends DataLoader {
 	}
 
 	/**
-	 * Pr¸ft den Berechtigungsstatus f¸r die Ver‰nderung von Mengen
+	 * Pr√ºft den Berechtigungsstatus f√ºr die Ver√§nderung von Mengen
 	 *
 	 * @param area Konfigurationsbereich
 	 * @param type Mengentyp
@@ -203,9 +209,9 @@ class Role extends DataLoader {
 		_readLock.lock();
 				try{
 			// Verhalten dieser Funktion:
-			// Standardm‰ﬂig wird keine Aussage angenommen.
-			// in Aktivit‰tMengen werden dann die Aktivit‰ten ¸berlagert nach der Reihenfolge Keine Aussage < Erlaubt < Verboten
-			// Falls in Aktivit‰tMengen keine Aussage gemacht werden kann, werden die untergeordneten Rollen beachtet und Additiv vereinigt.
+			// Standardm√§√üig wird keine Aussage angenommen.
+			// in Aktivit√§tMengen werden dann die Aktivit√§ten √ºberlagert nach der Reihenfolge Keine Aussage < Erlaubt < Verboten
+			// Falls in Aktivit√§tMengen keine Aussage gemacht werden kann, werden die untergeordneten Rollen beachtet und Additiv vereinigt.
 
 			Role.PermissionState currentState = Role.PermissionState.IMPLICIT_FORBIDDEN;
 			for(final ActivityObjectSet activity : _activitiesObjectSet) {
@@ -220,8 +226,8 @@ class Role extends DataLoader {
 						for(final Role innerRole : _innerRoles) {
 							final Role.PermissionState p = innerRole.getPermissionObjectSetChange(area, type);
 							if(p.getPriority() > currentState.getPriority() && p != Role.PermissionState.EXPLICIT_FORBIDDEN) {
-								// Falls die innere Rolle Role.PermissionState.EXPLICIT_FORBIDDEN zur¸ckgibt muss das ignoriert werden,
-								// da sich verschachtelte Rollen nur Additiv erg‰nzen sollen
+								// Falls die innere Rolle Role.PermissionState.EXPLICIT_FORBIDDEN zur√ºckgibt muss das ignoriert werden,
+								// da sich verschachtelte Rollen nur Additiv erg√§nzen sollen
 								currentState = p;
 							}
 						}
@@ -254,15 +260,15 @@ class Role extends DataLoader {
 			_innerRoles.clear();
 			_disabledInnerRoles.clear();
 			if(data != null) {
-				final Data.Array activitiesData = data.getArray("Aktivit‰tDaten");
+				final Data.Array activitiesData = data.getArray("Aktivit√§tDaten");
 				for(int i = 0; i < activitiesData.getLength(); i++) {
 					_activitiesData.add(new ActivityData(activitiesData.getItem(i)));
 				}
-				final Data.Array activitiesObject = data.getArray("Aktivit‰tObjekte");
+				final Data.Array activitiesObject = data.getArray("Aktivit√§tObjekte");
 				for(int i = 0; i < activitiesObject.getLength(); i++) {
 					_activitiesObject.add(new ActivityObject(activitiesObject.getItem(i)));
 				}
-				final Data.Array activitiesObjectSet = data.getArray("Aktivit‰tMengen");
+				final Data.Array activitiesObjectSet = data.getArray("Aktivit√§tMengen");
 				for(int i = 0; i < activitiesObjectSet.getLength(); i++) {
 					_activitiesObjectSet.add(new ActivityObjectSet(activitiesObjectSet.getItem(i)));
 				}
@@ -278,7 +284,7 @@ class Role extends DataLoader {
 		}
 	}
 
-	/** Signalisiert allen deaktivierten referenzierten Rollen, dass diese Rolle ge‰ndert wurde. Wird gebraucht um unendliche Rekursionen aufzulˆsen. */
+	/** Signalisiert allen deaktivierten referenzierten Rollen, dass diese Rolle ge√§ndert wurde. Wird gebraucht um unendliche Rekursionen aufzul√∂sen. */
 	private void updateChildren() {
 		_writeLock.lock();
 		try{
@@ -294,7 +300,7 @@ class Role extends DataLoader {
 	}
 
 	/**
-	 * Gibt die referenzierten Unter-Rollen zur¸ck
+	 * Gibt die referenzierten Unter-Rollen zur√ºck
 	 *
 	 * @return Liste mit Role-Objekten
 	 */
@@ -310,7 +316,7 @@ class Role extends DataLoader {
 	}
 
 	/**
-	 * Deaktiviert die angegebene Unter-Rolle um Rekursionen aufzulˆsen
+	 * Deaktiviert die angegebene Unter-Rolle um Rekursionen aufzul√∂sen
 	 *
 	 * @param node Das zu entfernende Kindobjekt
 	 */
@@ -339,10 +345,10 @@ class Role extends DataLoader {
 	}
 
 	/**
-	 * Pr¸ft, ob sich ein Typ in einer angegebenen Liste von Typen befindet. Dabei kann Typ auch ein abgeleiteter Typ eines erlaubten Typen sein.
-	 * @param typeToTest Objekttyp, bei den gepr¸ft wird ob er in der Liste enthalten ist
+	 * Pr√ºft, ob sich ein Typ in einer angegebenen Liste von Typen befindet. Dabei kann Typ auch ein abgeleiteter Typ eines erlaubten Typen sein.
+	 * @param typeToTest Objekttyp, bei den gepr√ºft wird ob er in der Liste enthalten ist
 	 * @param typesToAllow Liste von Objekttypen
-	 * @return true wenn typeToTest oder einer seiner ¸bergeordneten Typen in der Liste enthalten ist
+	 * @return true wenn typeToTest oder einer seiner √ºbergeordneten Typen in der Liste enthalten ist
 	 */
 	private static boolean matchesType(final SystemObjectType typeToTest, final List<? extends SystemObjectType> typesToAllow) {
 		for(final SystemObjectType typeToAllow : typesToAllow) {
@@ -371,26 +377,26 @@ class Role extends DataLoader {
 	/** Stellt einen Berechtigungsstatus dar. */
 	public enum PermissionState {
 
-		/** Implizites Nein, oder keine Aussage. Geringste Priorit‰t */
+		/** Implizites Nein, oder keine Aussage. Geringste Priorit√§t */
 		IMPLICIT_FORBIDDEN(0),
-		/** Explizites Ja, also erlaubt. kann von explizitem Nein ¸berschrieben werden */
+		/** Explizites Ja, also erlaubt. kann von explizitem Nein √ºberschrieben werden */
 		EXPLICIT_ALLOWED(1),
-		/** Explizites Nein, hˆchste Priorit‰t, ¸berschreibt alles. */
+		/** Explizites Nein, h√∂chste Priorit√§t, √ºberschreibt alles. */
 		EXPLICIT_FORBIDDEN(2);
 
 		private int _priority;
 
 		/**
 		 * Erstellt ein neues PermissionState
-		 * @param priority Hˆhere Priorit‰t hat Vorrang
+		 * @param priority H√∂here Priorit√§t hat Vorrang
 		 */
 		PermissionState(final int priority) {
 			_priority = priority;
 		}
 
 		/**
-		 * Gibt die Priorit‰t zur¸ck
-		 * @return Priorit‰t
+		 * Gibt die Priorit√§t zur√ºck
+		 * @return Priorit√§t
 		 */
 		public int getPriority() {
 			return _priority;
@@ -412,7 +418,7 @@ class Role extends DataLoader {
 		}
 	}
 
-	/** Kapselt eine Datenanmeldungs-Aktivit‰t innerhalb einer Rolle */
+	/** Kapselt eine Datenanmeldungs-Aktivit√§t innerhalb einer Rolle */
 	private class ActivityData {
 
 		private List<AttributeGroup> _attributeGroups = new ArrayList<AttributeGroup>();
@@ -430,9 +436,9 @@ class Role extends DataLoader {
 		private PermissionState _allowDrain;
 
 		/**
-		 * Erstellt eine neue Aktivit‰t
+		 * Erstellt eine neue Aktivit√§t
 		 *
-		 * @param data Ausschnitt aus einem Rollen-Data-Objekt, das die Aktivit‰t enth‰lt.
+		 * @param data Ausschnitt aus einem Rollen-Data-Objekt, das die Aktivit√§t enth√§lt.
 		 */
 		public ActivityData(final Data data) {
 			final SystemObject[] atgs = data.getReferenceArray("Attributgruppe").getSystemObjectArray();
@@ -447,21 +453,21 @@ class Role extends DataLoader {
 			for(final SystemObject area : configurationAreas) {
 				_configurationAreas.add((ConfigurationArea)area);
 			}
-			_allowReceiver = PermissionState.parse(data.getTextValue("Empf‰nger").getValueText());
+			_allowReceiver = PermissionState.parse(data.getTextValue("Empf√§nger").getValueText());
 			_allowSender = PermissionState.parse(data.getTextValue("Sender").getValueText());
 			_allowSource = PermissionState.parse(data.getTextValue("Quelle").getValueText());
 			_allowDrain = PermissionState.parse(data.getTextValue("Senke").getValueText());
 		}
 
 		/**
-		 * Pr¸ft den Berechtigungsstatus f¸r eine angegebene Datenanmeldung
+		 * Pr√ºft den Berechtigungsstatus f√ºr eine angegebene Datenanmeldung
 		 *
 		 * @param atg    Attributgruppe
 		 * @param asp    Aspekt
 		 * @param action Art der Datenanmeldung
 		 *
 		 * @return <ul> <li>{@link PermissionState#IMPLICIT_FORBIDDEN} wenn keine Aussage gemacht werden kann</li> <li>{@link PermissionState#EXPLICIT_ALLOWED} wenn
-		 *         die Aktion von dieser Aktivit‰t erlaubt wird</li> <li>{@link PermissionState#EXPLICIT_FORBIDDEN} wenn die Aktion von dieser Aktivit‰t explizit
+		 *         die Aktion von dieser Aktivit√§t erlaubt wird</li> <li>{@link PermissionState#EXPLICIT_FORBIDDEN} wenn die Aktion von dieser Aktivit√§t explizit
 		 *         verboten wird</li> </ul>
 		 */
 		public PermissionState getPermission(final AttributeGroup atg, final Aspect asp, final UserAction action) {
@@ -496,7 +502,7 @@ class Role extends DataLoader {
 		}
 	}
 
-	/** Kapselt eine Objekterstellungs/-ver‰nderungs-/-entfernungs-Aktivit‰t innerhalb einer Rolle */
+	/** Kapselt eine Objekterstellungs/-ver√§nderungs-/-entfernungs-Aktivit√§t innerhalb einer Rolle */
 	private static class ActivityObject {
 
 		private List<SystemObjectType> _systemObjectTypes = new ArrayList<SystemObjectType>();
@@ -506,9 +512,9 @@ class Role extends DataLoader {
 		private PermissionState _allowChange;
 
 		/**
-		 * Erstellt eine neue Aktivit‰t
+		 * Erstellt eine neue Aktivit√§t
 		 *
-		 * @param data Ausschnitt aus einem Rollen-Data-Objekt, das die Aktivit‰t enth‰lt.
+		 * @param data Ausschnitt aus einem Rollen-Data-Objekt, das die Aktivit√§t enth√§lt.
 		 */
 		public ActivityObject(final Data data) {
 			final SystemObject[] atgs = data.getReferenceArray("Objekttyp").getSystemObjectArray();
@@ -519,17 +525,17 @@ class Role extends DataLoader {
 			for(final SystemObject atg : asps) {
 				_configurationAreas.add((ConfigurationArea)atg);
 			}
-			_allowChange = PermissionState.parse(data.getTextValue("ObjekteErzeugenƒndernLˆschen").getValueText());
+			_allowChange = PermissionState.parse(data.getTextValue("ObjekteErzeugen√ÑndernL√∂schen").getValueText());
 		}
 
 		/**
-		 * Pr¸ft den Berechtigungsstatus f¸r die Erstellung/Ver‰nderung/Lˆschung von Objekten
+		 * Pr√ºft den Berechtigungsstatus f√ºr die Erstellung/Ver√§nderung/L√∂schung von Objekten
 		 *
 		 * @param configurationArea Konfigurationsbereich
 		 * @param type              ObjektTyp
 		 *
 		 * @return <ul> <li>{@link PermissionState#IMPLICIT_FORBIDDEN} wenn keine Aussage gemacht werden kann</li> <li>{@link PermissionState#EXPLICIT_ALLOWED} wenn
-		 *         die Aktion von dieser Aktivit‰t erlaubt wird</li> <li>{@link PermissionState#EXPLICIT_FORBIDDEN} wenn die Aktion von dieser Aktivit‰t explizit
+		 *         die Aktion von dieser Aktivit√§t erlaubt wird</li> <li>{@link PermissionState#EXPLICIT_FORBIDDEN} wenn die Aktion von dieser Aktivit√§t explizit
 		 *         verboten wird</li> </ul>
 		 */
 		public PermissionState getPermission(final ConfigurationArea configurationArea, final SystemObjectType type) {
@@ -558,9 +564,9 @@ class Role extends DataLoader {
 		private PermissionState _allowChange;
 
 		/**
-		 * Erstellt eine neue Aktivit‰t
+		 * Erstellt eine neue Aktivit√§t
 		 *
-		 * @param data Ausschnitt aus einem Rollen-Data-Objekt, das die Aktivit‰t enth‰lt.
+		 * @param data Ausschnitt aus einem Rollen-Data-Objekt, das die Aktivit√§t enth√§lt.
 		 */
 		public ActivityObjectSet(final Data data) {
 			final SystemObject[] atgs = data.getReferenceArray("Mengentyp").getSystemObjectArray();
@@ -571,17 +577,17 @@ class Role extends DataLoader {
 			for(final SystemObject atg : asps) {
 				_configurationAreas.add((ConfigurationArea)atg);
 			}
-			_allowChange = PermissionState.parse(data.getTextValue("Mengeƒndern").getValueText());
+			_allowChange = PermissionState.parse(data.getTextValue("Menge√Ñndern").getValueText());
 		}
 
 		/**
-		 * Pr¸ft den Berechtigungsstatus f¸r die Ver‰nderung von Mengen
+		 * Pr√ºft den Berechtigungsstatus f√ºr die Ver√§nderung von Mengen
 		 *
 		 * @param configurationArea Konfigurationsbereich
 		 * @param type              Mengentyp
 		 *
 		 * @return <ul> <li>{@link PermissionState#IMPLICIT_FORBIDDEN} wenn keine Aussage gemacht werden kann</li> <li>{@link PermissionState#EXPLICIT_ALLOWED} wenn
-		 *         die Aktion von dieser Aktivit‰t erlaubt wird</li> <li>{@link PermissionState#EXPLICIT_FORBIDDEN} wenn die Aktion von dieser Aktivit‰t explizit
+		 *         die Aktion von dieser Aktivit√§t erlaubt wird</li> <li>{@link PermissionState#EXPLICIT_FORBIDDEN} wenn die Aktion von dieser Aktivit√§t explizit
 		 *         verboten wird</li> </ul>
 		 */
 		public PermissionState getPermission(final ConfigurationArea configurationArea, final ObjectSetType type) {
