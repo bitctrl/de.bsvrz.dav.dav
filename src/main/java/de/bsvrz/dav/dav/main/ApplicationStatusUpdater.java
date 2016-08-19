@@ -179,7 +179,7 @@ public final class ApplicationStatusUpdater extends Thread {
 		final long applicationId = unknownObject.getId();
 		if(applicationId == 0 || applicationId == -1) return false;
 		final SystemObject unknownSystemobject = _dataModel.getObject(applicationId);
-		final SystemObject unknownUser = _dataModel.getObject(unknownObject.getRemoteUserId());
+		final SystemObject unknownUser = _dataModel.getObject(unknownObject.getUserLogin().toLong());
 
 		if(unknownSystemobject == null) {
 			if(unknownUser == null) {
@@ -223,7 +223,7 @@ public final class ApplicationStatusUpdater extends Thread {
 					final SystemObject subscribedApplicationSystemObject = _dataModel.getObject(applicationConnection.getId());
 					listEntry.getItem("applikation").asReferenceValue().setSystemObject(subscribedApplicationSystemObject);
 
-					final SystemObject subscribedUserSystemObject = _dataModel.getObject(applicationConnection.getRemoteUserId());
+					final SystemObject subscribedUserSystemObject = _dataModel.getObject(applicationConnection.getUserLogin().toLong());
 					listEntry.getItem("benutzer").asReferenceValue().setSystemObject(subscribedUserSystemObject);
 
 					listEntry.getItem("seit").asTimeValue().setMillis(applicationConnection.getConnectionCreatedTime());

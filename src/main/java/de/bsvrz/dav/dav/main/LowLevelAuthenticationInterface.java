@@ -27,6 +27,7 @@
 package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.AuthentificationProcess;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 
 /**
  * Low-Level-Authentifizierung für angemeldete Applikationen undDatenverteiler
@@ -40,7 +41,7 @@ public interface LowLevelAuthenticationInterface {
 	 * Prüft, ob es sich um einen gültigen Benutzer handelt
 	 * @return die Benutzerid wenn er berechtigt ist sonst -1
 	 */
-	long isValidUser(String userName, byte[] encryptedPassword, String text, AuthentificationProcess authenticationProcess, String userTypePid);
+	UserLogin isValidUser(String userName, byte[] encryptedPassword, String text, AuthentificationProcess authenticationProcess, String userTypePid);
 
 	AuthentificationComponent getAuthenticationComponent();
 }

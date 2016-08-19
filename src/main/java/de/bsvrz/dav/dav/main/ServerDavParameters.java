@@ -29,17 +29,20 @@
 package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.ParameterizedConnectionInterface;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpClientAuthentication;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpCryptoParameter;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpUtilities;
 import de.bsvrz.dav.daf.main.ClientDavParameters;
+import de.bsvrz.dav.daf.main.EncryptionConfiguration;
 import de.bsvrz.dav.daf.main.MissingParameterException;
+import de.bsvrz.dav.daf.main.authentication.*;
 import de.bsvrz.dav.daf.main.impl.ArgumentParser;
 import de.bsvrz.dav.daf.main.impl.CommunicationConstant;
 import de.bsvrz.dav.daf.main.impl.InvalidArgumentException;
 import de.bsvrz.sys.funclib.commandLineArgs.ArgumentList;
 import de.bsvrz.sys.funclib.debug.Debug;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -132,9 +135,6 @@ public class ServerDavParameters {
 	/** Der Name des Benutzers */
 	private String _userName;
 
-	/** Das Benutzer-Passwort */
-	private String _userPassword;
-
 	/** Die lokale Datenverteiler-Id */
 	private long _dataTransmitterId;
 
@@ -182,16 +182,16 @@ public class ServerDavParameters {
 	private String _configurationUserName;
 
 	/** Das Benutzerpasswort der Konfiguration */
-	private String _configurationUserPassword;
+	private ClientCredentials _configurationClientCredentials;
 
 	/** Der Benutzername der Parametrierung */
 	private String _parameterUserName;
 
 	/** Das Benutzerpasswort der Parametrierung */
-	private String _parameterUserPassword;
+	private ClientCredentials _parameterClientCredentials;
 
 	/** Benutzerpassworttabelle */
-	private Properties _userProperties;
+	private UserProperties _userProperties;
 
 	/** Flag, das angibt, ob die Benutzerrechte durch diesen Datenverteiler geprüft werden sollen. */
 	private UserRightsChecking _userRightsChecking = UserRightsChecking.Compatibility_Enabled;
@@ -216,6 +216,16 @@ public class ServerDavParameters {
 	 */
 	private String _configAreaPidForApplicationObjects = "";
 
+	/**
+	 * Ob die alte Hmac-Authentifizierung erlaubt ist.
+	 */
+	private boolean _allowHmacAuthentication;
+
+	/**
+	 * Bevorzugte Konfiguration der Verschlüsselung
+	 */
+	private EncryptionConfiguration _encryptionPreference;
+	
 	/**
 	 * Erzeugt einen neuen Parametersatz mit Defaultwerten für die einzelnen Parameter und setzt die in den übergebenen Aufrufargumenten angegebenen Parameter mit
 	 * den angegebenen Werten. Unbekannte Aufrufargumente werden ignoriert. Bekannte Aufrufargumente werden nach der Umsetzung auf null gesetzt, um zu
@@ -328,6 +338,11 @@ public class ServerDavParameters {
 		}
 		_lowLevelCommunicationName = tcpCommunicationClassName;
 		_lowLevelCommunicationParameters = tcpCommunicationParameters;
+
+		
+		_allowHmacAuthentication = argumentList.fetchArgument("-erlaubeHmacAuthentifizierung=ja").booleanValue();
+
+		_encryptionPreference = argumentList.fetchArgument("-verschluesselung=auto").asEnum(EncryptionConfiguration.class);
 	}
 
 	/**
@@ -524,31 +539,29 @@ public class ServerDavParameters {
 					tmp = ArgumentParser.getParameter(parameter, AUTHENTIFICATION_FILE_KEY);
 					if((tmp == null) || (tmp.length() == 0)) {
 						throw new MissingParameterException(
-								"Authentificationsdatei-Parameter muss folgende Formatierung besitzen: -authentifizierung=Zeichenkette"
+								"Authentifizierungsdatei-Parameter muss folgende Formatierung besitzen: -authentifizierung=Zeichenkette"
 						);
 					}
+					if(tmp.equals("STDIN") || tmp.equalsIgnoreCase("interaktiv")){
+						_userProperties = InteractiveAuthentication.getInstance();
+					}
 					else {
-						_userProperties = new Properties();
-						try {
-							_userProperties.load(new BufferedInputStream(new FileInputStream(tmp)));
-						}
-						catch(IOException ex) {
-							throw new MissingParameterException("Spezifizierte Authentifizierungsdatei nicht vorhanden");
-						}
+						_userProperties = new AuthenticationFile(Paths.get(tmp));
 					}
 				}
 				catch(InvalidArgumentException ex) {
 					throw new MissingParameterException(
-							"Authentificationsdatei-Parameter muss folgende Formatierung besitzen: -authentifizierung=Zeichenkette"
+							"Authentifizierungsdatei-Parameter muss folgende Formatierung besitzen: -authentifizierung=Zeichenkette"
 					);
 				}
 			}
 
 			//User name
 			parameter = getParameter(startArguments, USER_NAME_KEY);
+			String userPassword;
 			if(parameter == null) {
 				_userName = resourceBundle.getString("Benutzername");
-				_userPassword = resourceBundle.getString("Benutzerpasswort");
+				userPassword = resourceBundle.getString("Benutzerpasswort");
 			}
 			else {
 				try {
@@ -558,7 +571,7 @@ public class ServerDavParameters {
 								"Benutzername-Parameter muss folgende Formatierung besitzen: -benutzer=Zeichenkette"
 						);
 					}
-					_userPassword = null;
+					userPassword = null;
 				}
 				catch(InvalidArgumentException ex) {
 					throw new MissingParameterException(
@@ -566,20 +579,7 @@ public class ServerDavParameters {
 					);
 				}
 			}
-			//Authentification file name
-			if(_userPassword == null) {
-				if(_userProperties == null) {
-					throw new MissingParameterException("Keine Authentifizierungsdatei angegeben");
-				}
-				else {
-					_userPassword = _userProperties.getProperty(_userName);
-					if((_userPassword == null) || (_userPassword.length() == 0)) {
-						throw new MissingParameterException(
-								"Das Passwort für den Benutzer " + _userName + " ist in der Authentifizierungsdatei nicht vorhanden"
-						);
-					}
-				}
-			}
+			
 			//Authentification process
 			parameter = getParameter(startArguments, AUTHENTIFICATION_PROCESS_KEY);
 			if(parameter == null) {
@@ -611,80 +611,102 @@ public class ServerDavParameters {
 
 			//Konfiguration User name
 			parameter = getParameter(startArguments, CONFIGURATION_USER_NAME_KEY);
-			if(parameter == null) {
-				_configurationUserName = resourceBundle.getString("configurationUserName");
-				_configurationUserPassword = resourceBundle.getString("configurationUserPassword");
-			}
-			else {
-				try {
-					_configurationUserName = ArgumentParser.getParameter(parameter, CONFIGURATION_USER_NAME_KEY);
-					if((_configurationUserName == null) || (_configurationUserName.length() == 0)) {
-						throw new MissingParameterException(
-								"KonfigurationsbenutzerName-Parameter muss folgende Formatierung besitzen: -konfigurationsBenutzer=Zeichenkette"
-						);
-					}
-					_configurationUserPassword = null;
-				}
-				catch(InvalidArgumentException ex) {
-					throw new MissingParameterException(
-							"KonfigurationsbenutzerName-Parameter muss folgende Formatierung besitzen: -konfigurationsBenutzer=Zeichenkette"
-					);
-				}
-			}
-
-			//Konfig user password
-			if(_configurationUserPassword == null) {
-				if(_userProperties == null) {
-					throw new MissingParameterException("Keine Authentifizierungsdatei angegeben");
+			if(_localConfiguration) {
+				if(parameter == null) {
+					_configurationUserName = resourceBundle.getString("configurationUserName");
 				}
 				else {
-					_configurationUserPassword = _userProperties.getProperty(_configurationUserName);
-					if((_configurationUserPassword == null) || (_configurationUserPassword.length() == 0)) {
+					try {
+						_configurationUserName = ArgumentParser.getParameter(parameter, CONFIGURATION_USER_NAME_KEY);
+						if((_configurationUserName == null) || (_configurationUserName.length() == 0)) {
+							throw new MissingParameterException(
+									"KonfigurationsbenutzerName-Parameter muss folgende Formatierung besitzen: -konfigurationsBenutzer=Zeichenkette"
+							);
+						}
+					}
+					catch(InvalidArgumentException ex) {
 						throw new MissingParameterException(
-								"Das Passwort für den Konfigurationsbenutzer " + _configurationUserName + " ist in der Authentifizierungsdatei nicht vorhanden"
+								"KonfigurationsbenutzerName-Parameter muss folgende Formatierung besitzen: -konfigurationsBenutzer=Zeichenkette", ex
 						);
 					}
 				}
-			}
 
+				//Konfig user password
+				if(_userProperties == null){
+					_debug.warning("Keine Authentifizierungsdatei angegeben. Verwende Standardpasswort um die Konfiguration unter dem Benutzer \"" + _configurationUserName + "\" anzumelden.");
+					_configurationClientCredentials = ClientCredentials.ofString(resourceBundle.getString("configurationUserPassword"));					
+				}
+				else {
+					_configurationClientCredentials = _userProperties.getClientCredentials(_configurationUserName);
+					if((_configurationClientCredentials == null)) {
+						if(parameter == null) {
+							_debug.warning("Das Passwort für den Konfigurationsbenutzer " + _configurationUserName + " ist in der Authentifizierungsdatei nicht vorhanden.");
+							_configurationClientCredentials = ClientCredentials.ofString(resourceBundle.getString("configurationUserPassword"));
+						}
+						else {
+							throw new MissingParameterException(
+									"Das Passwort für den Konfigurationsbenutzer " + _configurationUserName + " ist in der Authentifizierungsdatei nicht vorhanden."
+							);
+						}
+					}
+				}
+			}
+			else if(parameter != null){
+				_debug.warning("Aufrufargument " + parameter + " wird ignoriert, da eine Remote-Konfiguration verwendet wird.");
+			}
+			
 			//Parameter User name
 			parameter = getParameter(startArguments, PARAMETER_USER_NAME_KEY);
 			if(parameter == null) {
 				_parameterUserName = resourceBundle.getString("parameterUserName");
-				_parameterUserPassword = resourceBundle.getString("parameterUserPassword");
 			}
 			else {
 				try {
 					_parameterUserName = ArgumentParser.getParameter(parameter, PARAMETER_USER_NAME_KEY);
 					if((_parameterUserName == null) || (_parameterUserName.length() == 0)) {
 						throw new MissingParameterException(
-								"ParametrierungsbenutzerName-Parameter muss folgende Formatierung besitzen: -parametrierungsBenutzer=Zeichenkette"
+								"parametrierungsBenutzer-Parameter muss folgende Formatierung besitzen: -parametrierungsBenutzer=Zeichenkette"
 						);
 					}
-					_parameterUserPassword = null;
 				}
 				catch(InvalidArgumentException ex) {
 					throw new MissingParameterException(
-							"parametrierungsbenutzerName-Parameter muss folgende Formatierung besitzen: -parametrierungsBenutzer=Zeichenkette"
+							"parametrierungsBenutzer-Parameter muss folgende Formatierung besitzen: -parametrierungsBenutzer=Zeichenkette"
 					);
 				}
 			}
 
 			//Parameter password
-			if(_parameterUserPassword == null) {
+			if(_parameterClientCredentials == null) {
 				if(_userProperties == null) {
-					throw new MissingParameterException("Keine Authentifizierungsdatei angegeben");
+					if(parameter == null){
+						_parameterClientCredentials = ClientCredentials.ofString(resourceBundle.getString("parameterUserPassword"));
+						_debug.warning("Verwende Standard-Authentifizierungsdaten für Parametrierungsbenutzer. Bitte Benutzer für Parametrierung anlegen und mit Aufrufparameter " + PARAMETER_USER_NAME_KEY + " auswählen.");
+					}
+					else {
+						throw new MissingParameterException("Keine Authentifizierungsdatei angegeben");
+					}
 				}
 				else {
-					_parameterUserPassword = _userProperties.getProperty(_parameterUserName);
-					if((_parameterUserPassword == null) || (_parameterUserPassword.length() == 0)) {
-						throw new MissingParameterException(
-								"Das Passwort für den Parametrierungsbenutzer " + _parameterUserName + " ist in der Authentifizierungsdatei nicht vorhanden"
-						);
+					_parameterClientCredentials = _userProperties.getClientCredentials(_parameterUserName);
+					if(parameter == null && _parameterClientCredentials == null) {
+						_parameterClientCredentials = ClientCredentials.ofString(resourceBundle.getString("parameterUserPassword"));
+						_debug.warning("Verwende Standard-Authentifizierungsdaten für Parametrierungsbenutzer. Bitte Benutzer für Parametrierung anlegen und mit Aufrufparameter " + PARAMETER_USER_NAME_KEY + " auswählen.");
 					}
 				}
 			}
 
+			// Datenverteiler-Passwort
+			if(_userProperties == null) {
+				if(userPassword == null) {
+					throw new MissingParameterException("Keine Authentifizierungsdatei angegeben");
+				}
+				else {
+					_debug.warning("Es wird das Standard-Passwort für die Datenverteilerauthentifizierung verwendet, eine Authentifizierungsdatei sollte angegeben werden: -authentifizierung=Zeichenkette");
+					_userProperties = new SimpleUserProperties(_userName, ClientCredentials.ofString(userPassword));
+				}
+			}
+			
 			//Data transmitter Id
 			parameter = getParameter(startArguments, TRANSMITTER_ID_KEY);
 			if(parameter == null) {
@@ -925,14 +947,15 @@ public class ServerDavParameters {
 	/**
 	 * Bestimmt das in der Passwort-Datei gespeicherte Passwort eines bestimmten Benutzers.
 	 * @param userName Name des Benutzers
+	 * @param suffix   Verbindungsziel (z.B. Datenverteiler-Pid)
 	 * @return Passwort des Benutzers oder <code>null</code>, wenn kein Passwort für den Benutzer in der Passwort-Datei enthalten ist.
 	 */
-	public String getStoredPassword(String userName) {
+	public ClientCredentials getStoredClientCredentials(String userName, final String suffix) {
 		if(_userProperties == null) {
 			_debug.warning("Lokale Passwort-Datei nicht verfügbar. Sie sollte mit dem Aufrufargument -authentifizierung= angegeben werden.");
 			return null;
 		}
-		return _userProperties.getProperty(userName);
+		return _userProperties.getClientCredentials(userName, suffix);
 	}
 
 	/**
@@ -1190,26 +1213,6 @@ public class ServerDavParameters {
 	public final void setUserName(String userName) {
 		if(userName != null) {
 			_userName = userName;
-		}
-	}
-
-	/**
-	 * Bestimmt das bei der Authentifizierung zu verwendende Passwort.
-	 *
-	 * @return userPassword Passwort des Benutzers.
-	 */
-	public final String getUserPassword() {
-		return _userPassword;
-	}
-
-	/**
-	 * Setzt das bei der Authentifizierung zu verwendende Passwort.
-	 *
-	 * @param userPassword Passwort des Benutzers.
-	 */
-	public final void setUserPassword(String userPassword) {
-		if(userPassword != null) {
-			_userPassword = userPassword;
 		}
 	}
 
@@ -1473,21 +1476,21 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt der Konfigurationsbenutzerpasswort zurück
+	 * Gibt Passwort oder Login-Token für den Konfigurationsbenutzer zurück
 	 *
 	 * @return der Konfigurationsbenutzerpasswort
 	 */
-	public final String getConfigurationUserPassword() {
-		return _configurationUserPassword;
+	public final ClientCredentials getConfigurationClientCredentials() {
+		return _configurationClientCredentials;
 	}
 
 	/**
-	 * Setzt der Konfigurationsbenutzerpasswort auf den neuen Wert.
+	 * Setzt Passwort oder Login-Token für den Konfigurationsbenutzer
 	 *
-	 * @param configUserPassword das Konfigurationsbenutzerpasswort
+	 * @param configurationClientCredentials das Konfigurationsbenutzerpasswort
 	 */
-	public final void setConfigurationUserPassword(String configUserPassword) {
-		_configurationUserPassword = configUserPassword;
+	public final void setConfigurationClientCredentials(ClientCredentials configurationClientCredentials) {
+		_configurationClientCredentials = configurationClientCredentials;
 	}
 
 
@@ -1510,21 +1513,21 @@ public class ServerDavParameters {
 	}
 
 	/**
-	 * Gibt der Parametrierungsbenutzerpasswort zurück
+	 * Gibt Passwort oder Login-Token für den Parametrierungsbenutzer zurück
 	 *
-	 * @return der Parametrierungsbenutzerpasswort
+	 * @return Passwort oder Login-Token für den Parametrierungsbenutzer
 	 */
-	public final String getParameterUserPassword() {
-		return _parameterUserPassword;
+	public final ClientCredentials getParameterClientCredentials() {
+		return _parameterClientCredentials;
 	}
 
 	/**
-	 * Setzt der Parametrierungsbenutzerpasswort auf den neuen Wert.
+	 * Setzt Passwort oder Login-Token für den Parametrierungsbenutzer auf den neuen Wert.
 	 *
 	 * @param paramUserPassword das Parametrierungsbenutzerpasswort
 	 */
-	public final void setParameterUserPassword(String paramUserPassword) {
-		_parameterUserPassword = paramUserPassword;
+	public final void setParameterClientCredentials(ClientCredentials paramUserPassword) {
+		_parameterClientCredentials = paramUserPassword;
 	}
 
 	/** Gibt auf der Standardausgabe die möglichen Startargumente einer Datenverteilerapplikation aus. */
@@ -1601,7 +1604,7 @@ public class ServerDavParameters {
 		final String address;
 		final int subAddress;
 		final String userName;
-		final String userPassword;
+		ClientCredentials clientCredentials;
 		final String applicationName;
 		final String authentificationProcessName;
 		final int maxTelegramSize;
@@ -1619,9 +1622,16 @@ public class ServerDavParameters {
 			configurationPid = (String)objects[0];
 			address = "127.0.0.1";  // localhost über loopback
 			subAddress = getApplicationConnectionsSubAddress();
-			userName = "TransmitterLocalApplication@" + System.currentTimeMillis();
-			userPassword = "TransmitterLocalApplication";
-			applicationName = "TransmitterLocalApplication@" + System.currentTimeMillis();
+			String name = "TransmitterLocalApplication@" + System.currentTimeMillis();
+			userName = name;
+
+			clientCredentials = SrpClientAuthentication.createRandomToken(SrpCryptoParameter.getDefaultInstance());
+
+			if(System.getProperty("srp6.disable.login") != null) {
+				// Wenn SRP deaktiviert ist, muss hier ein Klartextpasswort verwendet werden
+				clientCredentials = ClientCredentials.ofPassword(SrpUtilities.bytesToHex(clientCredentials.getTokenData()).toCharArray());
+			}
+			applicationName = name;
 		}
 		else {
 			// If remotemode set the adress and sub adress of the destination transmitter
@@ -1633,7 +1643,7 @@ public class ServerDavParameters {
 			subAddress = ((Integer)objects[1]).intValue();
 			configurationPid = (String)objects[2];
 			userName = getUserName();
-			userPassword = getUserPassword();
+			clientCredentials = getStoredClientCredentials(userName, configurationPid);
 			applicationName = "TransmitterRemoteApplication@" + System.currentTimeMillis();
 		}
 
@@ -1649,7 +1659,6 @@ public class ServerDavParameters {
 				address,
 				subAddress,
 				userName,
-				userPassword,
 				applicationName,
 				authentificationProcessName,
 				maxTelegramSize,
@@ -1657,10 +1666,19 @@ public class ServerDavParameters {
 				sendKeepAliveTimeout,
 				outputBufferSize,
 				inputBufferSize,
-				communicationProtocolName
-		);
+				communicationProtocolName,
+		        _allowHmacAuthentication,
+		        _encryptionPreference
+		){
+			@Override
+			public boolean isSelfClientDavConnection() {
+				return true;
+			}
+		};
+		clientDavParameters.setUserProperties(new SimpleUserProperties(userName, clientCredentials));
 		// Interne Datenverteilerverbindung darf keine 2. Verbindung benutzen
 		clientDavParameters.setUseSecondConnection(false);
+
 		return clientDavParameters;
 	}
 
@@ -1693,6 +1711,38 @@ public class ServerDavParameters {
 	 */
 	public String getConfigAreaPidForApplicationObjects() {
 		return _configAreaPidForApplicationObjects;
+	}
+
+	/**
+	 * Gibt <tt>true</tt> zurück, wenn die alte Hmac-basierte Authentifizierung erlaubt ist
+	 * @return <tt>true</tt>, wenn die alte Hmac-basierte Authentifizierung erlaubt ist, sonst <tt>false</tt>
+	 */
+	public boolean isHmacAuthenticationAllowed() {
+		return _allowHmacAuthentication;
+	}
+
+	/**
+	 * Gibt die bevorzugte Verschlüsselungskonfiguration zurück.
+	 * @return die bevorzugte Verschlüsselungskonfiguration
+	 */
+	public EncryptionConfiguration getEncryptionPreference() {
+		return _encryptionPreference;
+	}
+
+	/**
+	 * Setzt, ob die alte Hmac-Authentifizierugn erlaubt sein soll
+	 * @param allowHmacAuthentication
+	 */
+	public void setAllowHmacAuthentication(final boolean allowHmacAuthentication) {
+		_allowHmacAuthentication = allowHmacAuthentication;
+	}
+
+	/**
+	 * Setzt ob die Verbindung verschlüsselt werden soll
+	 * @param encryptionPreference
+	 */
+	public void setEncryptionPreference(final EncryptionConfiguration encryptionPreference) {
+		_encryptionPreference = encryptionPreference;
 	}
 
 	/**

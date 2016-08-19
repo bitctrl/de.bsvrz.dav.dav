@@ -26,15 +26,10 @@
 
 package de.bsvrz.dav.dav.main;
 
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterBestWayUpdate;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataSubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataSubscriptionReceipt;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataTelegram;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataUnsubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterListsDeliveryUnsubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterListsSubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterListsUnsubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterListsUpdate;
+import de.bsvrz.dav.daf.communication.lowLevel.telegrams.*;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpNotSupportedException;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpVerifierAndUser;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunicationInterface;
 
@@ -66,10 +61,27 @@ public interface HighLevelTransmitterManagerInterface {
 	 * Bestimmt das Benutzerpasswort das zur Authentifizierung beim angegebenen Datenverteiler benutzt werden soll. Wenn der Benutzername in
 	 * der Topologie nicht vorgegeben ist, dann wird das Passwort des Standardbenutzers des Datenverteilers zurückgegeben.
 	 *
-	 * @param connectedTransmitterId Objekt-ID des anderen Datenverteilers.
+	 * @param transmitterId Objekt-ID des anderen Datenverteilers.
 	 * @return Passwort für die Authentifizierung beim anderen Datenverteiler.
 	 */
-	String getPasswordForAuthentication(long connectedTransmitterId);
+	ClientCredentials getClientCredentialsForAuthentication(long transmitterId);
+
+	/**
+	 * Bestimmt das Benutzerpasswort das zur Authentifizierung beim angegebenen Datenverteiler mit dem angegebenen Benutzernamen benutzt werden soll.
+	 *
+	 * @param userName  Benutzername
+	 * @param transmitterId Objekt-ID des anderen Datenverteilers.
+	 * @return Passwort für die Authentifizierung beim anderen Datenverteiler.
+	 */
+	ClientCredentials getClientCredentialsForAuthentication(String userName, long transmitterId);
+
+	/**
+	 * Fragt von der Konfiguration bei einer eingehenden Authentifizierungsanfrage den SRP-Verifier für den angegebenen Benutzer ab
+	 * @param userName Benutzername
+	 * @return SRP-Überprüfugnscode
+	 * @throws SrpNotSupportedException
+	 */
+	SrpVerifierAndUser fetchSrpVerifierAndAuthentication(String userName) throws SrpNotSupportedException;
 
 	/**
 	 * Gibt das Gewicht einer Verbindung zurück
@@ -161,4 +173,10 @@ public interface HighLevelTransmitterManagerInterface {
 	 * @param transmitterBestWayUpdate Telegramm
 	 */
 	void updateBestWay(T_T_HighLevelCommunication communication, TransmitterBestWayUpdate transmitterBestWayUpdate);
+
+	/**
+	 * Wird bei jedem Login-Versuch aufgerufen und sorgt dafür, dass bei wiederholten Brute-Force-Angriffen der Login verzögert wird.
+	 * @param passwordWasCorrect War das Passwort korrekt? Ausgebremst wird zwar immer, aber nur wenn das passwort falsch war, hat das eine Auswirkung auf folgende Login-Vesuche
+	 */
+	void throttleLoginAttempt(boolean passwordWasCorrect);
 }

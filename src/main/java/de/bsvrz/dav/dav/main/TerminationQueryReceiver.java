@@ -26,7 +26,9 @@
 
 package de.bsvrz.dav.dav.main;
 
-import de.bsvrz.dav.daf.main.*;
+import de.bsvrz.dav.daf.main.ClientReceiverInterface;
+import de.bsvrz.dav.daf.main.Data;
+import de.bsvrz.dav.daf.main.ResultData;
 import de.bsvrz.dav.dav.communication.appProtocol.T_A_HighLevelCommunicationInterface;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunicationInterface;
 import de.bsvrz.sys.funclib.debug.Debug;

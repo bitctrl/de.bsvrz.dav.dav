@@ -27,6 +27,7 @@
 package de.bsvrz.dav.dav.subscriptions;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.dav.main.ConnectionState;
 import de.bsvrz.dav.dav.main.SubscriptionsManager;
 import de.bsvrz.dav.dav.util.accessControl.UserAction;
@@ -133,13 +134,13 @@ public class RemoteSourceSubscription implements RemoteSendingSubscription, Remo
 
 	@Override
 	public boolean isAllowed() {
-		return _subscriptionsManager.isActionAllowed(getUserId(), _baseSubscriptionInfo, UserAction.SOURCE);
+		return _subscriptionsManager.isActionAllowed(getAuthenticationState(), _baseSubscriptionInfo, UserAction.SOURCE);
 	}
 
 	@Override
-	public long getUserId() {
-		if(_transmitterCommunication == null) return -1;
-		return _transmitterCommunication.getRemoteUserId();
+	public UserLogin getAuthenticationState() {
+		if(_transmitterCommunication == null) return UserLogin.notAuthenticated();
+		return _transmitterCommunication.getUserLogin();
 	}
 
 	@Override
@@ -168,6 +169,6 @@ public class RemoteSourceSubscription implements RemoteSendingSubscription, Remo
 		return "Ausgehende Anmeldung (" + _senderState + ", " + _connectionState + ")" +
 				" auf " + _subscriptionsManager.subscriptionToString(_baseSubscriptionInfo) +
 				" zur Quelle über " + _transmitterCommunication +
-		        " (Benutzer=" + _subscriptionsManager.objectToString(getUserId()) + ")";
+		        " (Benutzer=" + _subscriptionsManager.objectToString(getAuthenticationState().toLong()) + ")";
 	}
 }

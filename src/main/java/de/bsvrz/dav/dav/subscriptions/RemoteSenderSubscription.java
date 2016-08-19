@@ -28,6 +28,7 @@ package de.bsvrz.dav.dav.subscriptions;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterSubscriptionType;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.dav.main.ConnectionState;
 import de.bsvrz.dav.dav.main.SubscriptionsManager;
 import de.bsvrz.dav.dav.util.accessControl.UserAction;
@@ -119,12 +120,12 @@ public class RemoteSenderSubscription implements RemoteSendingSubscription {
 
 	@Override
 	public boolean isAllowed() {
-		return _subscriptionsManager.isActionAllowed(getUserId(),  _baseSubscriptionInfo, UserAction.SENDER);
+		return _subscriptionsManager.isActionAllowed(getAuthenticationState(), _baseSubscriptionInfo, UserAction.SENDER);
 	}
 
 	@Override
-	public long getUserId() {
-		return _transmitterCommunication.getRemoteUserId();
+	public UserLogin getAuthenticationState() {
+		return _transmitterCommunication.getUserLogin();
 	}
 
 	@Override
@@ -178,6 +179,6 @@ public class RemoteSenderSubscription implements RemoteSendingSubscription {
 		return "Eingehende Anmeldung (" +_senderState + ") als " +  "Sender" +
 				" auf " + _subscriptionsManager.subscriptionToString(_baseSubscriptionInfo) +
 				" über " + _transmitterCommunication +
-		       " (Benutzer=" + _subscriptionsManager.objectToString(getUserId()) + ")";
+		       " (Benutzer=" + _subscriptionsManager.objectToString(getAuthenticationState().toLong()) + ")";
 	}
 }

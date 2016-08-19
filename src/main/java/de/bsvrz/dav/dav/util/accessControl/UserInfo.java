@@ -27,12 +27,7 @@
 package de.bsvrz.dav.dav.util.accessControl;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
-import de.bsvrz.dav.daf.main.config.Aspect;
-import de.bsvrz.dav.daf.main.config.AttributeGroup;
-import de.bsvrz.dav.daf.main.config.ConfigurationArea;
-import de.bsvrz.dav.daf.main.config.ObjectSetType;
-import de.bsvrz.dav.daf.main.config.SystemObject;
-import de.bsvrz.dav.daf.main.config.SystemObjectType;
+import de.bsvrz.dav.daf.main.config.*;
 
 /**
  * Interface, das ein BenutzerInfo-Objekt repräsentiert, das nach verschiedenen Berechtigungen gefragt werden kann.

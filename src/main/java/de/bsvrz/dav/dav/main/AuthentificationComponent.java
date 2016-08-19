@@ -29,7 +29,8 @@ package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.AuthentificationProcess;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Hashtable;
 
 /**
  * Diese Klasse enthält die Komponenten zur Authentifizierung eines Benutzers/Applikation.

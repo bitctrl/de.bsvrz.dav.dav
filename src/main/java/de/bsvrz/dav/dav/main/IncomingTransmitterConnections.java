@@ -94,7 +94,7 @@ public class IncomingTransmitterConnections extends AbstractTransmitterConnectio
 		final ServerConnectionProperties properties = new ServerConnectionProperties(
 				lowLevelCommunication, _lowLevelConnectionsManager.getLowLevelAuthentication().getAuthenticationComponent(), _serverDavParameters
 		);
-		return createTransmitterHighLevelCommunication(DEFAULT_WEIGHT, "", "", properties, true);
+		return createTransmitterHighLevelCommunication(DEFAULT_WEIGHT, "", null, properties, true);
 	}
 
 	/**

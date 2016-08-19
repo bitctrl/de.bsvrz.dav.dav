@@ -28,8 +28,9 @@ package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterSubscriptionType;
-import de.bsvrz.dav.dav.subscriptions.TransmitterCommunicationInterface;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.dav.subscriptions.SubscriptionInfo;
+import de.bsvrz.dav.dav.subscriptions.TransmitterCommunicationInterface;
 import de.bsvrz.dav.dav.util.accessControl.UserAction;
 import de.bsvrz.dav.dav.util.accessControl.UserRightsChangeHandler;
 
@@ -76,12 +77,12 @@ public interface SubscriptionsManager extends UserRightsChangeHandler {
 	/**
 	 * Führt eine Rechteprüfung durch
 	 *
-	 * @param userId Benutzer-ID
+	 * @param userLogin Benutzer-ID
 	 * @param info   Anmeldeinfo
 	 * @param action Aktion
 	 * @return true wenn die Aktion erlaubt ist, sonst false
 	 */
-	boolean isActionAllowed(long userId, BaseSubscriptionInfo info, UserAction action);
+	boolean isActionAllowed(UserLogin userLogin, BaseSubscriptionInfo info, UserAction action);
 
 	/**
 	 * Prüft von allen Anmeldungen die den Benutzer betreffen die Rechte erneut

@@ -28,6 +28,7 @@ package de.bsvrz.dav.dav.subscriptions;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ApplicationDataTelegram;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.daf.main.ReceiveOptions;
 import de.bsvrz.dav.dav.main.ConnectionState;
 import de.bsvrz.dav.dav.main.SubscriptionsManager;
@@ -138,13 +139,13 @@ public class RemoteDrainSubscription implements RemoteReceivingSubscription, Rem
 
 	@Override
 	public boolean isAllowed(){
-		return _subscriptionsManager.isActionAllowed(getUserId(), _baseSubscriptionInfo, UserAction.DRAIN);
+		return _subscriptionsManager.isActionAllowed(getAuthenticationState(), _baseSubscriptionInfo, UserAction.DRAIN);
 	}
 
 	@Override
-	public long getUserId() {
-		if(_transmitterCommunication == null) return -1;
-		return _transmitterCommunication.getRemoteUserId();
+	public UserLogin getAuthenticationState() {
+		if(_transmitterCommunication == null) return UserLogin.notAuthenticated();
+		return _transmitterCommunication.getUserLogin();
 	}
 
 	@Override
@@ -180,6 +181,6 @@ public class RemoteDrainSubscription implements RemoteReceivingSubscription, Rem
 		return "Ausgehende Anmeldung (" + _receiverState + ", " + _connectionState + ")" +
 				" auf " + _subscriptionsManager.subscriptionToString(_baseSubscriptionInfo) +
 				" zur Senke über " + _transmitterCommunication +
-		        " (Benutzer=" + _subscriptionsManager.objectToString(getUserId()) + ")";
+		        " (Benutzer=" + _subscriptionsManager.objectToString(getAuthenticationState().toLong()) + ")";
 	}
 }

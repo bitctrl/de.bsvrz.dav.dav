@@ -27,8 +27,12 @@
 package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpNotSupportedException;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpVerifierAndUser;
 import de.bsvrz.dav.daf.main.*;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.daf.main.config.*;
+import de.bsvrz.dav.daf.main.config.management.UserAdministration;
 import de.bsvrz.dav.daf.main.impl.CommunicationConstant;
 import de.bsvrz.dav.daf.main.impl.config.DafDataModel;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterConnectionInfo;
@@ -92,9 +96,6 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	/** Anmeldename des Datenverteilers z.B. zur Authentifizierung bei anderen Datenverteilern */
 	private final String _userName;
 
-	/** Passwort des Datenverteilers z.B. zur Authentifizierung bei anderen Datenverteilern */
-	private final String _userPassword;
-
 	/**
 	 * ATG, die benötigt wird um Terminierungsanfragen für Applikationen und Dav-Verbindungen zu erhalten. Ist diese ATG nicht vorhanden, so wird der
 	 * Datenverteiler gestartet ohne diese Funktionalität zur Verfügung zu stellen.
@@ -102,14 +103,25 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 	private static final String _pidTerminierung = "atg.terminierung";
 
 	/**
-	 * Objekt, das das eigene Datenverteilerobjekt darstellt. Warnung: _connection.getLocalDav() liefert nicht den lokalen Datenverteiler, sondern den mit der Konfiguration, wenn der
+	 * Objekt, das das eigene Datenverteilerobjekt darstellt. Warnung: _connection.getLocalDav() liefert nicht den lokalen Datenverteiler, sondern den Datenverteiler mit der Konfiguration, wenn der
 	 * Datenverteiler keine eigene Konfiguration besitzt.
 	 */
 	private ConfigurationObject _davObject;
 
+	/**
+	 * Verwaltung der Anmeldelisten
+	 */
 	private final ListsManager _listsManager;
-	
+
+	/**
+	 * Listener, die sich auf den Status von verbundenen Datenverteilern anmelden
+	 */
 	private final List<TransmitterStatusPublisher> _transmitterStatusPublishers = new CopyOnWriteArrayList<TransmitterStatusPublisher>();
+
+	/**
+	 * Benutzerverwaltung der Konfiguration für Anfragen nach SRP-Authentifizierungscodes
+	 */
+	private UserAdministration _userAdministration;
 
 	/**
 	 * Initialisiert den HighLevelConnectionsManager
@@ -123,7 +135,6 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		_transmitterTypePid = _lowLevelConnectionsManager.getClientDavParameters().getApplicationTypePid();
 		_transmitterApplicationName = _lowLevelConnectionsManager.getClientDavParameters().getApplicationName();
 		_userName = _lowLevelConnectionsManager.getServerDavParameters().getUserName();
-		_userPassword = _lowLevelConnectionsManager.getServerDavParameters().getUserPassword();
 		_telegramManager = new TelegramManager(this, userRightsChecking);
 		_highLevelApplicationManager = new HighLevelApplicationManager(this);
 		_listsManager = new ListsManager(this);
@@ -139,6 +150,8 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		_dataModel = selfClientDavConnection.getDataModel();
 		_connection = selfClientDavConnection.getConnection();
 		_davObject = (ConfigurationObject)_dataModel.getObject(getTransmitterId());
+		_userAdministration = _dataModel.getUserAdministration();
+
 		initializeTerminationQueries();
 		publishReleaseInfo();
 		_highLevelApplicationManager.setConfigurationAvailable(
@@ -154,7 +167,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		// Status der Rechteprüfung veröffentlichen
 		new DavAccessControlPublisher(_connection, _davObject, _userRightsChecking);
 		
-		// Empränger für deaktivierte Dav-Dav-Verbindungen erstellen
+		// Empfänger für deaktivierte Dav-Dav-Verbindungen erstellen
 		new DisabledTransmitterConnectionsReceiver(_lowLevelConnectionsManager, _connection, _davObject);
 	}
 
@@ -351,22 +364,25 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		return _userName;
 	}
 
-	/** @return Gibt das Passwort zurück, das z.B. für die Authentifizierung bei anderen Datenverteilern benutzt wird */
-	@Override
-	public String getUserPassword() {
-		return _userPassword;
-	}
-
 	/**
 	 * Gibt das gespeicherte Passwort für einen bestimmten Benutzer aus der Passwort-Datei zurück
 	 *
 	 * @param userName Benutzername
 	 *
-	 * @return Passwort oder null falls kein Passwort für diesen benutzer ermittelt werden konnte
+	 * @param suffix   Verbindungspartner (damit kann je Verbindungspartner ein unterschiedliches Passwort definiert werden)
+	 *                 Wird ignoriert falls null oder leer   
+	 * 
+	 * @return Passwort oder null falls kein Passwort für diesen Benutzer ermittelt werden konnte
 	 */
 	@Override
-	public String getStoredPassword(final String userName) {
-		return _lowLevelConnectionsManager.getServerDavParameters().getStoredPassword(userName);
+	public ClientCredentials getStoredClientCredentials(final String userName, final String suffix) {
+		return _lowLevelConnectionsManager.getServerDavParameters().getStoredClientCredentials(userName, suffix);
+	}
+
+	@Override
+	public ClientCredentials getStoredClientCredentials(final String userName, final long id) {
+		SystemObject object = _dataModel.getObject(id);
+		return getStoredClientCredentials(userName, object == null ? "" : object.getPidOrId());
 	}
 
 	/**
@@ -517,8 +533,81 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		return getTelegramManager().getSubscriptionsManager();
 	}
 
-	public void userLoggedIn(final long userId) {
+	@Override
+	public SrpVerifierAndUser fetchSrpVerifierAndUser(final String userNameForVerifier, final int passwordIndex) throws SrpNotSupportedException {
+		if(_userAdministration != null) {
+			try {
+				SrpVerifierAndUser verifier = _userAdministration.getSrpVerifier(_userName, getUserAdministrationPassword(), userNameForVerifier, passwordIndex);
+				if(verifier.getUserLogin().isRegularUser()) {
+					// Der Benutzer ist zwar noch nicht komplett eingeloggt, aber wir können schonmal die Benutzerrechte laden 
+					initializeUser(verifier.getUserLogin().getRemoteUserId());
+				}
+				return verifier;
+			}
+			catch(SrpNotSupportedException e){
+				throw e;
+			}
+			catch(ConfigurationTaskException e) {
+				// Fallunterscheidung: Keine Admin-Rechte oder kein Benutzer
+				String detail;
+				try {
+					boolean isUserAdmin = _userAdministration.isUserAdmin(_userName, getUserAdministrationPassword(), _userName);
+					if(!isUserAdmin) {
+						detail = "Der Benutzer mit dem Namen \"" + _userName + "\" muss in der Benutzerverwaltung als Admin markiert sein.";
+					}
+					else {
+						detail = String.valueOf(e.getLocalizedMessage());
+					}
+				}
+				catch(ConfigurationTaskException ignored) {
+					// Benutzer nicht gültig
+					List<SystemObject> users = _dataModel.getType("typ.benutzer").getElements();
+					if(users.stream().anyMatch(user -> user.getName().equals(_userName))) {
+						// Benutzer existiert
+						detail = "Der Benutzer existiert vermutlich nicht in der benutzerverwaltung.xml.";
+					}
+					else {
+						detail = "Es gibt kein Benutzerobjekt mit dem Namen \"" + _userName + "\".";
+					}
+				}
+				String msg = "Der Datenverteiler konnte sich nicht mit dem Benutzer \"" + _userName + "\" bei der Konfiguration authentifizieren, die SRP-Authentifizierung ist daher nicht funktionsfähig: " + detail;
+				_debug.error(msg, e);
+				throw new SrpNotSupportedException(msg, e);
+			}
+		}
+		else {
+			throw new IllegalStateException("Die Verbindung zur Konfiguration wurde noch nicht hergestellt");
+		}
+	}
 
+	@Override
+	public void disableSingleServingPassword(final String userName, final int passwordIndex) {
+		if(_userAdministration != null) {
+			try {
+				_userAdministration.disableOneTimePassword(_userName, getUserAdministrationPassword(), userName, passwordIndex);
+			}
+			catch(ConfigurationTaskException e) {
+				e.printStackTrace();
+				_debug.warning("Der Datenverteiler konnte sich nicht bei der Konfiguration authentifizieren", e);
+				shutdown(true, "Der Datenverteiler konnte sich nicht bei der Konfiguration authentifizieren");
+			}
+		}
+		else {
+			throw new IllegalStateException("Die Verbindung zur Konfiguration wurde noch nicht hergestellt");
+		}
+	}
+
+	private String getUserAdministrationPassword() {
+		// Passwort zum Einloggen des Datenverteilers bei der Konfiguration
+		ClientCredentials davUserPassword = getStoredClientCredentials(_userName, _dataModel.getConfigurationAuthority().getPid());
+		return davUserPassword.toString();
+	}
+
+	/**
+	 * Initialisiert die Zugriffsrechte für den angegebenen Benutzer
+	 * @param userId Benutzer-ID (muss in der lokalen Konfiguration existieren)
+	 */
+	public void initializeUser(final long userId) {
 		if(_telegramManager != null){
 			_telegramManager.getSubscriptionsManager().initializeUser(userId);
 		}
@@ -538,7 +627,7 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		for(Map.Entry<TransmitterInfo, CommunicationStateAndMessage> entry : connections.entrySet()) {
 			long transmitterId = entry.getKey().getTransmitterId();
 			CommunicationStateAndMessage stateAndMessage = entry.getValue();
-			tmp.add(new TransmitterStatus(transmitterId, stateAndMessage.getAddress(), stateAndMessage.getState(), stateAndMessage.getMessage()));
+			tmp.add(new TransmitterStatus(transmitterId, stateAndMessage.getAddress(), stateAndMessage.getState(), stateAndMessage.getMessage(), stateAndMessage.getEncryptionState()));
 		}
 		TimerTask task = new TimerTask() {
 			@Override

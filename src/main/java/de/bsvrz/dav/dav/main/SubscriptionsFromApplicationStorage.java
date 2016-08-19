@@ -28,13 +28,11 @@
 
 package de.bsvrz.dav.dav.main;
 
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ReceiveSubscriptionInfo;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.SendSubscriptionInfo;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ReceiveSubscriptionTelegram;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.SendSubscriptionTelegram;
+import de.bsvrz.dav.daf.communication.lowLevel.telegrams.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 /**

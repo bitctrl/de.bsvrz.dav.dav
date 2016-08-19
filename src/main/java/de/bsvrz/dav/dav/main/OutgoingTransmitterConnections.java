@@ -31,6 +31,7 @@ import de.bsvrz.dav.daf.communication.lowLevel.LowLevelCommunication;
 import de.bsvrz.dav.daf.communication.lowLevel.ServerConnectionInterface;
 import de.bsvrz.dav.daf.main.CommunicationError;
 import de.bsvrz.dav.daf.main.ConnectionException;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterConnectionInfo;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterInfo;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
@@ -220,7 +221,7 @@ public class OutgoingTransmitterConnections extends AbstractTransmitterConnectio
 
 
 	private T_T_HighLevelCommunication startTransmitterConnection(
-			final TransmitterInfo transmitterInfo, final short weight, final String userName, final String password, final int subAddressToConnectTo)
+			final TransmitterInfo transmitterInfo, final short weight, final String userName, final ClientCredentials clientCredentials, final int subAddressToConnectTo)
 			throws ConnectionException {
 		final ConnectionInterface connection = _serverConnection.getPlainConnection();
 		final LowLevelCommunication lowLevelCommunication = createLowLevelCommunication(connection, false);
@@ -228,7 +229,7 @@ public class OutgoingTransmitterConnections extends AbstractTransmitterConnectio
 				lowLevelCommunication, _lowLevelConnectionsManager.getLowLevelAuthentication().getAuthenticationComponent(), _serverDavParameters
 		);
 		lowLevelCommunication.connect(transmitterInfo.getAdress(), subAddressToConnectTo);
-		return createTransmitterHighLevelCommunication(weight, userName, password, properties, false);
+		return createTransmitterHighLevelCommunication(weight, userName, clientCredentials, properties, false);
 	}
 
 	/**
@@ -239,22 +240,19 @@ public class OutgoingTransmitterConnections extends AbstractTransmitterConnectio
 	 * @param time            Zeitspanne in der versucht werden soll eine Verbindung aufzubauen, in Millisekunden. Minimale Wartezeit eine Sekunde.
 	 * @param userName        Benutzername mit dem die Authentifizierung durchgeführt werden soll.
 	 * @return true, wenn Verbindung hergestellt werden konnte; false, wenn Verbindung nicht hergestellt werden konnte.
-	 * @see #connectToTransmitter(TransmitterInfo, short, String, String)
+	 * @see #connectToTransmitter(TransmitterInfo, short, String, ClientCredentials) 
 	 */
 	private boolean connectToTransmitter(final TransmitterInfo transmitterInfo, final short weight, final long time, String userName) {
-		final String password;
-		if("".equals(userName)) {
+		final ClientCredentials clientCredentials;
+		if(userName.isEmpty()) {
 			userName = _serverDavParameters.getUserName();
-			password = _serverDavParameters.getUserPassword();
 		}
-		else {
-			password = _serverDavParameters.getStoredPassword(userName);
-			if(password == null) {
-				_debug.error(
-						"Passwort des Benutzers " + userName + " konnte nicht ermittelt werden. Es wird gebraucht für Datenverteilerkopplung mit " + transmitterInfo
-				);
-				return false;
-			}
+		clientCredentials = _transmitterManager.getClientCredentialsForAuthentication(userName, transmitterInfo.getTransmitterId());
+		if(clientCredentials == null) {
+			_debug.error(
+					"Passwort des Benutzers " + userName + " konnte nicht ermittelt werden. Es wird gebraucht für Datenverteilerkopplung mit " + transmitterInfo
+			);
+			return false;
 		}
 		_debug.info("Starte Datenverteilerkopplung als Benutzer " + userName + " zu ", transmitterInfo);
 		_debug.finer(" time", time);
@@ -266,7 +264,7 @@ public class OutgoingTransmitterConnections extends AbstractTransmitterConnectio
 		final long startTime = System.currentTimeMillis();
 		do {
 			try {
-				connectToTransmitter(transmitterInfo, weight, userName, password);
+				connectToTransmitter(transmitterInfo, weight, userName, clientCredentials);
 				return true;
 			}
 			catch(ConnectionException | CommunicationError ex) {
@@ -296,11 +294,11 @@ public class OutgoingTransmitterConnections extends AbstractTransmitterConnectio
 	 * @param transmitterInfo Informationen zum Datenverteiler.
 	 * @param weight          Die Information wird von der Wegverwaltung benutzt, wenn eine Verbindung bewertet wird.
 	 * @param userName        Benutzername mit dem die Authentifizierung durchgeführt werden soll.
-	 * @param password        Passwort des Benutzers mit dem die Authentifizierung durchgeführt werden soll.
+	 * @param clientCredentials        Passwort des Benutzers mit dem die Authentifizierung durchgeführt werden soll.
 	 * @throws de.bsvrz.dav.daf.main.ConnectionException wenn eine Verbindung nicht aufgebaut werden konnte
 	 * @throws de.bsvrz.dav.daf.main.CommunicationError  wenn bei der initialen Kommunikation mit dem Datenverteiler Fehler aufgetreten sind
 	 */
-	private void connectToTransmitter(final TransmitterInfo transmitterInfo, final short weight, final String userName, final String password)
+	private void connectToTransmitter(final TransmitterInfo transmitterInfo, final short weight, final String userName, final ClientCredentials clientCredentials)
 			throws ConnectionException, CommunicationError {
 		if(_serverConnection == null) {
 			throw new IllegalArgumentException("Die Verwaltung ist nicht richtig initialisiert.");
@@ -334,7 +332,7 @@ public class OutgoingTransmitterConnections extends AbstractTransmitterConnectio
 			return;
 		}
 
-		final T_T_HighLevelCommunication highLevelCommunication = startTransmitterConnection(transmitterInfo, weight, userName, password, subAddressToConnectTo);
+		final T_T_HighLevelCommunication highLevelCommunication = startTransmitterConnection(transmitterInfo, weight, userName, clientCredentials, subAddressToConnectTo);
 		_connections.putConnection(tId, highLevelCommunication);
 		_lowLevelConnectionsManager.updateCommunicationState();
 		highLevelCommunication.connect();

@@ -27,13 +27,19 @@
 package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpNotSupportedException;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpVerifierAndUser;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.daf.main.config.ConfigurationObject;
+import de.bsvrz.dav.daf.main.config.management.UserAdministration;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterConnectionInfo;
 import de.bsvrz.dav.dav.communication.appProtocol.T_A_HighLevelCommunication;
 import de.bsvrz.dav.dav.communication.appProtocol.T_A_HighLevelCommunicationInterface;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunicationInterface;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 
@@ -88,17 +94,20 @@ public interface HighLevelConnectionsManagerInterface {
 	String getUserName();
 
 	/**
-	 * Gibt das Passwort zurück unter dem der Datenverteiler läuft
-	 * @return Passwort
+	 * Gibt das in der Passwort(passwd)-Datei gespeicherte Passwort für den angegebenen Benutzernamen zurück
+	 * @param userName Benutzername
+	 * @param suffix
+	 * @return Passwort oder null falls der Benutzername nicht gefunden werden konnte
 	 */
-	String getUserPassword();
-
+	ClientCredentials getStoredClientCredentials(String userName, final String suffix);
+	
 	/**
 	 * Gibt das in der Passwort(passwd)-Datei gespeicherte Passwort für den angegebenen Benutzernamen zurück
 	 * @param userName Benutzername
+	 * @param id       ID-Des Verbindungspartners (Systemobjekt, wird automatisch in eine Pid umgewandelt)
 	 * @return Passwort oder null falls der Benutzername nicht gefunden werden konnte
 	 */
-	String getStoredPassword(String userName);
+	ClientCredentials getStoredClientCredentials(String userName, final long id);
 
 	/**
 	 * Gibt das gewicht einer Verbindung zu einem anderen Datenverteiler zurück
@@ -208,4 +217,21 @@ public interface HighLevelConnectionsManagerInterface {
 	 * @return den SubscriptionsManager
 	 */
 	HighLevelSubscriptionsManager getSubscriptionsManager();
+
+	/**
+	 * Holt den SRP-Überprüfungscode und die Benutzer-ID von einem Benutzer von der Konfiguration
+	 * @param userName Anzufragender Benutzername
+	 * @param passwordIndex Index des Einmalpassworts
+	 * @return Überprüfungscode und Benutzername analog zur {@link UserAdministration#getSrpVerifier(String, String, String, int) UserAdministration}-Implementierung.
+	 * Insbesondere ist der Benutzer {@link UserLogin#notAuthenticated()} falls es den Benutzer nicht gibt, aber es wird immer ein SRP-Überprüfungscode erzeugt um eine {@link de.bsvrz.dav.daf.communication.srpAuthentication.SrpServerAuthentication#step1(String, BigInteger, BigInteger, boolean)}  Fake-Authentifizierung} zu ermöglichen.
+	 * @throws SrpNotSupportedException Falls SRP nicht untersützt wird
+	 */
+	SrpVerifierAndUser fetchSrpVerifierAndUser(String userName, final int passwordIndex) throws SrpNotSupportedException;
+
+	/**
+	 * Markiert das angegebene Einmalpasswort als benutzt (nachdem der Benutzer es zum erfolgreichen Einloggen verwendet hat)
+	 * @param userName Benutzername
+	 * @param passwordIndex Index des Einmalpassworts
+	 */
+	void disableSingleServingPassword(String userName, int passwordIndex);
 }

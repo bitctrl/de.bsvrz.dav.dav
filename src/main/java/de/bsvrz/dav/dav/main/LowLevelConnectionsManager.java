@@ -30,6 +30,7 @@ package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.AuthentificationProcess;
 import de.bsvrz.dav.daf.communication.lowLevel.ServerConnectionInterface;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.daf.main.*;
 import de.bsvrz.dav.daf.main.config.*;
 import de.bsvrz.dav.daf.main.impl.ConfigurationManager;
@@ -404,7 +405,7 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 
 	@Override
 	public void setLocalConfigurationAvailable() {
-		_lowLevelApplicationConnections.continueAuthentication(_clientDavParameters.getApplicationTypePid(), _clientDavParameters.getApplicationName());
+		_lowLevelApplicationConnections.localConfigurationAvailable();
 	}
 
 	@Override
@@ -484,20 +485,28 @@ public class LowLevelConnectionsManager implements LowLevelConnectionsManagerInt
 	}
 
 	@Override
-	public long login(final String userName, final byte[] userPassword, final String authentificationText, final AuthentificationProcess authentificationProcess, final String applicationTypePid) {
-		long userId = _lowLevelAuthentication.isValidUser(
+	public UserLogin login(final String userName, final byte[] userPassword, final String authentificationText, final AuthentificationProcess authentificationProcess, final String applicationTypePid) {
+		if(!_clientDavParameters.isHmacAuthenticationAllowed()){
+			_debug.warning("Benutzer " + userName + " möchte sich über die alte Hmac-Authentifizierung authentifizieren, aber das ist aus Sicherheitsgründen nicht erlaubt. (Aufrufparameter: -erlaubeHmacAuthentifizierung)");
+			return UserLogin.notAuthenticated();
+		}
+		UserLogin userId = _lowLevelAuthentication.isValidUser(
 				userName, userPassword, authentificationText, authentificationProcess, applicationTypePid
 		);
-		if(userId > 0 && userId != _transmitterId) {
+		if(!userId.isAuthenticated()){
+			_debug.warning("Benutzer " + userName + " hat erfolglos versucht, sich über die alte Hmac-Authentifizierung zu authentifizieren. Falls das Passwort in der Konfiguration verschlüsselt gespeichert ist, funktioniert die Authentifizierung nur mit dem neuen Verfahren (benötigt Kernsoftware ab 3.9.0).");
+		}
+		if(userId.isRegularUser()) {
 			try {
 				if(_serverDavParameters.getWaitForParamApp()) waitForParamReady(_serverDavParameters.getParamAppIncarnationName());
 			}
 			catch(InterruptedException e) {
 				_debug.info("Warten auf Parametrierung wurde unterbrochen", e);
-				return -1L;
+				return UserLogin.notAuthenticated();
 			}
-			_highLevelConnectionsManager.userLoggedIn(userId);
+			_highLevelConnectionsManager.initializeUser(userId.getRemoteUserId());
 		}
+
 		return userId;
 	}
 

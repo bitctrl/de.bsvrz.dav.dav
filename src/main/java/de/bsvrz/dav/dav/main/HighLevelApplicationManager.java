@@ -27,8 +27,16 @@
 package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.*;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpNotSupportedException;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpVerifierAndUser;
 import de.bsvrz.dav.daf.main.config.ConfigurationChangeException;
+import de.bsvrz.dav.daf.main.config.management.UserAdministration;
+import de.bsvrz.dav.daf.util.Throttler;
 import de.bsvrz.dav.dav.communication.appProtocol.T_A_HighLevelCommunication;
+
+import java.math.BigInteger;
+import java.time.Duration;
 
 /**
  * Klasse, die Telegramme von den Applikations-Verbindungen entgegennimmt und entsprechend weiterleitet und verarbeitet
@@ -47,6 +55,11 @@ public class HighLevelApplicationManager {
 	private final HighLevelSubscriptionsManager _subscriptionsManager;
 
 	private ApplicationStatusUpdater _applicationStatusUpdater = null;
+
+	/**
+	 * Instanz zur Begrenzung der Login-Versuche
+	 */
+	private final Throttler _throttle = new Throttler(Duration.ofSeconds(1), Duration.ofSeconds(5));
 
 	/**
 	 * Initialisiert einen neuen HighLevelApplicationManager
@@ -178,5 +191,29 @@ public class HighLevelApplicationManager {
 
 	public ApplicationStatusUpdater getApplicationStatusUpdater() {
 		return _applicationStatusUpdater;
+	}
+
+	/**
+	 * Holt den SRP-Überprüfungscode und die Benutzer-ID von einem Benutzer von der Konfiguration
+	 * @param userName Anzufragender Benutzername
+	 * @param passwordIndex Index des Einmalpassworts
+	 * @return Überprüfungscode und Benutzername analog zur {@link UserAdministration#getSrpVerifier(String, String, String, int) UserAdministration}-Implementierung.
+	 * Insbesondere ist der Benutzer {@link UserLogin#notAuthenticated()} falls es den Benutzer nicht gibt, aber es wird immer ein SRP-Überprüfungscode erzeugt um eine {@link de.bsvrz.dav.daf.communication.srpAuthentication.SrpServerAuthentication#step1(String, BigInteger, BigInteger, boolean)}  Fake-Authentifizierung} zu ermöglichen.
+	 * @throws SrpNotSupportedException Falls SRP nicht untersützt wird
+	 */
+	public SrpVerifierAndUser fetchSrpVerifierAndAuthentication(final String userName, final int passwordIndex) throws SrpNotSupportedException {
+		return _connectionsManager.fetchSrpVerifierAndUser(userName, passwordIndex);
+	}
+
+	public void disableSingleServingPassword(final String userName, final int passwordIndex) {
+		_connectionsManager.disableSingleServingPassword(userName, passwordIndex);
+	}
+
+	/**
+	 * Wird bei jedem Login-Versuch aufgerufen und sorgt dafür, dass bei wiederholten Brute-Force-Angriffen der Login verzögert wird.
+	 * @param passwordWasCorrect War das Passwort korrekt? Ausgebremst wird zwar immer, aber nur wenn das passwort falsch war, hat das eine Auswirkung auf folgende Login-Vesuche
+	 */
+	public void throttleLoginAttempt(boolean passwordWasCorrect){
+		_throttle.trigger(!passwordWasCorrect);
 	}
 }

@@ -865,7 +865,7 @@ public class SubscriptionInfo implements Closeable {
 	 */
 	public synchronized void handleUserRightsChanged(final long userId) {
 		for(final ReceivingSubscription subscription : _subscriptionList.getReceivingSubscriptions()) {
-			if(subscription.getUserId() != userId) continue;
+			if(subscription.getAuthenticationState().toLong() != userId) continue;
 			final boolean isAllowed = subscription.isAllowed();
 			if(isAllowed && subscription.getState() == ReceiverState.NOT_ALLOWED) {
 				// Anmeldung wird gültig, Anmeldung "hinzufügen" und Sender informieren
@@ -884,7 +884,7 @@ public class SubscriptionInfo implements Closeable {
 		}
 
 		for(final SendingSubscription subscription : _subscriptionList.getSendingSubscriptions()) {
-			if(subscription.getUserId() != userId) continue;
+			if(subscription.getAuthenticationState().toLong() != userId) continue;
 			final boolean isAllowed = subscription.isAllowed();
 			if(isAllowed && subscription.getState() == SenderState.NOT_ALLOWED) {
 				// Anmeldung wird gültig, Anmeldung "hinzufügen" und Empfänger informieren
@@ -1455,7 +1455,7 @@ public class SubscriptionInfo implements Closeable {
 			for(final SendingSubscription sendingSubscription : sendingSubscriptions) {
 				dataOutputStream.writeBoolean(sendingSubscription instanceof LocalSubscription);
 				dataOutputStream.writeLong(sendingSubscription.getCommunication().getId());
-				dataOutputStream.writeLong(sendingSubscription.getUserId());
+				dataOutputStream.writeLong(sendingSubscription.getAuthenticationState().toLong());
 				dataOutputStream.writeBoolean(sendingSubscription.isSource());
 				dataOutputStream.writeBoolean(sendingSubscription.isRequestSupported());
 				dataOutputStream.writeInt(sendingSubscription.getState().ordinal());
@@ -1466,7 +1466,7 @@ public class SubscriptionInfo implements Closeable {
 			for(final ReceivingSubscription receivingSubscription : receivingSubscriptions) {
 				dataOutputStream.writeBoolean(receivingSubscription instanceof LocalSubscription);
 				dataOutputStream.writeLong(receivingSubscription.getCommunication().getId());
-				dataOutputStream.writeLong(receivingSubscription.getUserId());
+				dataOutputStream.writeLong(receivingSubscription.getAuthenticationState().toLong());
 				dataOutputStream.writeBoolean(receivingSubscription.isDrain());
 				dataOutputStream.writeBoolean(receivingSubscription.getReceiveOptions().withDelayed());
 				dataOutputStream.writeBoolean(receivingSubscription.getReceiveOptions().withDelta());
@@ -1482,7 +1482,7 @@ public class SubscriptionInfo implements Closeable {
 				);
 				long id = connection.getId();
 				int resistance = connection.getThroughputResistance();
-				long remoteUserId = connection.getRemoteUserId();
+				long remoteUserId = connection.getUserLogin().toLong();
 				dataOutputStream.writeLong(id);
 				dataOutputStream.writeInt(resistance);
 				dataOutputStream.writeLong(remoteUserId);

@@ -35,7 +35,7 @@ import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 import de.bsvrz.sys.funclib.debug.Debug;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Diese Klasse ist die Low-level-Verwaltung für Datenverteiler-Datenverteiler-Verbindungen

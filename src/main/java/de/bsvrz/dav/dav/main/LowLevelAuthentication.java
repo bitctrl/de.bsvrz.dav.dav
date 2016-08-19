@@ -27,7 +27,9 @@
 package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.AuthentificationProcess;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.daf.main.ClientDavParameters;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.daf.main.impl.CommunicationConstant;
 import de.bsvrz.dav.daf.main.impl.ConfigurationManager;
 
@@ -63,40 +65,46 @@ public class LowLevelAuthentication implements LowLevelAuthenticationInterface {
 	}
 
 	/**
-	 * @return die Benutzerid wenn er berechtigt ist sonst -1
+	 * Alte Authentifizierung über Hmac
 	 */
 	@Override
-	public long isValidUser(
+	public UserLogin isValidUser(
 			final String userName,
 			final byte[] encryptedPassword,
 			final String text,
 			final AuthentificationProcess authenticationProcess,
 			final String userTypePid) {
-		// if local configuration
+		// Spezialbehandlung Konfiguration, Parametrierung und SelfClientDavConnection (falls mit lokaler Konfiguration verbunden)
 		if(CommunicationConstant.CONFIGURATION_TYPE_PID.equals(userTypePid)) {
 			if(userName.equals(_serverDavParameters.getConfigurationUserName())) {
-				final String password = _serverDavParameters.getConfigurationUserPassword();
+				ClientCredentials clientCredentials = _serverDavParameters.getConfigurationClientCredentials();
+				if(!clientCredentials.hasPassword()) return UserLogin.notAuthenticated();
+				final String password = new String(clientCredentials.getPassword());
 				final byte[] _encriptedPassword = authenticationProcess.encrypt(password, text);
 				if(Arrays.equals(encryptedPassword, _encriptedPassword)) {
-					return 0;
+					return UserLogin.systemUser();
 				}
 			}
 		}
 		else if(CommunicationConstant.PARAMETER_TYPE_PID.equals(userTypePid)) {
 			if(userName.equals(_serverDavParameters.getParameterUserName())) {
-				final String password = _serverDavParameters.getParameterUserPassword();
+				ClientCredentials clientCredentials = _serverDavParameters.getParameterClientCredentials();
+				if(!clientCredentials.hasPassword()) return UserLogin.notAuthenticated();
+				final String password = new String(clientCredentials.getPassword());
 				final byte[] _encriptedPassword = authenticationProcess.encrypt(password, text);
 				if(Arrays.equals(encryptedPassword, _encriptedPassword)) {
-					return 0;
+					return UserLogin.systemUser();
 				}
 			}
 		}
 		else if(_serverDavParameters.isLocalMode()) {
 			if(userName.equals(_clientDavParameters.getUserName())) {
-				final String password = _clientDavParameters.getUserPassword();
+				ClientCredentials clientCredentials = _clientDavParameters.getClientCredentials();
+				if(!clientCredentials.hasPassword()) return UserLogin.notAuthenticated();
+				final String password = new String(clientCredentials.getPassword());
 				final byte[] _encriptedPassword = authenticationProcess.encrypt(password, text);
 				if(Arrays.equals(encryptedPassword, _encriptedPassword)) {
-					return _transmitterId;
+					return UserLogin.systemUser();
 				}
 			}
 		}
@@ -104,18 +112,22 @@ public class LowLevelAuthentication implements LowLevelAuthenticationInterface {
 		if(_selfClientDavConnection != null) {
 			final ConfigurationManager configurationManager = _selfClientDavConnection.getDataModel().getConfigurationManager();
 			try {
-				return configurationManager.isValidUser(
+				long userId = configurationManager.isValidUser(
 						userName, encryptedPassword, text, authenticationProcess.getName()
 				);
+				if(userId == -1){
+					return UserLogin.notAuthenticated();
+				}
+				return UserLogin.user(userId);
 
 			}catch(RuntimeException e){
 				e.printStackTrace();
-				return -1;
+				return UserLogin.notAuthenticated();
 			}
 
 
 		}
-		return -1L;
+		return UserLogin.notAuthenticated();
 	}
 
 	public void setSelfClientDavConnection(final SelfClientDavConnection selfClientDavConnection) {

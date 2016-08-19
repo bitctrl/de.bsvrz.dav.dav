@@ -30,6 +30,7 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ReceiveSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.SendSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterSubscriptionType;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.daf.util.HashBagMap;
 import de.bsvrz.dav.dav.subscriptions.*;
 import de.bsvrz.dav.dav.util.accessControl.UserAction;
@@ -333,9 +334,9 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	public void connectToRemoteDrains(final SubscriptionInfo subscriptionInfo, final Set<Long> distributorsToUse) {
 		HashBagMap<TransmitterCommunicationInterface, Long> connections = getCentralDistributorConnections(distributorsToUse);
 		for(Map.Entry<TransmitterCommunicationInterface, Collection<Long>> entry : connections.entrySet()) {
-			long remoteUserId = entry.getKey().getRemoteUserId();
+			UserLogin userLogin = entry.getKey().getUserLogin();
 
-			if(!isActionAllowed(remoteUserId, subscriptionInfo.getBaseSubscriptionInfo(), UserAction.DRAIN)){
+			if(!isActionAllowed(userLogin, subscriptionInfo.getBaseSubscriptionInfo(), UserAction.DRAIN)){
 				// Bei fehlenden Benutzerrechten Anmeldung gar nicht erst versuchen
 				continue;
 			}
@@ -350,9 +351,9 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	public void connectToRemoteSources(final SubscriptionInfo subscriptionInfo, final Set<Long> distributorsToUse) {
 		HashBagMap<TransmitterCommunicationInterface, Long> connections = getCentralDistributorConnections(distributorsToUse);
 		for(Map.Entry<TransmitterCommunicationInterface, Collection<Long>> entry : connections.entrySet()) {
-			long remoteUserId = entry.getKey().getRemoteUserId();
+			UserLogin userLogin = entry.getKey().getUserLogin();
 
-			if(!isActionAllowed(remoteUserId, subscriptionInfo.getBaseSubscriptionInfo(), UserAction.SOURCE)){
+			if(!isActionAllowed(userLogin, subscriptionInfo.getBaseSubscriptionInfo(), UserAction.SOURCE)){
 				// Bei fehlenden Benutzerrechten Anmeldung gar nicht erst versuchen
 				continue;
 			}
@@ -410,6 +411,10 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 		return result;
 	}
 
+	/**
+	 * Initialisiert die Zugriffsrechte für den angegebenen Benutzer
+	 * @param userId Benutzer-ID (muss in der lokalen Konfiguration existieren)
+	 */
 	public void initializeUser(final long userId){
 	}
 

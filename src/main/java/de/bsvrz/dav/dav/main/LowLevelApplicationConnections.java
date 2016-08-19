@@ -35,13 +35,7 @@ import de.bsvrz.dav.daf.main.ConnectionException;
 import de.bsvrz.dav.dav.communication.appProtocol.T_A_HighLevelCommunication;
 import de.bsvrz.sys.funclib.debug.Debug;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -122,27 +116,27 @@ public final class LowLevelApplicationConnections {
 	public void continueAuthentication() {
 		for(final T_A_HighLevelCommunication connection : getApplicationConnections()) {
 			if(connection != null) {
-				connection.continueAuthentification();
+				connection.continueAuthentication();
 			}
 		}
 		_configurationAvailable = true;
 	}
 
 	/**
-	 * Setzt dass die Konfigurationsverbindung erfolgreich hergestellt ist
-	 *
-	 * @param _applicationTypePid
-	 * @param _applicationName
+	 * Wird aufgerufen, wenn die lokale Konfiguration erfolgreich verbunden ist, und ermöglicht der SelfClientDafConnection,
+	 * mit der Initialisierung fortzufahren (sodass diese dann nicht mehr auf die Konfiguration wartet)
 	 */
-	public void continueAuthentication(final String _applicationTypePid, final String _applicationName) {
-		for(final T_A_HighLevelCommunication _applicationConnection : getApplicationConnections()) {
-			final String applicationTypePid = _applicationConnection.getApplicationTypePid();
-			final String applicationName = _applicationConnection.getApplicationName();
+	public void localConfigurationAvailable() {
+		final String davName = _lowLevelConnectionsManager.getClientDavParameters().getApplicationName();
+		final String davType = _lowLevelConnectionsManager.getClientDavParameters().getApplicationTypePid();
+		for(final T_A_HighLevelCommunication communication : getApplicationConnections()) {
+			final String applicationTypePid = communication.getApplicationTypePid();
+			final String applicationName = communication.getApplicationName();
 			if((applicationTypePid == null) || (applicationName == null)) {
 				continue;
 			}
-			if(applicationTypePid.equals(_applicationTypePid) && applicationName.equals(_applicationName)) {
-				_applicationConnection.continueAuthentification();
+			if(applicationTypePid.equals(davType) && applicationName.equals(davName)) {
+				communication.continueAuthentication();
 				break;
 			}
 		}

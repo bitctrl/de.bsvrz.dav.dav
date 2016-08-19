@@ -27,6 +27,7 @@
 package de.bsvrz.dav.dav.subscriptions;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.dav.main.ConnectionState;
 
 /**
@@ -58,7 +59,7 @@ public interface Subscription {
 	 * Gibt die Id des angemeldeten Benutzers zurück. Liefert das gleiche wie getCommunication().getRemoteUserId()
 	 * @return Id den angemeldeten Benutzers
 	 */
-	public long getUserId();
+	public UserLogin getAuthenticationState();
 
 	/**
 	 * Liefert die Id der anmeldenden Applikation bzw. des anmeldenden Datenverteilers (nicht zwingend der direkt verbundene Datenverteiler, sondern

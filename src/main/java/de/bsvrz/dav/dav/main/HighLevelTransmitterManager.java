@@ -26,31 +26,19 @@
 
 package de.bsvrz.dav.dav.main;
 
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.AttributeGroupAspectCombination;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterBestWayUpdate;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataSubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataSubscriptionReceipt;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataTelegram;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataUnsubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterListsDeliveryUnsubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterListsSubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterListsUnsubscription;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterListsUpdate;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterSubscriptionType;
-import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterSubscriptionsConstants;
+import de.bsvrz.dav.daf.communication.lowLevel.telegrams.*;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpNotSupportedException;
+import de.bsvrz.dav.daf.communication.srpAuthentication.SrpVerifierAndUser;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterConnectionInfo;
 import de.bsvrz.dav.daf.util.Longs;
+import de.bsvrz.dav.daf.util.Throttler;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunicationInterface;
-import de.bsvrz.dav.dav.subscriptions.ReceivingSubscription;
-import de.bsvrz.dav.dav.subscriptions.RemoteReceiverSubscription;
-import de.bsvrz.dav.dav.subscriptions.RemoteSenderSubscription;
-import de.bsvrz.dav.dav.subscriptions.SendingSubscription;
-import de.bsvrz.dav.dav.subscriptions.SubscriptionInfo;
-import de.bsvrz.dav.dav.subscriptions.TransmitterCommunicationInterface;
+import de.bsvrz.dav.dav.subscriptions.*;
 import de.bsvrz.sys.funclib.debug.Debug;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -71,9 +59,14 @@ public class HighLevelTransmitterManager implements DistributionInterface, HighL
 
 	private final HighLevelSubscriptionsManager _subscriptionsManager;
 
-	private ListsManager _listsManager;
+	private final ListsManager _listsManager;
 
-	private BestWayManager _bestWayManager;
+	private final BestWayManager _bestWayManager;
+
+	/**
+	 * Instanz zur Begrenzung der Login-Versuche
+	 */
+	private final Throttler _throttle = new Throttler(Duration.ofSeconds(1), Duration.ofSeconds(5));
 
 	public HighLevelTransmitterManager(final HighLevelConnectionsManagerInterface connectionsManager, final ListsManager listsManager) {
 		_connectionsManager = connectionsManager;
@@ -124,22 +117,27 @@ public class HighLevelTransmitterManager implements DistributionInterface, HighL
 
 
 	@Override
-	public String getPasswordForAuthentication(final long connectedTransmitterId) {
+	public ClientCredentials getClientCredentialsForAuthentication(final long transmitterId) {
 		String userName = "";
-		final TransmitterConnectionInfo info = _connectionsManager.getTransmitterConnectionInfo(connectedTransmitterId);
+		final TransmitterConnectionInfo info = _connectionsManager.getTransmitterConnectionInfo(transmitterId);
 		if(info != null) {
 			userName = info.getUserName();
 		}
 		else {
-			final TransmitterConnectionInfo remoteInfo = _connectionsManager.getRemoteTransmitterConnectionInfo(connectedTransmitterId);
+			final TransmitterConnectionInfo remoteInfo = _connectionsManager.getRemoteTransmitterConnectionInfo(transmitterId);
 			if(remoteInfo != null) {
 				userName = remoteInfo.getRemoteUserName();
 			}
 		}
-		if("".equals(userName)) {
-			return _connectionsManager.getUserPassword();
+		if(userName.isEmpty()) {
+			userName = _connectionsManager.getUserName();
 		}
-		return _connectionsManager.getStoredPassword(userName);
+		return _connectionsManager.getStoredClientCredentials(userName, transmitterId);
+	}
+
+	@Override
+	public ClientCredentials getClientCredentialsForAuthentication(final String userName, final long transmitterId) {
+		return _connectionsManager.getStoredClientCredentials(userName, transmitterId);
 	}
 
 	@Override
@@ -267,6 +265,16 @@ public class HighLevelTransmitterManager implements DistributionInterface, HighL
 	@Override
 	public void updateBestWay(final T_T_HighLevelCommunication communication, final TransmitterBestWayUpdate transmitterBestWayUpdate) {
 		_bestWayManager.update(communication, transmitterBestWayUpdate);
+	}
+
+	@Override
+	public void throttleLoginAttempt(final boolean passwordWasCorrect) {
+		_throttle.trigger(!passwordWasCorrect);
+	}
+
+	@Override
+	public SrpVerifierAndUser fetchSrpVerifierAndAuthentication(final String userName) throws SrpNotSupportedException {
+		return _connectionsManager.fetchSrpVerifierAndUser(userName, -1);
 	}
 
 	@Override

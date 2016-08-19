@@ -26,13 +26,14 @@
 
 package de.bsvrz.dav.dav.main;
 
+import de.bsvrz.dav.daf.main.EncryptionStatus;
 import de.bsvrz.dav.daf.main.config.ConfigurationObject;
 import de.bsvrz.dav.daf.main.config.DataModel;
 import de.bsvrz.dav.daf.main.config.DavApplication;
 import de.bsvrz.dav.daf.main.config.SystemObject;
 import de.bsvrz.sys.funclib.debug.Debug;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  * Veröffentlicht den Verbindungszustand zwischen Datenverteilern auf der Konsole
@@ -58,8 +59,8 @@ public class DebugTransmitterPublisher implements TransmitterStatusPublisher {
 	public void update(final Set<TransmitterStatus> connections) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Verbundene Datenverteiler von ").append(_davObject.getPidOrId()).append(":");
-		builder.append(String.format("%n%20s | %20s | %-35s | %-40s", "Datenverteiler", "Adresse", "Zustand", "Meldung"));
-		builder.append(String.format("%n%20s | %20s + %-35s + %-40s", "", "", "", "").replace(' ', '-'));
+		builder.append(String.format("%n%20s | %20s | %-35s | %-35s | %-40s", "Datenverteiler", "Adresse", "Zustand", "Verschlüsselung", "Meldung"));
+		builder.append(String.format("%n%20s | %20s + %-35s + %-35s + %-40s", "", "", "", "", "").replace(' ', '-'));
 		for(TransmitterStatus value : connections) {
 			CommunicationState state = value.getCommunicationState();
 			SystemObject davApplication = _dataModel.getObject(value.getDavApplication());
@@ -69,7 +70,8 @@ public class DebugTransmitterPublisher implements TransmitterStatusPublisher {
 			String address = value.getAddress();
 			if(state == CommunicationState.NotRelevant) continue;
 			String message = value.getMessage();
-			builder.append(String.format("%n%20s | %20s | %-35s | %-40s", davApplication == null ? value.getDavApplication() : davApplication.getPidOrId(), address, state, message));
+			EncryptionStatus encryptionStatus = value.getEncryptionStatus();
+			builder.append(String.format("%n%20s | %20s | %-35s | %-35s | %-40s", davApplication == null ? value.getDavApplication() : davApplication.getPidOrId(), address, state, encryptionStatus, message));
 		}
 		_debug.info(builder.toString());
 	}

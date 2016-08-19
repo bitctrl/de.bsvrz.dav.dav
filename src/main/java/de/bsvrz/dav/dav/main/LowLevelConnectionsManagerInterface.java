@@ -27,6 +27,7 @@
 package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.AuthentificationProcess;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.daf.main.ClientDavParameters;
 import de.bsvrz.dav.daf.main.config.SystemObject;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterConnectionInfo;
@@ -195,7 +196,7 @@ public interface LowLevelConnectionsManagerInterface {
 	 * @param applicationTypePid Applikations-Typ-Pid
 	 * @return Benutzerid, falls erfolgreich eingeloggt, sonst -1. (0 ist der spezielle Benutzer für Datenverteiler und Konfiguration)
 	 */
-	long login(String userName, byte[] userPassword, String authentificationText, AuthentificationProcess authentificationProcess, String applicationTypePid);
+	UserLogin login(String userName, byte[] userPassword, String authentificationText, AuthentificationProcess authentificationProcess, String applicationTypePid);
 
 	/**
 	 * Wird aufgerufen, wenn sich der Status einer verbundenen Dav-Dav-Verbindung geändert hat um beispielsweise die "atg.datenverteilerKommunikationsZustand" zu aktualisieren

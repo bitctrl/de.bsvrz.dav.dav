@@ -30,7 +30,7 @@ package de.bsvrz.dav.dav.main;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterDataTelegram;
 
-import java.util.*;
+import java.util.Hashtable;
 
 /**
  * Diese Klasse stellt eine Methode zur Verfügung, mit der alle Teiltelegramme eines Datensatzes gesammelt werden können. Wurden alle Teiltelegramme empfangen,

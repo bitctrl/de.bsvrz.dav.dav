@@ -28,8 +28,9 @@
 
 package de.bsvrz.dav.dav.main;
 
-import de.bsvrz.dav.daf.main.CommunicationError;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TelegramTimeRequest;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
+import de.bsvrz.dav.daf.main.CommunicationError;
 
 /**
  * Dieses Interface deklariert Methoden, welche von der Verbindungsverwaltung aufgerufen werden. Die Methoden werden sowohl in DAV-DAF als auch in der DAV-DAV
@@ -59,7 +60,7 @@ public interface ServerHighLevelCommunication {
 	 * die Antwort blockiert bis die Konfiguration bereit ist. Dies ist notwendig, da nur die Konfiguration bestimmen kann, ob die Authentifizierungsdaten korrekt
 	 * sind. Auch für die Interpretation der Daten ist die Konfiguration notwendig.
 	 */
-	public void continueAuthentification();
+	public void continueAuthentication();
 
 	/**
 	 * Diese Methode wird von der Verbindungsverwaltung aufgerufen, um die ID der verbundenen Applikation zu erhalten.
@@ -73,7 +74,7 @@ public interface ServerHighLevelCommunication {
 	 *
 	 * @return die Benutzer ID
 	 */
-	public long getRemoteUserId();
+	public UserLogin getUserLogin();
 
 	/**
 	 * Terminiert die Kommunikationsverbindung.

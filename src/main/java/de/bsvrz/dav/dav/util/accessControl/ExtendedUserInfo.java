@@ -29,16 +29,11 @@ package de.bsvrz.dav.dav.util.accessControl;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.daf.main.ClientDavInterface;
 import de.bsvrz.dav.daf.main.Data;
-import de.bsvrz.dav.daf.main.config.Aspect;
-import de.bsvrz.dav.daf.main.config.AttributeGroup;
-import de.bsvrz.dav.daf.main.config.AttributeGroupUsage;
-import de.bsvrz.dav.daf.main.config.ConfigurationArea;
-import de.bsvrz.dav.daf.main.config.DataModel;
-import de.bsvrz.dav.daf.main.config.ObjectSetType;
-import de.bsvrz.dav.daf.main.config.SystemObject;
-import de.bsvrz.dav.daf.main.config.SystemObjectType;
+import de.bsvrz.dav.daf.main.config.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Kapselt für die Rechteverwaltung einen Benutzer und dessen Berechtigungsklassen. Diese Klasse wird von dem neuen Datenmodell verwendet, bei dem jeder Benutzer

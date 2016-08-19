@@ -30,6 +30,7 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.AttributeGroupAspectCom
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ReceiveSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.SendSubscriptionInfo;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.daf.main.ClientDavConnection;
 import de.bsvrz.dav.daf.main.config.AttributeGroupUsage;
 import de.bsvrz.dav.daf.main.config.DataModel;
@@ -135,20 +136,20 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	/**
 	 * Führt eine Rechteprüfung durch
 	 *
-	 * @param userId Benutzer-ID
+	 * @param userLogin Benutzer-ID
 	 * @param info   Anmeldeinfo
 	 * @param action Aktion
 	 *
 	 * @return true wenn die Aktion erlaubt ist, sonst false
 	 */
 	@Override
-	public final boolean isActionAllowed(final long userId, final BaseSubscriptionInfo info, final UserAction action) {
+	public final boolean isActionAllowed(final UserLogin userLogin, final BaseSubscriptionInfo info, final UserAction action) {
 		if(_userRightsChecking == ServerDavParameters.UserRightsChecking.Disabled) {
 			return true;
 		}
 
 		// Konfiguration oder Parametrierung oder interne Datenverteiler-Applikation beim lokalen Betrieb
-		if(userId == 0 || userId == _connectionsManager.getTransmitterId()) {
+		if(userLogin.isSystemUser()) {
 			return true;
 		}
 
@@ -169,11 +170,11 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 			throw new IllegalStateException("AccessControlManager wurde noch nicht initialisiert");
 		}
 
-		final UserInfo userInfo = _accessControlManager.getUser(userId);
+		final UserInfo userInfo = _accessControlManager.getUser(userLogin.getRemoteUserId());
 
 		if(userInfo != null && userInfo.maySubscribeData(info, action)) return true;
 
-		_debug.warning("Anmeldung als " + action + " auf " + subscriptionToString(info) + " durch " + (userInfo == null ? userId : userInfo)
+		_debug.warning("Anmeldung als " + action + " auf " + subscriptionToString(info) + " durch " + (userInfo == null ? userLogin : userInfo)
 		+ " ist nicht erlaubt.");
 
 		return false;
@@ -345,6 +346,10 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 	}
 
 	@Override
+	/**
+	 * Initialisiert die Zugriffsrechte für den angegebenen Benutzer
+	 * @param userId Benutzer-ID (muss in der lokalen Konfiguration existieren)
+	 */
 	public void initializeUser(final long userId) {
 		_debug.fine("Lade Benutzerrechte für Benutzer", userId);
 		if(_accessControlManager != null) {

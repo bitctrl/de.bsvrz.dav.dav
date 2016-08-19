@@ -59,8 +59,7 @@ public class ServerConnectionProperties extends ConnectionProperties {
 
 	/** Datenverteiler Subadresse für die Konfigurationsanbindung */
 	private int _configDataTransmitterSubAdress;
-
-
+	
 	/**
 	 * Dieser Konstruktor wird für Tests benötigt.
 	 */
@@ -82,11 +81,12 @@ public class ServerConnectionProperties extends ConnectionProperties {
 				lowLevelCommunication,
 				authentificationComponent.getAuthentificationProcess(),
 				serverDavParameters.getUserName(),
-				serverDavParameters.getUserPassword(),
 				serverDavParameters.getSendKeepAliveTimeout(),
 				serverDavParameters.getReceiveKeepAliveTimeout(),
 				serverDavParameters.getDavCommunicationOutputBufferSize(),
-				serverDavParameters.getDavCommunicationInputBufferSize()
+				serverDavParameters.getDavCommunicationInputBufferSize(),
+				serverDavParameters.isHmacAuthenticationAllowed(),
+				serverDavParameters.getEncryptionPreference()
 		);
 		if((authentificationComponent == null) || (serverDavParameters == null)) {
 			throw new IllegalArgumentException("Falsche Startparameter");
@@ -203,4 +203,5 @@ public class ServerConnectionProperties extends ConnectionProperties {
 		_configDataTransmitterSubAdress = configDataTransmitterSubAdress;
 		_configurationPid = configurationPid;
 	}
+
 }

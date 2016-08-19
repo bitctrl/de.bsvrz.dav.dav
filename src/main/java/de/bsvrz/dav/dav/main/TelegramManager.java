@@ -44,13 +44,7 @@ import de.bsvrz.dav.dav.subscriptions.LocalSendingSubscription;
 import de.bsvrz.dav.dav.subscriptions.SubscriptionInfo;
 import de.bsvrz.sys.funclib.debug.Debug;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Diese Klasse verarbeitet ankommende Datentelegramme, prüft ob der Absender erlaubt war die Daten zu verschicken (Anmeldung gültig),
@@ -215,9 +209,9 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 		if(telegrams.size() == 0) return;
 
 		final List<AccessControlPlugin> plugins = getPluginFilterMap().get(baseSubscriptionInfo.getUsageIdentification());
-		if(plugins != null && isValidRemoteUser(communication.getRemoteUserId())) {
+		if(plugins != null && communication.getUserLogin().isRegularUser()) {
 			telegrams = AccessControlUtil.handleApplicationDataTelegram(
-					telegrams, plugins, communication.getRemoteUserId(), _selfClientDavConnection.getDataModel()
+					telegrams, plugins, communication.getUserLogin().getRemoteUserId(), _selfClientDavConnection.getDataModel()
 			);
 			if(telegrams.size() == 0) return;
 		}
@@ -228,16 +222,6 @@ public class TelegramManager implements TelegramManagerTransactionInterface {
 		else {
 			subscriptionInfo.distributeTelegrams(telegrams, toCentralDistributor, communication);
 		}
-	}
-
-	/**
-	 * Prüft, ob eine userId zu einem "normalen" Benutzer gehört. Rechteprüfungs-Plugins haben u.U. sonst Probleme, weil zu der BenutzerId kein Benutzerobjekt
-	 * gehört. Davon abgesehen ist Rechteprüfung für diese Benutzer sowieso normalerweise deaktiviert.
-	 * @param remoteUserId Benutzer-Id
-	 * @return True wenn normaler benutzer für den Rechte geprüft werden sollen.
-	 */
-	private boolean isValidRemoteUser(final long remoteUserId) {
-		return remoteUserId != _connectionsManager.getTransmitterId() && remoteUserId != 0;
 	}
 
 	/**

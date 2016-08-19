@@ -27,17 +27,16 @@
 
 package de.bsvrz.dav.dav.communication.tcpCommunication;
 
-import de.bsvrz.sys.funclib.debug.Debug;
-import de.bsvrz.dav.daf.communication.tcpCommunication.TCP_IP_Communication;
 import de.bsvrz.dav.daf.communication.lowLevel.ConnectionInterface;
+import de.bsvrz.dav.daf.communication.lowLevel.ServerConnectionInterface;
+import de.bsvrz.dav.daf.communication.tcpCommunication.TCP_IP_Communication;
 import de.bsvrz.dav.daf.main.CommunicationError;
+import de.bsvrz.sys.funclib.debug.Debug;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import de.bsvrz.dav.daf.communication.lowLevel.ServerConnectionInterface;
 
 /**
  * TCP/IP-Implementierung des Interfaces {@link de.bsvrz.dav.daf.communication.lowLevel.ServerConnectionInterface}.
@@ -67,7 +66,7 @@ public class TCP_IP_ServerCommunication implements ServerConnectionInterface {
 			_debug.info("TCP-Server erwartet Verbindungen, " + _socket.getLocalSocketAddress());
 		}
 		catch(IOException ex) {
-			final String msg = "Fehler beim anlegen eines TCP-Server-Sockets auf Port " + subAdressNumber;
+			final String msg = "Fehler beim Anlegen eines TCP-Server-Sockets auf Port " + subAdressNumber;
 			_debug.error(msg, ex);
 			throw new CommunicationError(msg + ": " + ex);
 		}

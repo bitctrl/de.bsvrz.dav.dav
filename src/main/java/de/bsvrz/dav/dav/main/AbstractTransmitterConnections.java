@@ -29,6 +29,7 @@ package de.bsvrz.dav.dav.main;
 import de.bsvrz.dav.daf.communication.lowLevel.ConnectionInterface;
 import de.bsvrz.dav.daf.communication.lowLevel.LowLevelCommunication;
 import de.bsvrz.dav.daf.main.ConnectionException;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
 
 /**
@@ -76,19 +77,19 @@ class AbstractTransmitterConnections {
 	}
 
 	/**
-	 * Ersteltl eine neue T_T_HighLevelCommunication
+	 * Erstellt eine neue T_T_HighLevelCommunication
 	 * @param weight Gewicht der Verbindung (für Routenberechnung)
 	 * @param userName Benutzername zum Anmelden
-	 * @param password Passwort zum Anmelden
+	 * @param clientCredentials Passwort oder Token zur Authentifizierung
 	 * @param properties Verbindungsparameter 
 	 * @param incomingConnection Handelt es sich um eine eingehende Verbindung? 
 	 * @return neue T_T_HighLevelCommunication
 	 */
 	T_T_HighLevelCommunication createTransmitterHighLevelCommunication(
-			final short weight, final String userName, final String password, final ServerConnectionProperties properties, final boolean incomingConnection) {
+			final short weight, final String userName, final ClientCredentials clientCredentials, final ServerConnectionProperties properties, final boolean incomingConnection) {
 
 		return new T_T_HighLevelCommunication(
-				properties, _transmitterManager, _lowLevelConnectionsManager, weight, false, userName, password, incomingConnection
+				properties, _transmitterManager, _lowLevelConnectionsManager, weight, false, userName, clientCredentials, incomingConnection
 		);
 	}
 

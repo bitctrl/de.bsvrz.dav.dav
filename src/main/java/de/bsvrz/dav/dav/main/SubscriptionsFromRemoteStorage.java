@@ -30,7 +30,10 @@ package de.bsvrz.dav.dav.main;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Speichert alle Anmeldungen, die über eine Kommunikationsverbindung mit einer Applikation oder mit einem anderen Datenverteiler empfangen wurden.

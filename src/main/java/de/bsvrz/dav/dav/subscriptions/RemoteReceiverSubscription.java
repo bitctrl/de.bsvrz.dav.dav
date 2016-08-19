@@ -29,6 +29,7 @@ package de.bsvrz.dav.dav.subscriptions;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ApplicationDataTelegram;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.TransmitterSubscriptionType;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.daf.main.DataState;
 import de.bsvrz.dav.daf.main.ReceiveOptions;
 import de.bsvrz.dav.dav.main.ConnectionState;
@@ -169,12 +170,12 @@ public class RemoteReceiverSubscription implements RemoteReceivingSubscription {
 
 	@Override
 	public boolean isAllowed(){
-		return _subscriptionsManager.isActionAllowed(getUserId(), _baseSubscriptionInfo, UserAction.RECEIVER);
+		return _subscriptionsManager.isActionAllowed(getAuthenticationState(), _baseSubscriptionInfo, UserAction.RECEIVER);
 	}
 
 	@Override
-	public long getUserId() {
-		return _transmitterCommunication.getRemoteUserId();
+	public UserLogin getAuthenticationState() {
+		return _transmitterCommunication.getUserLogin();
 	}
 
 	@Override
@@ -202,7 +203,7 @@ public class RemoteReceiverSubscription implements RemoteReceivingSubscription {
 		return "Eingehende Anmeldung (" +_receiverState + ") als " +  "Empfänger" +
 				" auf " + _subscriptionsManager.subscriptionToString(_baseSubscriptionInfo) +
 				" über " + _transmitterCommunication +
-		       " (Benutzer=" + _subscriptionsManager.objectToString(getUserId()) + ")";
+		       " (Benutzer=" + _subscriptionsManager.objectToString(getAuthenticationState().toLong()) + ")";
 	}
 
 

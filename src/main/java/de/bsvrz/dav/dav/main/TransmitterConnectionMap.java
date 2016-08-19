@@ -26,6 +26,7 @@
 
 package de.bsvrz.dav.dav.main;
 
+import de.bsvrz.dav.daf.main.EncryptionStatus;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterConnectionInfo;
 import de.bsvrz.dav.daf.main.impl.config.telegrams.TransmitterInfo;
 import de.bsvrz.dav.dav.communication.davProtocol.T_T_HighLevelCommunication;
@@ -204,13 +205,16 @@ public final class TransmitterConnectionMap {
 		CommunicationState state = CommunicationState.NotConnected;
 		String message = "";
 		String address = "";
+		EncryptionStatus encryptionState = EncryptionStatus.notEncrypted();
 		if(communication != null) {
 			CommunicationStateAndMessage s = communication.getState();
 			state = s.getState();
 			message = s.getMessage();
 			address = communication.getRemoteAdress() + ":" + communication.getRemoteSubadress();
+			encryptionState = communication.getEncryptionStatus();
 		}
 		if(state == CommunicationState.NotConnected) {
+			encryptionState = EncryptionStatus.notEncrypted();
 			if(!isSelf(info.getTransmitter_1()) && !isSelf(info.getTransmitter_2())) {
 				state = CommunicationState.NotRelevant;
 			}
@@ -221,7 +225,7 @@ public final class TransmitterConnectionMap {
 				state = CommunicationState.UnusedReplacementConnection;
 			}
 		}
-		return new CommunicationStateAndMessage(address, state, message);
+		return new CommunicationStateAndMessage(address, state, encryptionState, message);
 	}
 
 	/**
@@ -231,20 +235,22 @@ public final class TransmitterConnectionMap {
 	 */
 	public CommunicationStateAndMessage getState(final long transmitterId) {
 		TransmitterConnectionInfo info = getInfo(transmitterId);
-		if(info != null){
+		if(info != null) {
 			return getState(info);
 		}
 		T_T_HighLevelCommunication communication = getConnection(transmitterId);
 		CommunicationState state = CommunicationState.NotRelevant;
 		String message = "";
 		String address = "";
+		EncryptionStatus encryptionStatus = EncryptionStatus.notEncrypted();
 		if(communication != null) {
 			CommunicationStateAndMessage s = communication.getState();
 			state = s.getState();
 			message = s.getMessage();
 			address = communication.getRemoteAdress() + ":" + communication.getRemoteSubadress();
+			encryptionStatus = communication.getEncryptionStatus();
 		}
-		return new CommunicationStateAndMessage(address, state, message);
+		return new CommunicationStateAndMessage(address, state, encryptionStatus, message);
 	}
 
 	/** 

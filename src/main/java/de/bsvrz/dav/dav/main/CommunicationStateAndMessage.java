@@ -26,6 +26,8 @@
 
 package de.bsvrz.dav.dav.main;
 
+import de.bsvrz.dav.daf.main.EncryptionStatus;
+
 /**
  * Ein Kommunikationsstatus plus Fehlernachricht und Datenverteileradresse (falls bekannt)
  *
@@ -34,28 +36,63 @@ package de.bsvrz.dav.dav.main;
  */
 public final class CommunicationStateAndMessage {
 
+	/**
+	 * Verbindungszustand
+	 */
 	private final CommunicationState _state;
-	
+
+	/**
+	 * Verschlüsselung
+	 */
+	private final EncryptionStatus _encryptionState;
+
+	/**
+	 * Adresse des Kommunikationspartners
+	 */
 	private final String _address;
 
+	/**
+	 * Eventuelle Fehlermeldung
+	 */
 	private final String _message;
 
-	public CommunicationStateAndMessage(final String address, final CommunicationState state, final String message) {
+	public CommunicationStateAndMessage(final String address, final CommunicationState state, final EncryptionStatus encryptionState, final String message) {
 		_address = address;
 		_state = state;
+		_encryptionState = encryptionState;
 		_message = message;
 	}
 
+	/**
+	 * Gibt den Verbindungszustand zurück
+	 * @return Zustand
+	 */
 	public CommunicationState getState() {
 		return _state;
 	}
 
+	/**
+	 * Gibt die Fehlermeldung zurück
+	 * @return Fehlermeldung
+	 */
 	public String getMessage() {
 		return _message;
 	}
 
+	/**
+	 * Gibt die Netzwerkadresse des Kommunikationspartners zurück
+	 * @return Netzwerkadresse
+	 */
 	public String getAddress() {
 		return _address;
+	}
+
+	/**
+	 * Gibt den Verschlüsselungszustand zurück
+	 * @return Verschlüsselungszustand
+	 */
+	public EncryptionStatus getEncryptionState() {
+		return _encryptionState;
 	}
 
 	@Override
@@ -72,6 +109,7 @@ public final class CommunicationStateAndMessage {
 		final CommunicationStateAndMessage that = (CommunicationStateAndMessage) o;
 
 		if(_state != that._state) return false;
+		if(!_encryptionState.equals(that._encryptionState)) return false;
 		if(_address != null ? !_address.equals(that._address) : that._address != null) return false;
 		return !(_message != null ? !_message.equals(that._message) : that._message != null);
 
@@ -80,7 +118,8 @@ public final class CommunicationStateAndMessage {
 	@Override
 	public int hashCode() {
 		int result = _state.hashCode();
-		result = 31 * result + (_address != null ? _address.hashCode() : 0);
+		result = 31 * result + _encryptionState.hashCode();
+		result = 31 * result + _address.hashCode();
 		result = 31 * result + (_message != null ? _message.hashCode() : 0);
 		return result;
 	}

@@ -33,7 +33,12 @@ import de.bsvrz.dav.daf.communication.lowLevel.ConnectionInterface;
 import de.bsvrz.dav.daf.communication.lowLevel.HighLevelCommunicationCallbackInterface;
 import de.bsvrz.dav.daf.communication.lowLevel.LowLevelCommunicationInterface;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.*;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
+import de.bsvrz.dav.daf.communication.srpAuthentication.*;
 import de.bsvrz.dav.daf.main.CommunicationError;
+import de.bsvrz.dav.daf.main.EncryptionStatus;
+import de.bsvrz.dav.daf.main.InconsistentLoginException;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.daf.main.config.ConfigurationException;
 import de.bsvrz.dav.daf.main.impl.CommunicationConstant;
 import de.bsvrz.dav.daf.util.Longs;
@@ -43,8 +48,9 @@ import de.bsvrz.dav.dav.subscriptions.RemoteSourceSubscription;
 import de.bsvrz.dav.dav.subscriptions.RemoteSubscription;
 import de.bsvrz.sys.funclib.debug.Debug;
 
-import java.util.LinkedList;
-import java.util.ListIterator;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.stream.IntStream;
 
 
 /**
@@ -62,7 +68,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	private long _connectedTransmitterId;
 
 	/** Die Id des Remotebenutzers */
-	private long _remoteUserId;
+	private UserLogin _userLogin = UserLogin.notAuthenticated();
 
 	/** Die erste Ebene der Kommunikation */
 	private LowLevelCommunicationInterface _lowLevelCommunication;
@@ -71,8 +77,8 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	private ServerConnectionProperties _properties;
 
 	/** Die unterstützten Versionen des Datenverteilers */
-	private int[] _versions;
-
+	private final Set<Integer> _supportedProtocolVersions = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(2, 3)));
+	
 	/** Die Version, mit der die Kommunikation erfolgt */
 	private int _version;
 
@@ -111,27 +117,36 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	private Object _closedLock = new Object();
 
 	/** Benutzername mit dem sich dieser Datenverteiler beim anderen Datenverteiler authentifizieren soll */
-	private String _authentifyAsUser;
+	private String _userForAuthentication;
+
+	/** Passwort des Benutzers mit dem sich dieser Datenverteiler beim anderen Datenverteiler authentifizieren soll */
+	private ClientCredentials _credentialsForAuthentication;
 
 	private final HighLevelTransmitterManagerInterface _transmitterManager;
 
 	private final LowLevelConnectionsManagerInterface _lowLevelConnectionsManager;
 
-	/** Passwort des Benutzers mit dem sich dieser Datenverteiler beim anderen Datenverteiler authentifizieren soll */
-	private String _authentifyWithPassword;
-
 	/** Status der Verbindung */
-	private CommunicationStateAndMessage _state = new CommunicationStateAndMessage("", CommunicationState.Connecting, "");
+	private CommunicationStateAndMessage _state = new CommunicationStateAndMessage("", CommunicationState.Connecting, EncryptionStatus.notEncrypted(), "");
+	
+	private SrpRequest _srpRequest;
+	private SrpServerAuthentication _srpServerSession;
+
+	/**
+	 * Die als Server bei der SRP-Authentifizierung (von der lokalen Konfiguration) empfangenen kryptographischen Parameter
+	 */
+	private SrpCryptoParameter _serverCryptoParams;
+
+	private UserLogin _pendingSrpUserLogin;
 
 	/**
 	 * Erzeugt ein neues Objekt mit den gegebenen Parametern.
-	 *
-	 * @param properties                 Eigenschaften dieser Verbindung
+	 *  @param properties                 Eigenschaften dieser Verbindung
 	 * @param lowLevelConnectionsManager Low-Level-Verbindugnsverwaltung
 	 * @param weight                     Gewichtung dieser Verbindung
 	 * @param waitForConfiguration       true: auf die KOnfiguration muss gewartet werden, false: Konfiguration ist vorhanden
-	 * @param authentifyAsUser           Benutzername mit dem sich dieser Datenverteiler beim anderen Datenverteiler authentifizieren soll
-	 * @param authentifyWithPassword     Passwort des Benutzers mit dem sich dieser Datenverteiler beim anderen Datenverteiler authentifizieren soll
+	 * @param userForAuthentication           Benutzername mit dem sich dieser Datenverteiler beim anderen Datenverteiler authentifizieren soll
+	 * @param credentialsForAuthentication     Passwort des Benutzers mit dem sich dieser Datenverteiler beim anderen Datenverteiler authentifizieren soll
 	 * @param incomingConnection
 	 */
 	public T_T_HighLevelCommunication(
@@ -140,16 +155,14 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			final LowLevelConnectionsManagerInterface lowLevelConnectionsManager,
 			short weight,
 			boolean waitForConfiguration,
-			final String authentifyAsUser,
-			final String authentifyWithPassword,
+			final String userForAuthentication,
+			final ClientCredentials credentialsForAuthentication,
 			final boolean incomingConnection) {
 		_transmitterManager = transmitterManager;
 		_lowLevelConnectionsManager = lowLevelConnectionsManager;
-		_authentifyWithPassword = authentifyWithPassword;
-		_authentifyAsUser = authentifyAsUser;
+		_credentialsForAuthentication = credentialsForAuthentication;
+		_userForAuthentication = userForAuthentication;
 		_connectedTransmitterId = -1;
-		_versions = new int[1];
-		_versions[0] = 2;
 		_weight = weight;
 		_properties = properties;
 		_lowLevelCommunication = _properties.getLowLevelCommunication();
@@ -188,30 +201,25 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	public final void connect() throws CommunicationError {
 		_syncSystemTelegramList.clear();
 		// Protokollversion verhandeln
-		TransmitterProtocolVersionRequest protocolVersionRequest = new TransmitterProtocolVersionRequest(_versions);
+		TransmitterProtocolVersionRequest protocolVersionRequest = new TransmitterProtocolVersionRequest(_supportedProtocolVersions.stream().mapToInt(x->x).toArray());
 		sendTelegram(protocolVersionRequest);
 
 		TransmitterProtocolVersionAnswer protocolVersionAnswer = (TransmitterProtocolVersionAnswer) waitForAnswerTelegram(
 				DataTelegram.TRANSMITTER_PROTOCOL_VERSION_ANSWER_TYPE, "Antwort auf Verhandlung der Protokollversionen"
 		);
 		_version = protocolVersionAnswer.getPreferredVersion();
-		int i = 0;
-		for(; i < _versions.length; ++i) {
-			if(_version == _versions[i]) {
-				break;
-			}
+		if(_version == -1) {
+			throw new CommunicationError("Die Protokollversionen " + _supportedProtocolVersions + " werden vom Datenverteiler nicht unterstützt.");
 		}
-		if(i >= _versions.length) {
-			throw new CommunicationError("Der Datenverteiler unterstüzt keine der gegebenen Versionen.\n");
+		else if(!_supportedProtocolVersions.contains(_version)) {
+			throw new CommunicationError("Die vom Datenverteiler vorgegebene Protokollversion (" + _version + ") wird lokal nicht unterstützt.");
 		}
-
-		_remoteUserId = 0;
 
 		authenticate();
 
 		synchronized(_authentificationSync) {
 			try {
-				while(_remoteUserId == 0) {
+				while(!_userLogin.isAuthenticated()) {
 					if(_closed) return;
 					_authentificationSync.wait(1000);
 				}
@@ -221,7 +229,6 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 				return;
 			}
 		}
-		if(_remoteUserId < 0) return;
 
 		// Timeouts Parameter verhandeln
 		TransmitterComParametersRequest comParametersRequest = new TransmitterComParametersRequest(
@@ -343,9 +350,8 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 		sendTelegram(new TransmitterBestWayUpdate(routingUpdates));
 	}
 
-	@Override
-	public final long getRemoteUserId() {
-		return _remoteUserId;
+	public final UserLogin getUserLogin() {
+		return _userLogin;
 	}
 
 	@Override
@@ -354,8 +360,12 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	}
 
 	private void setCommunicationState(final CommunicationState communicationState, final String message) {
-		_state = new CommunicationStateAndMessage(getRemoteAdress() + ":" + getRemoteSubadress(), communicationState, message);
+		_state = new CommunicationStateAndMessage(getRemoteAdress() + ":" + getRemoteSubadress(), communicationState, getEncryptionStatus(), message);
 		_lowLevelConnectionsManager.updateCommunicationState();
+	}
+
+	public EncryptionStatus getEncryptionStatus() {
+		return _lowLevelCommunication.getEncryptionStatus();
 	}
 
 	/**
@@ -399,7 +409,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	}
 
 	@Override
-	public void continueAuthentification() {
+	public void continueAuthentication() {
 		synchronized(_sync) {
 			_waitForConfiguration = false;
 			_sync.notifyAll();
@@ -474,8 +484,8 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 		switch(telegram.getType()) {
 			case DataTelegram.TRANSMITTER_PROTOCOL_VERSION_REQUEST_TYPE: {
 				TransmitterProtocolVersionRequest protocolVersionRequest = (TransmitterProtocolVersionRequest) telegram;
-				int version = getPrefferedVersion(protocolVersionRequest.getVersions());
-				TransmitterProtocolVersionAnswer protocolVersionAnswer = new TransmitterProtocolVersionAnswer(version);
+				_version = getPreferredVersion(protocolVersionRequest.getVersions());
+				TransmitterProtocolVersionAnswer protocolVersionAnswer = new TransmitterProtocolVersionAnswer(_version);
 				sendTelegram(protocolVersionAnswer);
 				break;
 			}
@@ -487,6 +497,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 				break;
 			}
 			case DataTelegram.TRANSMITTER_AUTHENTIFICATION_TEXT_REQUEST_TYPE: {
+				needsToBeNotAuthenticated();
 				TransmitterAuthentificationTextRequest authentificationTextRequest = (TransmitterAuthentificationTextRequest) telegram;
 				if(_waitForConfiguration) {
 					synchronized(_sync) {
@@ -503,28 +514,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 					}
 				}
 				final long remoteTransmitterId = authentificationTextRequest.getTransmitterId();
-				_debug.info("Datenverteiler " + remoteTransmitterId + " möchte sich authentifizieren");
-				final T_T_HighLevelCommunication transmitterConnection;
-
-				transmitterConnection = _lowLevelConnectionsManager.getTransmitterConnection(remoteTransmitterId);
-
-				if(transmitterConnection != null
-						&& transmitterConnection.isIncomingConnection()
-						&& !transmitterConnection.isClosed()) {
-					_debug.warning(
-							"Eingehende Verbindung vom Datenverteiler " + remoteTransmitterId
-									+ " wird terminiert, weil noch eine andere Verbindung zu diesem Datenverteiler besteht."
-					);
-					terminate(
-							true, "Verbindung wurde terminiert, weil noch eine andere Verbindung zu diesem Datenverteiler besteht."
-					);
-					return;
-				}
-				_connectedTransmitterId = remoteTransmitterId;
-				_lowLevelCommunication.setRemoteName("DAV " + _connectedTransmitterId);
-				_weight = _transmitterManager.getWeight(_connectedTransmitterId);
-				_authentifyAsUser = _transmitterManager.getUserNameForAuthentication(_connectedTransmitterId);
-				_authentifyWithPassword = _transmitterManager.getPasswordForAuthentication(_connectedTransmitterId);
+				if(!handleRemoteTransmitterId(remoteTransmitterId)) return;
 				String text = _authentificationComponent.getAuthentificationText(Long.toString(_connectedTransmitterId));
 				TransmitterAuthentificationTextAnswer authentificationTextAnswer = new TransmitterAuthentificationTextAnswer(text);
 				sendTelegram(authentificationTextAnswer);
@@ -538,73 +528,24 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 				break;
 			}
 			case DataTelegram.TRANSMITTER_AUTHENTIFICATION_REQUEST_TYPE: {
+				needsToBeNotAuthenticated();
+				
 				TransmitterAuthentificationRequest authentificationRequest = (TransmitterAuthentificationRequest) telegram;
 				String userName = authentificationRequest.getUserName();
 				try {
-					_remoteUserId = _lowLevelConnectionsManager.login(
+					_userLogin = _lowLevelConnectionsManager.login(
 							userName,
 							authentificationRequest.getUserPassword(),
 							_authentificationComponent.getAuthentificationText(Long.toString(_connectedTransmitterId)),
 							_authentificationComponent.getAuthentificationProcess(),
 							""
 					);
-					if(_remoteUserId > -1) {
 
-						_lowLevelConnectionsManager.updateTransmitterId(this);
 
-						if(_lowLevelConnectionsManager.isDisabledConnection(_connectedTransmitterId)) {
-							// Die Verbindung wurde deaktiviert.
-							// Damit der andere Datenverteiler nicht anfängt Daten zu senden wird hier in der Authentifizierung blockiert und dann
-							// nach einer Minute die Verbindung terminiert.
-							// Dier Verbindung wird nicht sofort terminiert, damit der andere Datenverteiler nicht ständig neue Verbindungen aufbaut.
+					// Brute-Force-Bremse
+					_transmitterManager.throttleLoginAttempt(_userLogin.isAuthenticated());
 
-							String msg = "Eingehende Verbindung vom Datenverteiler " + _connectedTransmitterId
-									+ " wird in einer Minute terminiert, weil die Verbindung deaktiviert wurde.";
-							setCommunicationState(CommunicationState.Connecting, msg);
-							try {
-								Thread.sleep(60000);
-							}
-							catch(InterruptedException ignored) {
-							}
-							// das ist kein richtiger Fehler, aber trotzdem ein TerminateOrderTelegram-Telegramm statt einem ClosingTelegram senden,
-							// damit der Grund auf der Gegenseite ankommt.
-							terminate(true, "Verbindung zu diesem Datenverteiler wurde deaktiviert.", new TerminateOrderTelegram("Verbindung zu diesem Datenverteiler wurde deaktiviert."));
-							return;
-						}
-
-						_debug.info("Datenverteiler " + _connectedTransmitterId + " hat sich als '" + userName + "' erfolgreich authentifiziert");
-
-						TransmitterAuthentificationAnswer authentificationAnswer = new TransmitterAuthentificationAnswer(
-								true, _properties.getDataTransmitterId()
-						);
-						sendTelegram(authentificationAnswer);
-						synchronized(_authentificationSync) {
-							_authentificationSync.notifyAll();
-						}
-						if(_isIncomingConnection) {
-							Runnable runnable = new Runnable() {
-								@Override
-								public void run() {
-									try {
-										authenticate();
-									}
-									catch(CommunicationError ex) {
-										ex.printStackTrace();
-									}
-								}
-							};
-							Thread thread = new Thread(runnable);
-							thread.start();
-						}
-					}
-					else {
-						synchronized(_authentificationSync) {
-							_authentificationSync.notifyAll();
-						}
-						_debug.info("Datenverteiler " + _connectedTransmitterId + " hat vergeblich versucht sich als '" + userName + "' zu authentifizieren");
-						TransmitterAuthentificationAnswer authentificationAnswer = new TransmitterAuthentificationAnswer(false, -1);
-						sendTelegram(authentificationAnswer);
-					}
+					if(completeAuthenticationAndSendAnswer(userName)) return;
 				}
 				catch(ConfigurationException ex) {
 					ex.printStackTrace();
@@ -622,6 +563,103 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 				}
 				break;
 			}
+			case DataTelegram.SRP_REQUEST_TYPE:
+				needsToBeNotAuthenticated();
+				_srpRequest = (SrpRequest) telegram;
+
+				SrpVerifierAndUser srpVerifierAndUser;
+				try {
+					int passwordIndex = _srpRequest.getPasswordIndex();
+					if(passwordIndex != -1){
+						terminate(true, "Datenverteilerauthentifizierung mit Einmalpassworten ist nicht vorgesehen");
+						return;
+					}
+					srpVerifierAndUser = _transmitterManager.fetchSrpVerifierAndAuthentication(_srpRequest.getUserName());
+				}
+				catch(SrpNotSupportedException e) {
+					// SRP wird von der Konfiguration nicht unterstützt
+					_lowLevelCommunication.send(new SrpAnswer(e.getMessage()));
+					return;
+				}
+				final SrpVerifierData srpVerifierData = srpVerifierAndUser.getVerifier();
+				_serverCryptoParams = srpVerifierData.getSrpCryptoParameter();
+				_srpServerSession = new SrpServerAuthentication(_serverCryptoParams);
+				_pendingSrpUserLogin = srpVerifierAndUser.getUserLogin();
+				final BigInteger b = _srpServerSession.step1(_srpRequest.getUserName(), srpVerifierData.getSalt(), srpVerifierData.getVerifier(), !_pendingSrpUserLogin.isAuthenticated());
+				final SrpAnswer srpAnswer = new SrpAnswer(b, srpVerifierData.getSalt(), _serverCryptoParams);
+				_lowLevelCommunication.send(srpAnswer);
+				break;
+			case DataTelegram.SRP_VALDIATE_REQUEST_TYPE:
+				needsToBeNotAuthenticated();
+				final SrpValidateRequest srpValidateRequest = (SrpValidateRequest) telegram;
+				if(_srpServerSession == null || _srpRequest == null){
+					terminate(true, "Unerwartetes SRP-Telegramm");
+					return;
+				}
+				try {
+					final BigInteger m2 = _srpServerSession.step2(srpValidateRequest.getA(), srpValidateRequest.getM1());
+					// Passwort ist korrekt
+					
+					// Brute-Force-Bremse
+					_transmitterManager.throttleLoginAttempt(true);
+
+					final SrpValidateAnswer answer = new SrpValidateAnswer(m2);
+					_lowLevelCommunication.sendDirect(answer);
+
+					_userLogin = _pendingSrpUserLogin;
+
+					if(isIncomingConnection()) {
+						_lowLevelCommunication.enableEncryption(new SrpTelegramEncryption(SrpUtilities.bigIntegerToBytes(_srpServerSession.getSessionKey()), false, _serverCryptoParams));
+					}
+					else {
+						setCommunicationState(CommunicationState.Connected, "");
+					}
+
+				}
+				catch(InconsistentLoginException| SrpNotSupportedException ignored) {
+					// Passwort ist falsch
+
+					// Brute-Force-Bremse
+					_transmitterManager.throttleLoginAttempt(false);
+					
+					// Negative Quittung senden
+					final SrpValidateAnswer answer = new SrpValidateAnswer(BigInteger.ZERO);
+					_lowLevelCommunication.send(answer);
+				}
+				finally {
+					// Bisherige SRP-Sitzung nicht weiterverwenden, Client muss im Falle einer falschen Passworteingabe einen neuen Request senden
+					_srpServerSession = null;
+				}
+				break;
+			case DataTelegram.SRP_ANSWER_TYPE:
+			case DataTelegram.SRP_VALDIATE_ANSWER_TYPE:
+			case DataTelegram.DISABLE_ENCRYPTION_ANSWER_TYPE:
+				synchronized(_syncSystemTelegramList) {
+					_syncSystemTelegramList.add(telegram);
+					_syncSystemTelegramList.notifyAll();
+				}
+				break;
+			case DataTelegram.DISABLE_ENCRYPTION_REQUEST_TYPE:
+				needsToBeAuthenticated();
+				if(_properties.getEncryptionPreference().shouldDisable(_lowLevelCommunication.getConnectionInterface().isLoopback())){
+					_debug.info("Verschlüsselung der Verbindung wird deaktiviert");
+					_lowLevelCommunication.sendDirect(new DisableEncryptionAnswer(true));
+					_lowLevelCommunication.disableEncryption();
+				}
+				else {
+					_lowLevelCommunication.send(new DisableEncryptionAnswer(false));
+				}
+				break;
+			case DataTelegram.TRANSMITTER_REQUEST_TYPE:
+				needsToBeAuthenticated();
+				final TransmitterRequest transmitterRequest = (TransmitterRequest) telegram;
+				
+				String userName = _srpRequest.getUserName();
+
+				if(!handleRemoteTransmitterId(transmitterRequest.getTransmitterId())) return;
+
+				completeAuthenticationAndSendAnswer(userName);
+				break;
 			case DataTelegram.TRANSMITTER_COM_PARAMETER_REQUEST_TYPE: {
 				TransmitterComParametersRequest comParametersRequest = (TransmitterComParametersRequest) telegram;
 				long keepAliveSendTimeOut = comParametersRequest.getKeepAliveSendTimeOut();
@@ -662,6 +700,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			}
 			case DataTelegram.TRANSMITTER_DATA_SUBSCRIPTION_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterDataSubscription subscription = (TransmitterDataSubscription) telegram;
 					_transmitterManager.handleTransmitterSubscription(this, subscription);
 				}
@@ -674,6 +713,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			}
 			case DataTelegram.TRANSMITTER_DATA_SUBSCRIPTION_RECEIPT_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterDataSubscriptionReceipt receipt = (TransmitterDataSubscriptionReceipt) telegram;
 					_transmitterManager.handleTransmitterSubscriptionReceipt(this, receipt);
 				}
@@ -686,6 +726,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			}
 			case DataTelegram.TRANSMITTER_DATA_UNSUBSCRIPTION_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterDataUnsubscription unsubscription = (TransmitterDataUnsubscription) telegram;
 					_transmitterManager.handleTransmitterUnsubscription(this, unsubscription);
 				}
@@ -698,6 +739,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			}
 			case DataTelegram.TRANSMITTER_BEST_WAY_UPDATE_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterBestWayUpdate transmitterBestWayUpdate = (TransmitterBestWayUpdate) telegram;
 					_transmitterManager.updateBestWay(this, transmitterBestWayUpdate);
 				}
@@ -710,6 +752,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			}
 			case DataTelegram.TRANSMITTER_LISTS_SUBSCRIPTION_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterListsSubscription transmitterListsSubscription = (TransmitterListsSubscription) telegram;
 					_transmitterManager.handleListsSubscription(this, transmitterListsSubscription);
 				}
@@ -722,6 +765,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			}
 			case DataTelegram.TRANSMITTER_LISTS_UNSUBSCRIPTION_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterListsUnsubscription transmitterListsUnsubscription = (TransmitterListsUnsubscription) telegram;
 					_transmitterManager.handleListsUnsubscription(this, transmitterListsUnsubscription);
 				}
@@ -734,6 +778,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			}
 			case DataTelegram.TRANSMITTER_LISTS_DELIVERY_UNSUBSCRIPTION_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterListsDeliveryUnsubscription transmitterListsDeliveryUnsubscription = (TransmitterListsDeliveryUnsubscription) telegram;
 					_transmitterManager.handleListsDeliveryUnsubscription(this, transmitterListsDeliveryUnsubscription);
 				}
@@ -747,6 +792,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			case DataTelegram.TRANSMITTER_LISTS_UPDATE_TYPE:
 			case DataTelegram.TRANSMITTER_LISTS_UPDATE_2_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterListsUpdate transmitterListsUpdate = (TransmitterListsUpdate) telegram;
 					_transmitterManager.handleListsUpdate(transmitterListsUpdate);
 				}
@@ -759,6 +805,7 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 			}
 			case DataTelegram.TRANSMITTER_DATA_TELEGRAM_TYPE: {
 				if(_initComplete) {
+					needsToBeAuthenticated();
 					TransmitterDataTelegram transmitterDataTelegram = (TransmitterDataTelegram) telegram;
 					_transmitterManager.handleDataTelegram(this, transmitterDataTelegram);
 				}
@@ -784,6 +831,92 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 				break;
 			}
 		}
+	}
+
+	private boolean completeAuthenticationAndSendAnswer(final String userName) {
+		if(!_userLogin.isAuthenticated()) {
+			synchronized(_authentificationSync) {
+				_authentificationSync.notifyAll();
+			}
+			_debug.info("Datenverteiler " + _connectedTransmitterId + " hat vergeblich versucht sich als '" + userName + "' zu authentifizieren");
+			TransmitterAuthentificationAnswer authentificationAnswer = new TransmitterAuthentificationAnswer(false, -1);
+			sendTelegram(authentificationAnswer);
+			return false;
+		}
+		_lowLevelConnectionsManager.updateTransmitterId(this);
+
+		if(_lowLevelConnectionsManager.isDisabledConnection(_connectedTransmitterId)) {
+			// Die Verbindung wurde deaktiviert.
+			// Damit der andere Datenverteiler nicht anfängt Daten zu senden wird hier in der Authentifizierung blockiert und dann
+			// nach einer Minute die Verbindung terminiert.
+			// Dier Verbindung wird nicht sofort terminiert, damit der andere Datenverteiler nicht ständig neue Verbindungen aufbaut.
+
+			String msg = "Eingehende Verbindung vom Datenverteiler " + _connectedTransmitterId
+					+ " wird in einer Minute terminiert, weil die Verbindung deaktiviert wurde.";
+			setCommunicationState(CommunicationState.Connecting, msg);
+			try {
+				Thread.sleep(60000);
+			}
+			catch(InterruptedException ignored) {
+			}
+			// das ist kein richtiger Fehler, aber trotzdem ein TerminateOrderTelegram-Telegramm statt einem ClosingTelegram senden,
+			// damit der Grund auf der Gegenseite ankommt.
+			terminate(true, "Verbindung zu diesem Datenverteiler wurde deaktiviert.", new TerminateOrderTelegram("Verbindung zu diesem Datenverteiler wurde deaktiviert."));
+			return true;
+		}
+
+		_debug.info("Datenverteiler " + _connectedTransmitterId + " hat sich als '" + userName + "' erfolgreich authentifiziert");
+
+		TransmitterAuthentificationAnswer authentificationAnswer = new TransmitterAuthentificationAnswer(
+				true, _properties.getDataTransmitterId()
+		);
+		sendTelegram(authentificationAnswer);
+		synchronized(_authentificationSync) {
+			_authentificationSync.notifyAll();
+		}
+		if(_isIncomingConnection) {
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					try {
+						authenticate();
+					}
+					catch(CommunicationError ex) {
+						ex.printStackTrace();
+					}
+				}
+			};
+			Thread thread = new Thread(runnable);
+			thread.start();
+		}
+		return false;
+	}
+
+
+	private boolean handleRemoteTransmitterId(final long remoteTransmitterId) {
+		_debug.info("Datenverteiler " + remoteTransmitterId + " möchte sich authentifizieren");
+		final T_T_HighLevelCommunication transmitterConnection;
+
+		transmitterConnection = _lowLevelConnectionsManager.getTransmitterConnection(remoteTransmitterId);
+
+		if(transmitterConnection != null
+				&& transmitterConnection.isIncomingConnection()
+				&& !transmitterConnection.isClosed()) {
+			_debug.warning(
+					"Eingehende Verbindung vom Datenverteiler " + remoteTransmitterId
+							+ " wird terminiert, weil noch eine andere Verbindung zu diesem Datenverteiler besteht."
+			);
+			terminate(
+					true, "Verbindung wurde terminiert, weil noch eine andere Verbindung zu diesem Datenverteiler besteht."
+			);
+			return false;
+		}
+		_connectedTransmitterId = remoteTransmitterId;
+		_lowLevelCommunication.setRemoteName("DAV " + _connectedTransmitterId);
+		_weight = _transmitterManager.getWeight(_connectedTransmitterId);
+		_userForAuthentication = _transmitterManager.getUserNameForAuthentication(_connectedTransmitterId);
+		_credentialsForAuthentication = _transmitterManager.getClientCredentialsForAuthentication(_connectedTransmitterId);
+		return true;
 	}
 
 	/**
@@ -812,24 +945,16 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	}
 
 	/**
-	 * Gibt die höchhste unterstützte Version aus den gegebenen Versionen oder -1, wenn keine von den gegebenen Versionen unterstützt wird, zurück.
+	 * Gibt die höchste unterstützte Version aus den gegebenen Versionen oder -1, wenn keine von den gegebenen Versionen unterstützt wird, zurück.
 	 *
 	 * @param versions Feld der Versionen
-	 * @return die höchste unterstützte version oder -1
+	 * @return die höchste unterstützte Version oder -1
 	 */
-	private int getPrefferedVersion(int[] versions) {
-
-		if(_versions == null) {
+	private int getPreferredVersion(int[] versions) {
+		if(versions == null) {
 			return -1;
 		}
-		for(int i = 0; i < versions.length; ++i) {
-			for(int j = 0; j < _versions.length; ++j) {
-				if(versions[i] == _versions[j]) {
-					return versions[i];
-				}
-			}
-		}
-		return -1;
+		return IntStream.of(versions).filter(_supportedProtocolVersions::contains).max().orElse(-1);
 	}
 
 
@@ -840,7 +965,71 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	 */
 	private void authenticate() throws CommunicationError {
 		setCommunicationState(CommunicationState.Authenticating, "");
-		// Authentifikationstext holen
+		TransmitterAuthentificationAnswer authentificationAnswer;
+
+		try {
+			if(_version >= 3) {
+				try {
+					authentificationAnswer = authenticateSrp();
+				}
+				catch(SrpNotSupportedException ignored) {
+					// SRP wird von der Gegenseite nicht unterstützt
+					authentificationAnswer = authenticateHmac();
+				}
+			}
+			else {
+				authentificationAnswer = authenticateHmac();
+			}
+		}
+		catch(InconsistentLoginException e) {
+			terminate(true, "Die Authentifizierung beim anderen Datenverteiler ist fehlgeschlagen");
+			throw new CommunicationError("Die Authentifizierung beim anderen Datenverteiler ist fehlgeschlagen", e);
+		}
+		
+		_connectedTransmitterId = authentificationAnswer.getCommunicationTransmitterId();
+		_lowLevelCommunication.setRemoteName("DAV " + _connectedTransmitterId);
+		setCommunicationState(CommunicationState.Connected, "");
+	}
+
+	/**
+	 * Authentifizierung als Client mit SRP
+	 * @return Antwort vom Server
+	 * @throws SrpNotSupportedException SRP wird von der Gegenseite nicht unterstützt
+	 * @throws InconsistentLoginException Falsches Passwort
+	 * @throws CommunicationError Kommunikationsfehler
+	 */
+	private TransmitterAuthentificationAnswer authenticateSrp() throws SrpNotSupportedException, InconsistentLoginException, CommunicationError {
+		MyTelegramInterface queue = new MyTelegramInterface();
+		SrpClientAuthentication.AuthenticationResult authenticationResult = SrpClientAuthentication.authenticate(_userForAuthentication, -1, _credentialsForAuthentication, queue);
+
+		final SrpCryptoParameter clientCryptoParams = authenticationResult.getCryptoParams();
+		if(!isIncomingConnection()) {
+			_lowLevelCommunication.enableEncryption(new SrpTelegramEncryption(SrpUtilities.bigIntegerToBytes(authenticationResult.getSessionKey()), true, clientCryptoParams));
+			
+			if(_properties.getEncryptionPreference().shouldDisable(_lowLevelCommunication.getConnectionInterface().isLoopback())) {
+				_lowLevelCommunication.send(new DisableEncryptionRequest());
+				DisableEncryptionAnswer answer = (DisableEncryptionAnswer)waitForAnswerTelegram(DataTelegram.DISABLE_ENCRYPTION_ANSWER_TYPE, "Antwort auf Anfrage zur Deaktivierung der Verschlüsselung");
+				if(answer.isDisabled()){
+					_debug.info("Verschlüsselung der Verbindung wird deaktiviert");
+					_lowLevelCommunication.disableEncryption();
+				}
+			}
+		}
+		_lowLevelCommunication.send(new TransmitterRequest(_lowLevelConnectionsManager.getTransmitterId()));
+		return (TransmitterAuthentificationAnswer) queue.getDataTelegram(DataTelegram.TRANSMITTER_AUTHENTIFICATION_ANSWER_TYPE);
+	}
+
+	/**
+	 * Authentifizierung als Client mit HMAC
+	 * @return Antwort vom Server
+	 * @throws InconsistentLoginException Falsches Passwort
+	 * @throws CommunicationError Kommunikationsfehler
+	 */
+	private TransmitterAuthentificationAnswer authenticateHmac() throws CommunicationError, InconsistentLoginException {
+		if(!_properties.isHmacAuthenticationAllowed()){
+			throw new CommunicationError("Anderer Datenverteiler und/oder Konfiguration sind veraltet und unterstützen die sichere SRP-Authentifizierung nicht, und die alte Authentifizierung ist nicht erlaubt. (Aufrufparameter: -erlaubeHmacAuthentifizierung)");
+		}
+		final TransmitterAuthentificationAnswer authentificationAnswer;// Authentifikationstext holen
 		TransmitterAuthentificationTextRequest authentificationTextRequest = new TransmitterAuthentificationTextRequest(
 				_properties.getDataTransmitterId()
 		);
@@ -848,29 +1037,50 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 		TransmitterAuthentificationTextAnswer authentificationTextAnswer = (TransmitterAuthentificationTextAnswer) waitForAnswerTelegram(
 				DataTelegram.TRANSMITTER_AUTHENTIFICATION_TEXT_ANSWER_TYPE, "Aufforderung zur Authentifizierung"
 		);
+
+		if(!_credentialsForAuthentication.hasPassword()){
+			throw new CommunicationError("Die Authentifizierung mit einem Login-Token ist nicht möglich, da der Datenverteiler nur die Passwort-basierte Authentifizierung unterstützt.\n");
+		}
+		
 		byte[] encryptedPassword = authentificationTextAnswer.getEncryptedPassword(
-				_properties.getAuthentificationProcess(), _authentifyWithPassword
+				_properties.getAuthentificationProcess(), new String(_credentialsForAuthentication.getPassword())
 		);
 
 		// User Authentifizierung
 		String authentificationProcessName = _properties.getAuthentificationProcess().getName();
 		TransmitterAuthentificationRequest authentificationRequest = new TransmitterAuthentificationRequest(
-				authentificationProcessName, _authentifyAsUser, encryptedPassword
+				authentificationProcessName, _userForAuthentication, encryptedPassword
 		);
 		sendTelegram(authentificationRequest);
 
-		TransmitterAuthentificationAnswer authentificationAnswer = (TransmitterAuthentificationAnswer) waitForAnswerTelegram(
+		authentificationAnswer = (TransmitterAuthentificationAnswer) waitForAnswerTelegram(
 				DataTelegram.TRANSMITTER_AUTHENTIFICATION_ANSWER_TYPE, "Antwort auf eine Authentifizierungsanfrage"
 		);
 		if(!authentificationAnswer.isSuccessfullyAuthentified()) {
-			terminate(true, "Die Authentifizierung beim anderen Datenverteiler ist fehlgeschlagen");
-			throw new CommunicationError("Die Authentifizierung beim anderen Datenverteiler ist fehlgeschlagen");
+			throw new InconsistentLoginException("Die Authentifizierung beim anderen Datenverteiler ist fehlgeschlagen");
 		}
-		_connectedTransmitterId = authentificationAnswer.getCommunicationTransmitterId();
-		_lowLevelCommunication.setRemoteName("DAV " + _connectedTransmitterId);
-		setCommunicationState(CommunicationState.Connected, "");
+		return authentificationAnswer;
 	}
 
+
+	/**
+	 * Hilfsfunktion, die eine Exception wirft, wenn der Benutzer noch nicht erfolgreich authentifiziert ist
+	 */
+	private void needsToBeAuthenticated() {
+		if(!_userLogin.isAuthenticated()) {
+			throw new IllegalStateException("Benutzer ist nicht authentifiziert");
+		}
+	}
+
+	/**
+	 * Hilfsfunktion, die eine Exception wirft, wenn der Benutzer schon erfolgreich authentifiziert ist
+	 */
+	private void needsToBeNotAuthenticated() {
+		if(_userLogin.isAuthenticated()) {
+			throw new IllegalStateException("Benutzer ist bereits authentifiziert");
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "[" + _connectedTransmitterId + "]";
@@ -959,5 +1169,28 @@ public class T_T_HighLevelCommunication implements T_T_HighLevelCommunicationInt
 	 */
 	public CommunicationStateAndMessage getState() {
 		return _state;
+	}
+
+	private class MyTelegramInterface implements SrpClientAuthentication.TelegramInterface {
+
+		@Override
+		public SrpAnswer sendAndReceiveRequest(final SrpRequest telegram) throws CommunicationError {
+			_lowLevelCommunication.send(telegram);
+			return (SrpAnswer) getDataTelegram(DataTelegram.SRP_ANSWER_TYPE);
+		}
+
+		@Override
+		public SrpValidateAnswer sendAndReceiveValidateRequest(final SrpValidateRequest telegram) throws CommunicationError {
+			_lowLevelCommunication.send(telegram);
+			return (SrpValidateAnswer) getDataTelegram(DataTelegram.SRP_VALDIATE_ANSWER_TYPE);
+		}
+
+		private DataTelegram getDataTelegram(final byte telegramType) throws CommunicationError {
+			final DataTelegram telegram = waitForAnswerTelegram(telegramType, "Antwort auf SRP-Authentifizierung " + telegramType);
+			if(telegram == null) {
+				throw new CommunicationError("Der Datenverteiler antwortet nicht bei der SRP-Authentifizierung");
+			}
+			return telegram;
+		}
 	}
 }

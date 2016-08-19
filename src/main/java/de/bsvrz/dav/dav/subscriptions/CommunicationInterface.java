@@ -27,6 +27,7 @@
 package de.bsvrz.dav.dav.subscriptions;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ApplicationDataTelegram;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 
 /**
  * Basis-Interface für eine Netzwerkverbindung Dav-Dav oder Dav-App
@@ -37,10 +38,10 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ApplicationDataTelegram
 public interface CommunicationInterface {
 
 	/**
-	 * Gibt die Id des verbundenen Benutzers zurück
-	 * @return die Id des verbundenen Benutzers
+	 * Gibt den Authentifizierungsstatus des verbundenen Benutzers zurück
+	 * @return der verbundene Benutzer
 	 */
-	long getRemoteUserId();
+	UserLogin getUserLogin();
 
 	/**
 	 * Versendet ein Daten-Telegramm über diese Verbindung

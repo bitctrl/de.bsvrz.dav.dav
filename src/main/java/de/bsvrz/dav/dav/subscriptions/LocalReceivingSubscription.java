@@ -28,6 +28,7 @@ package de.bsvrz.dav.dav.subscriptions;
 
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.ApplicationDataTelegram;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
 import de.bsvrz.dav.daf.main.DataState;
 import de.bsvrz.dav.daf.main.ReceiveOptions;
 import de.bsvrz.dav.dav.main.ConnectionState;
@@ -169,12 +170,12 @@ public class LocalReceivingSubscription implements LocalSubscription, ReceivingS
 
 	@Override
 	public boolean isAllowed() {
-		return _subscriptionsManager.isActionAllowed(_applicationConnection.getRemoteUserId(), getBaseSubscriptionInfo(), _drain ? UserAction.DRAIN : UserAction.RECEIVER);
+		return _subscriptionsManager.isActionAllowed(_applicationConnection.getUserLogin(), getBaseSubscriptionInfo(), _drain ? UserAction.DRAIN : UserAction.RECEIVER);
 	}
 
 	@Override
-	public long getUserId() {
-		return _applicationConnection.getRemoteUserId();
+	public UserLogin getAuthenticationState() {
+		return _applicationConnection.getUserLogin();
 	}
 
 	@Override
@@ -182,7 +183,7 @@ public class LocalReceivingSubscription implements LocalSubscription, ReceivingS
 		return "Lokale Anmeldung (" + _receiverState + ") als " + (_drain ? "Senke" : "Empfänger") +
 				" auf " + _subscriptionsManager.subscriptionToString(_baseSubscriptionInfo) +
 				" von " + _applicationConnection.toString() +
-				" (Benutzer=" + _subscriptionsManager.objectToString(_applicationConnection.getRemoteUserId()) + ")";
+				" (Benutzer=" + _subscriptionsManager.objectToString(_applicationConnection.getUserLogin().toLong()) + ")";
 	}
 
 

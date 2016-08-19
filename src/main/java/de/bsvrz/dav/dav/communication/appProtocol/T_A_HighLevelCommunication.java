@@ -31,13 +31,21 @@ import de.bsvrz.dav.daf.communication.dataRepresentation.datavalue.SendDataObjec
 import de.bsvrz.dav.daf.communication.lowLevel.HighLevelCommunicationCallbackInterface;
 import de.bsvrz.dav.daf.communication.lowLevel.LowLevelCommunicationInterface;
 import de.bsvrz.dav.daf.communication.lowLevel.telegrams.*;
+import de.bsvrz.dav.daf.communication.protocol.UserLogin;
+import de.bsvrz.dav.daf.communication.srpAuthentication.*;
 import de.bsvrz.dav.daf.main.CommunicationError;
+import de.bsvrz.dav.daf.main.InconsistentLoginException;
+import de.bsvrz.dav.daf.main.authentication.ClientCredentials;
 import de.bsvrz.dav.daf.main.config.ConfigurationChangeException;
 import de.bsvrz.dav.daf.main.impl.CommunicationConstant;
 import de.bsvrz.dav.dav.main.*;
 import de.bsvrz.sys.funclib.debug.Debug;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * Diese Klasse stellt eine Verbindung vom Datenverteiler zur Applikation dar. Über diese Verbindung können Telegramme an eine Applikation verschickt werden.
@@ -56,13 +64,13 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	private ServerConnectionProperties _properties;
 
 	/** Die unterstützten Versionen des Datenverteilers */
-	private int[] _versions;
+	private final Set<Integer> _supportedProtocolVersions = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(3, 4)));
 
 	/** Der Applikation Id */
 	private long _applicationId;
 
 	/** Die Id des Benutzers */
-	private long _remoteUserId;
+	private UserLogin _userLogin = UserLogin.notAuthenticated();
 
 	/** Der Konfiguration Id */
 	private long _configurationId;
@@ -86,19 +94,35 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	private boolean _waitForConfiguration;
 
 	/** Objekt zur internen Synchronization */
-	private Object _sync;
+	private final Object _sync;
 
 	private boolean _closed = false;
 
 	private Object _closedLock = new Object();
 
 	private final long _connectionCreatedTime;
-	/** Map in der eine je Datenidentifikation eine Liste von empfangenen Telegrammen, die zu einem Datensatz gehören zwischengespeichert werden können */
-	private Map<BaseSubscriptionInfo, List<ApplicationDataTelegram>> _stalledTelegramListMap = new HashMap<BaseSubscriptionInfo, List<ApplicationDataTelegram>>();
 
 	private final HighLevelApplicationManager _applicationManager;
 
 	private final LowLevelConnectionsManagerInterface _lowLevelConnectionsManager;
+
+	/** Die Informationen zur SRP-Anmeldung */
+	private SrpServerAuthentication _srpServerSession;
+
+	/** Die SRP-Anfragedaten */
+	private SrpRequest _srpRequest;
+
+	/** 
+	 * Geheimer datenverteilerseitig eindeutiger Zufallstext, aus dem SRP-Fake-Verifier gebildet werden können. Dieser Text wird vorberechnet, damit Fake-Verifier über die Laufzeit des
+	 * Datenverteilers konstant sind und jemand so nicht einfach die Existenz von Benutzern prüfen kann
+	 */
+	private static final String _secretToken = new BigInteger(64, new SecureRandom()).toString(16);
+
+	/**
+	 * Kryptographische Parameter für die SRP-Authentifizierung
+	 */
+	private SrpCryptoParameter _srpCryptoParameter;
+	private UserLogin _pendingSrpUserLogin;
 
 	/**
 	 * Erzeugt ein neues Objekt mit den gegebenen Parametern.
@@ -112,8 +136,6 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 			HighLevelApplicationManager applicationManager, final LowLevelConnectionsManagerInterface lowLevelConnectionsManager, boolean waitForConfiguration) {
 		_lowLevelConnectionsManager = lowLevelConnectionsManager;
 		_applicationId = -1;
-		_versions = new int[1];
-		_versions[0] = 3;
 		_lowLevelCommunication = properties.getLowLevelCommunication();
 		_properties = properties;
 		_applicationManager = applicationManager;
@@ -139,7 +161,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 				synchronized(_syncSystemTelegramList) {
 					_syncSystemTelegramList.wait(sleepTime);
 					if(sleepTime < 1000) sleepTime *= 2;
-					DataTelegram telegram = null;
+					DataTelegram telegram;
 					ListIterator _iterator = _syncSystemTelegramList.listIterator(0);
 					while(_iterator.hasNext()) {
 						telegram = (DataTelegram)_iterator.next();
@@ -256,9 +278,16 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 		return _applicationId;
 	}
 
-	@Override
-	public final long getRemoteUserId() {
-		return _remoteUserId;
+	public final UserLogin getUserLogin() {
+		return _userLogin;
+	}
+
+	/**
+	 * Setzt den eingeloggten Benutzer (nur für Testzwecke)
+	 * @param userLogin Benutzer
+	 */
+	public void setUserLogin(final UserLogin userLogin) {
+		_userLogin = userLogin;
 	}
 
 	@Override
@@ -291,7 +320,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	}
 
 	@Override
-	public final void continueAuthentification() {
+	public final void continueAuthentication() {
 		synchronized(_sync) {
 			_waitForConfiguration = false;
 			_sync.notify();
@@ -306,25 +335,15 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 	 *
 	 * @return Version, die aus den gegebenen Versionen unterstützt wird. Wird keine der übergebenen Versionen unterstützt, so wird -1 zurückgegeben.
 	 */
-	private int getPrefferedVersion(int[] versions) {
-		if(_versions == null) {
+	private int getPreferredVersion(int[] versions) {
+		if(versions == null) {
 			return -1;
 		}
-		for(int i = 0; i < versions.length; ++i) {
-			for(int j = 0; j < _versions.length; ++j) {
-				if(versions[i] == _versions[j]) {
-					return versions[i];
-				}
-			}
-		}
-		return -1;
+		return IntStream.of(versions).filter(_supportedProtocolVersions::contains).max().orElse(-1);
 	}
 
 	@Override
 	public final void update(DataTelegram telegram) {
-		if(Transmitter._debugLevel > 10) {
-			System.err.println("T_A <-  " + (telegram == null ? "null" : telegram.toShortDebugString()));
-		}
 		if(telegram == null) {
 			return;
 		}
@@ -338,83 +357,32 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 			}
 			case DataTelegram.PROTOCOL_VERSION_REQUEST_TYPE: {
 				ProtocolVersionRequest protocolVersionRequest = (ProtocolVersionRequest)telegram;
-				int version = getPrefferedVersion(protocolVersionRequest.getVersions());
+				int version = getPreferredVersion(protocolVersionRequest.getVersions());
 				ProtocolVersionAnswer protocolVersionAnswer = new ProtocolVersionAnswer(version);
 				_lowLevelCommunication.send(protocolVersionAnswer);
 				break;
 			}
 			case DataTelegram.AUTHENTIFICATION_TEXT_REQUEST_TYPE: {
-				long formativeConfigurationId = 0;
-				AuthentificationTextRequest authentificationTextRequest = (AuthentificationTextRequest)telegram;
-				_configurationPid = authentificationTextRequest.getConfigurationPid();
-				if("".equals(_configurationPid)) {
-					_configurationPid = CommunicationConstant.LOCALE_CONFIGURATION_PID_ALIASE;
-				}
-				else {
-					String[] strings = _configurationPid.split(":");
-					if(strings.length > 1) {
-						_configurationPid = strings[0];
-						try {
-							// Id des Konfigurationsverantwortlichen wird mit Doppelpunkt getrennt hinter der Pid erwartet,
-							// wenn sich die Konfiguration anmeldet
-							formativeConfigurationId = Long.parseLong(strings[1]);
-						}
-						catch(NumberFormatException e) {
-							_debug.error("Fehler beim Parsen der mit Doppelpunkt getrennten Id an der Pid des Konfigurationsverantwortlichen", e);
-						}
-					}
-				}
-				_applicationName = authentificationTextRequest.getApplicationName();
-				_debug.finest("applicationName", _applicationName);
-				_applicationTypePid = authentificationTextRequest.getApplicationTypePid();
-				_debug.finest("applicationTypePid", _applicationTypePid);
-				_lowLevelCommunication.setRemoteName(_applicationName + " (Typ: " + _applicationTypePid + ")");
-				if(_waitForConfiguration) {
-					boolean mustWait = true;
-					if(CommunicationConstant.CONFIGURATION_TYPE_PID.equals(_applicationTypePid)) {
-						if(_properties.isLocalMode()) {
-							if(formativeConfigurationId != 0) {
-								// Die von der Konfiguration vorgegebene Pid und Id des Konfigurationsverantwortlichen wird als Default für die Applikationen
-								// gespeichert
-								_properties.setLocalModeParameter(_configurationPid, formativeConfigurationId);
-								_lowLevelConnectionsManager.setLocalModeParameter(_configurationPid, formativeConfigurationId);
-								_debug.info("Default-Konfiguration " + _configurationPid + ", Id " + formativeConfigurationId);
-								mustWait = false;
-							}
-							else {
-								terminate(true, "Konfiguration hat die Id des Konfigurationsverantwortlichen nicht vorgegeben");
-								return;
-							}
-						}
-					}
-					if(mustWait) {
-						synchronized(_sync) {
-							try {
-								_debug.finest("mustWait", mustWait);
-								while(_waitForConfiguration) {
-									if(_closed) return;
-									_sync.wait(1000);
-								}
-							}
-							catch(InterruptedException ex) {
-								return;
-							}
-						}
-					}
-				}
-				_waitForConfiguration = false;
-				_debug.finest("waitForConfiguration", _waitForConfiguration);
+				needsToBeNotAuthenticated();
+				AuthentificationTextRequest authentificationTextRequest = (AuthentificationTextRequest) telegram;
+				if(!firstInitialization(
+						authentificationTextRequest.getApplicationTypePid(),
+						authentificationTextRequest.getApplicationName(),
+						authentificationTextRequest.getConfigurationPid()
+				)) return;
+
 				String text = _authentificationComponent.getAuthentificationText(_applicationName);
-				AuthentificationTextAnswer authentificationTextAnswer = new AuthentificationTextAnswer(text);
-				_lowLevelCommunication.send(authentificationTextAnswer);
+				_lowLevelCommunication.send(new AuthentificationTextAnswer(text));
 				break;
 			}
 			case DataTelegram.AUTHENTIFICATION_REQUEST_TYPE: {
+				needsToBeNotAuthenticated();
+
 				AuthentificationRequest authentificationRequest = (AuthentificationRequest)telegram;
 				String userName = authentificationRequest.getUserName();
 
 				try {
-					_remoteUserId = _lowLevelConnectionsManager.login(
+					_userLogin = _lowLevelConnectionsManager.login(
 							userName,
 							authentificationRequest.getUserPassword(),
 							_authentificationComponent.getAuthentificationText(_applicationName),
@@ -422,69 +390,10 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 							_applicationTypePid
 					);
 
-					AuthentificationAnswer authentificationAnswer = null;
-					if(_remoteUserId > -1) {
-						// Pid und Id der Default-Konfiguration aus globalen Einstellungen holen und in lokalen Einstellungen speichern
-						if(_properties.isLocalMode()) {
-							String pid = _lowLevelConnectionsManager.getLocalModeConfigurationPid();
-							long id = _lowLevelConnectionsManager.getLocalModeConfigurationId();
-							_properties.setLocalModeParameter(pid, id);
-						}
-						if(CommunicationConstant.LOCALE_CONFIGURATION_PID_ALIASE.equals(_configurationPid)) {
-							Object[] objects = _properties.getLocalModeParameter();
-							if(objects != null) {
-								_configurationPid = (String)objects[0];
-								_configurationId = ((Long)objects[1]).longValue();
-							}
-							else {
-								_configurationId = _applicationManager.getConfigurationId(_configurationPid);
-							}
-						}
-						else {
-							_configurationId = _applicationManager.getConfigurationId(_configurationPid);
-						}
-
-						if(CommunicationConstant.CONFIGURATION_TYPE_PID.equals(_applicationTypePid)) {
-							Object[] objects = _properties.getLocalModeParameter();
-							if(objects == null) {
-								_applicationId = _applicationManager.createNewApplication(this, _applicationTypePid, _applicationName);
-							}
-							else {
-								String _configurationPid = (String)objects[0];
-								if(this._configurationPid.equals(_configurationPid)) {
-									_applicationId = 0;
-								}
-								else {
-									_applicationId = _applicationManager.createNewApplication(this, _applicationTypePid, _applicationName);
-								}
-							}
-						}
-						else {
-							_applicationId = _applicationManager.createNewApplication(this, _applicationTypePid, _applicationName);
-						}
-						if(_applicationId == -1) {
-							terminate(
-									true,
-									"Die Id der Applikation konnte nicht ermittelt werden, ApplikationsTyp: " + _applicationTypePid + ", ApplikationsName: "
-									+ _applicationName
-							);
-							return;
-						}
-						_lowLevelConnectionsManager.updateApplicationId(this);
-						if(_configurationId == -1) {
-							terminate(true, "Ungültige Pid der Konfiguration: " + _configurationPid);
-							return;
-						}
-						authentificationAnswer = new AuthentificationAnswer(
-								_remoteUserId, _applicationId, _configurationId, _properties.getDataTransmitterId()
-						);
-					}
-					else {
-						authentificationAnswer = new AuthentificationAnswer(false);
-					}
-					if(authentificationAnswer != null) {
-						_lowLevelCommunication.send(authentificationAnswer);
-					}
+					// Brute-Force-Bremse
+					_applicationManager.throttleLoginAttempt(_userLogin.isAuthenticated());
+					
+					completeAuthenticationAndSendAnswer();
 				}
 				catch(ConfigurationChangeException ex) {
 					ex.printStackTrace();
@@ -495,6 +404,100 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 				}
 				break;
 			}
+			case DataTelegram.SRP_REQUEST_TYPE:
+				needsToBeNotAuthenticated();
+				_srpRequest = (SrpRequest) telegram;
+
+				SrpVerifierAndUser srpVerifierAndUser;
+				try {
+					srpVerifierAndUser = fetchSrpUserData(_srpRequest.getUserName(), _srpRequest.getPasswordIndex());
+				}
+				catch(SrpNotSupportedException e) {
+					// SRP wird von der Konfiguration nicht unterstützt
+					_lowLevelCommunication.send(new SrpAnswer(e.getMessage()));
+					return;
+				}
+				final SrpVerifierData srpVerifierData = srpVerifierAndUser.getVerifier();
+				_pendingSrpUserLogin = srpVerifierAndUser.getUserLogin();
+				_srpCryptoParameter = srpVerifierData.getSrpCryptoParameter();
+				_srpServerSession = new SrpServerAuthentication(_srpCryptoParameter);
+				final BigInteger b = _srpServerSession.step1(_srpRequest.getUserName(), srpVerifierData.getSalt(), srpVerifierData.getVerifier(), !_pendingSrpUserLogin
+						.isAuthenticated());
+				final SrpAnswer srpAnswer = new SrpAnswer(b, srpVerifierData.getSalt(), _srpCryptoParameter);
+				_lowLevelCommunication.send(srpAnswer);
+				break;
+			case DataTelegram.SRP_VALDIATE_REQUEST_TYPE:
+				needsToBeNotAuthenticated();
+				
+				final SrpValidateRequest srpValidateRequest = (SrpValidateRequest) telegram;
+				if(_srpServerSession == null || _srpRequest == null){
+					terminate(true, "Unerwartetes SRP-Telegramm");
+					return;
+				}
+				try {
+					final BigInteger m2 = _srpServerSession.step2(srpValidateRequest.getA(), srpValidateRequest.getM1());
+					// Passwort ist korrekt
+					
+					// Brute-Force-Bremse
+					_applicationManager.throttleLoginAttempt(true);
+					
+					final SrpValidateAnswer answer = new SrpValidateAnswer(m2);
+					_lowLevelCommunication.sendDirect(answer);
+                    if(_srpRequest.getPasswordIndex() != -1){
+	                    // Einloggen erfolgreich, also Einmalpasswort deaktivieren
+	                    _applicationManager.disableSingleServingPassword(_srpRequest.getUserName(), _srpRequest.getPasswordIndex());
+                    }
+					
+					final BigInteger sessionKey = _srpServerSession.getSessionKey();
+					
+					_userLogin = _pendingSrpUserLogin;
+					_lowLevelCommunication.enableEncryption(new SrpTelegramEncryption(SrpUtilities.bigIntegerToBytes(sessionKey), false, _srpCryptoParameter));
+				}
+				catch(InconsistentLoginException | SrpNotSupportedException ignored) {
+					// Passwort ist falsch
+					
+					// Brute-Force-Bremse
+					_applicationManager.throttleLoginAttempt(false);
+					
+					// Negative Quittung senden
+					final SrpValidateAnswer answer = new SrpValidateAnswer(BigInteger.ZERO);
+					_lowLevelCommunication.send(answer);
+				}
+				finally {
+					// Bisherige SRP-Sitzung nicht weiterverwenden, Client muss im Falle einer falschen Passworteingabe einen neuen Request senden
+					_srpServerSession = null;
+				}
+				break;
+			case DataTelegram.DISABLE_ENCRYPTION_REQUEST_TYPE:
+				needsToBeAuthenticated();
+				if(_properties.getEncryptionPreference().shouldDisable(_lowLevelCommunication.getConnectionInterface().isLoopback())){
+					_lowLevelCommunication.sendDirect(new DisableEncryptionAnswer(true));
+					_lowLevelCommunication.disableEncryption();
+				}
+				else {
+					_lowLevelCommunication.send(new DisableEncryptionAnswer(false));
+				}
+				break;
+			case DataTelegram.APPLICATION_REQUEST_TYPE:
+				needsToBeAuthenticated();
+				try {
+					ApplicationRequest applicationRequest = (ApplicationRequest) telegram;
+					if(!firstInitialization(
+							applicationRequest.getApplicationTypePid(),
+							applicationRequest.getApplicationName(),
+							applicationRequest.getConfigurationPid()
+					)) return;
+
+					completeAuthenticationAndSendAnswer();
+				}
+				catch(ConfigurationChangeException ex) {
+					ex.printStackTrace();
+					terminate(
+							true, "Fehler während der Authentifizierung einer Applikation beim Zugriff auf die Konfiguration: " + ex.getMessage()
+					);
+					return;
+				}
+				break;
 			case DataTelegram.COM_PARAMETER_REQUEST_TYPE: {
 				ComParametersRequest comParametersRequest = (ComParametersRequest)telegram;
 				// Empfangene Timeoutparameter werden übernommen und nach unten begrenzt
@@ -503,7 +506,7 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 				long keepAliveReceiveTimeOut = comParametersRequest.getKeepAliveReceiveTimeOut();
 				if(keepAliveReceiveTimeOut < 6000) keepAliveReceiveTimeOut = 6000;
 
-				ComParametersAnswer comParametersAnswer = null;
+				ComParametersAnswer comParametersAnswer;
 
 				byte cacheThresholdPercentage = comParametersRequest.getCacheThresholdPercentage();
 				short flowControlThresholdTime = comParametersRequest.getFlowControlThresholdTime();
@@ -534,26 +537,31 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 				break;
 			}
 			case DataTelegram.SEND_SUBSCRIPTION_TYPE: {
+				needsToBeAuthenticated();
 				SendSubscriptionTelegram sendSubscriptionTelegram = (SendSubscriptionTelegram)telegram;
 				_applicationManager.handleSendSubscription(this, sendSubscriptionTelegram);
 				break;
 			}
 			case DataTelegram.SEND_UNSUBSCRIPTION_TYPE: {
+				needsToBeAuthenticated();
 				SendUnsubscriptionTelegram sendUnsubscriptionTelegram = (SendUnsubscriptionTelegram)telegram;
 				_applicationManager.handleSendUnsubscription(this, sendUnsubscriptionTelegram);
 				break;
 			}
 			case DataTelegram.RECEIVE_SUBSCRIPTION_TYPE: {
+				needsToBeAuthenticated();
 				ReceiveSubscriptionTelegram receiveSubscriptionTelegram = (ReceiveSubscriptionTelegram)telegram;
 				_applicationManager.handleReceiveSubscription(this, receiveSubscriptionTelegram);
 				break;
 			}
 			case DataTelegram.RECEIVE_UNSUBSCRIPTION_TYPE: {
+				needsToBeAuthenticated();
 				ReceiveUnsubscriptionTelegram receiveUnsubscriptionTelegram = (ReceiveUnsubscriptionTelegram)telegram;
 				_applicationManager.handleReceiveUnsubscription(this, receiveUnsubscriptionTelegram);
 				break;
 			}
 			case DataTelegram.APPLICATION_DATA_TELEGRAM_TYPE: {
+				needsToBeAuthenticated();
 				ApplicationDataTelegram applicationDataTelegram = (ApplicationDataTelegram)telegram;
 				_applicationManager.handleDataTelegram(this, applicationDataTelegram);
 				break;
@@ -571,54 +579,98 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 				break;
 			}
 			default: {
+				System.out.println(telegram);
 				break;
 			}
 		}
 	}
 
 	/**
-	 * Erzeugt eine Liste für verzögerte Telegramme für eine Datenidentifikation und speichert sie in einer Map.
-	 *
-	 * @param info     Datenidentifikation der verzögerten Telegramme
-	 * @param maxCount Maximale Anzahl der verzögerten Telegramme
-	 *
-	 * @return Neue Liste für verzögerte Telegramme
-	 *
-	 * @see #getStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)
-	 * @see #deleteStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)
+	 * Hilfsfunktion, die eine Exception wirft, wenn der Benutzer noch nicht erfolgreich authentifiziert ist
 	 */
-	public List<ApplicationDataTelegram> createStalledTelegramList(final BaseSubscriptionInfo info, int maxCount) {
-		final List<ApplicationDataTelegram> stalledTelegramsList = new ArrayList<ApplicationDataTelegram>(maxCount);
-		_stalledTelegramListMap.put(info, stalledTelegramsList);
-		return stalledTelegramsList;
+	private void needsToBeAuthenticated() {
+		if(!_userLogin.isAuthenticated()) {
+			throw new IllegalStateException("Benutzer ist nicht authentifiziert");
+		}
 	}
 
 	/**
-	 * Liefert eine vorher erzeugte Liste für verzögerte Telegramme für eine Datenidentifikation.
-	 *
-	 * @param info Datenidentifikation der verzögerten Telegramme
-	 *
-	 * @return Vorher erzeugte Liste für verzögerte Telegramme
-	 *
-	 * @see #createStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo,int)
-	 * @see #deleteStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)
+	 * Hilfsfunktion, die eine Exception wirft, wenn der Benutzer schon erfolgreich authentifiziert ist
 	 */
-	public List<ApplicationDataTelegram> getStalledTelegramList(final BaseSubscriptionInfo info) {
-		return _stalledTelegramListMap.get(info);
+	private void needsToBeNotAuthenticated() {
+		if(_userLogin.isAuthenticated()) {
+			throw new IllegalStateException("Benutzer ist bereits authentifiziert");
+		}
 	}
 
 	/**
-	 * Liefert eine vorher erzeugte Liste für verzögerte Telegramme für eine Datenidentifikation und entfernt sie aus der Map.
-	 *
-	 * @param info Datenidentifikation der verzögerten Telegramme
-	 *
-	 * @return Vorher erzeugte Liste für verzögerte Telegramme
-	 *
-	 * @see #createStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo,int)
-	 * @see #getStalledTelegramList(de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo)
+	 * Bestimmt für den Benutzernamen und übergebenen Einmal-Passwortindex (bzw -1 für Standardpasswort) den Srp-Verifier und die Benutzer-ID.
+	 * Hierzu wird normalerweise die Konfiguration gefragt, aber für die Anmeldung der lokalen Konfiguration, Parametrierung und der
+	 * {@link SelfClientDavConnection} gibt es Spezialfälle.
+	 * @param userName Benutzername
+	 * @param passwordIndex Einmalpasswort-Index
+	 * @return SRP-Überprüfungscode
+	 * @throws SrpNotSupportedException SRP wird von der Konfiguration nicht unterstützt
 	 */
-	public List<ApplicationDataTelegram> deleteStalledTelegramList(final BaseSubscriptionInfo info) {
-		return _stalledTelegramListMap.remove(info);
+	private SrpVerifierAndUser fetchSrpUserData(final String userName, final int passwordIndex) throws SrpNotSupportedException {
+	
+		// Spezialfälle für lokale Konfiguration, Parametrierung und SelfClientDafConnection wie in LowLevelAuthentication.isValidUser():
+		ServerDavParameters serverDavParameters = _lowLevelConnectionsManager.getServerDavParameters();
+		if(userName.equals(serverDavParameters.getConfigurationUserName())) {
+			// Spezialfall lokale Konfiguration. Hier muss das Passwort aus der passwd genommen werden, da keine Konfiguration gefragt werden kann
+			return new SrpVerifierAndUser(UserLogin.systemUser(), fakeVerifier(serverDavParameters.getConfigurationClientCredentials(), userName), true);
+		}
+		else if(userName.equals(serverDavParameters.getParameterUserName())) {
+			// Spezialfall Parametrierung. Hier kann das Passwort wie bei der Konfiguration aus der passwd genommen werden, da dies historisch so realisiert war.
+			ClientCredentials parameterClientCredentials = serverDavParameters.getParameterClientCredentials();
+			if(parameterClientCredentials != null) {
+				return new SrpVerifierAndUser(UserLogin.systemUser(), fakeVerifier(parameterClientCredentials, userName), true);
+			}
+		}
+		else if(userName.equals(_lowLevelConnectionsManager.getClientDavParameters().getUserName())) {
+			if(serverDavParameters.isLocalMode()) {
+				return new SrpVerifierAndUser(
+						UserLogin.systemUser(),
+						fakeVerifier(_lowLevelConnectionsManager.getClientDavParameters().getClientCredentials(), userName),
+						true
+				);
+			}
+		}
+
+		// Ansonsten die Konfiguration fragen
+		if(_waitForConfiguration) {
+			// Ggf warten bis Konfiguration verfügbar
+			synchronized(_sync) {
+				try {
+					while(_waitForConfiguration) {
+						if(_closed) throw new IllegalStateException("Die Konfiguration hat sich beendet");
+						_sync.wait(1000);
+					}
+				}
+				catch(InterruptedException ex) {
+					throw new IllegalStateException("Unterbrochen beim Warten auf Konfiguration", ex);
+				}
+			}
+		}
+		_waitForConfiguration = false;
+
+		// Eigentlichen Überprüfungscode abfragen
+		SrpVerifierAndUser srpVerifierAndUser = _applicationManager.fetchSrpVerifierAndAuthentication(userName, passwordIndex);
+
+		if(userName.equals(serverDavParameters.getParameterUserName()) && srpVerifierAndUser.getUserLogin().isAuthenticated()) {
+			// Spezialfall: die Parametrierung kriegt volle Rechte, also BenutzerID auf 0 setzen
+			return new SrpVerifierAndUser(UserLogin.systemUser(), srpVerifierAndUser.getVerifier(), srpVerifierAndUser.isPlainTextPassword());
+		}
+		
+		return srpVerifierAndUser;
+	}
+
+	private static SrpVerifierData fakeVerifier(final ClientCredentials clientCredentials, final String userName) {
+		return SrpClientAuthentication.createVerifier(SrpCryptoParameter.getDefaultInstance(), userName, clientCredentials, secretHash(userName));
+	}
+
+	private static byte[] secretHash(final String userName) {
+		return SrpUtilities.generatePredictableSalt(SrpCryptoParameter.getDefaultInstance(), (userName + _secretToken).getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Override
@@ -628,5 +680,198 @@ public class T_A_HighLevelCommunication implements T_A_HighLevelCommunicationInt
 		}
 		return "[" + _applicationId + "]";
 
+	}
+
+	/**
+	 * Prüft ob die vorangegangene Authentifizierung erfolgreich war. Ist dies der Fall, wird die Initialisierung abgeschlossen und ggf. ein Applikationsobjekt bei der Konfiguration angefordert.
+	 * 
+	 * Schickt eine Antwort über den Authentifizierungs-Erfolg an den Client. 
+	 * 
+	 * @throws ConfigurationChangeException Fehler beim Anlegen eines Applikationsobjekts
+	 */
+	private void completeAuthenticationAndSendAnswer() throws ConfigurationChangeException {
+		AuthentificationAnswer authentificationAnswer;
+		if(_userLogin.isAuthenticated()) {
+			// Authentifizierung ist erfolgreich
+			
+			if(!updateParametersAndCreateApplicationObject()) return;
+			
+			authentificationAnswer = new AuthentificationAnswer(
+					_userLogin.toLong(), _applicationId, _configurationId, _properties.getDataTransmitterId()
+			);
+		}
+		else {
+			authentificationAnswer = new AuthentificationAnswer(false);
+		}
+		_lowLevelCommunication.send(authentificationAnswer);
+	}
+
+	/**
+	 * Speichert die bei der Authentifizierung übertragenen Daten zwischen und wartet ggf. auf die Konfiguration. Da zu diesem Zeitpunkt noch keine
+	 * Authentifizierung erfolgt ist, dürfen diese Daten noch nicht an relevanten Stellen weiterverwendet werden
+	 * @param applicationTypePid Pid des verbundenen Applikationstyps (z.B. "typ.applikation")
+	 * @param applicationName Name der verbundenen Applikation
+	 * @param configurationPid Bei der lokalen Konfiguration: "Pid:ID" des KV, sonst {@link CommunicationConstant#LOCALE_CONFIGURATION_PID_ALIASE}
+	 * @return true wenn warten auf Konfiguration erfolgreich, sonst false
+	 */
+	private boolean firstInitialization(final String applicationTypePid, final String applicationName, final String configurationPid) {
+		if(configurationPid.isEmpty()) {
+			_configurationPid = CommunicationConstant.LOCALE_CONFIGURATION_PID_ALIASE;
+		}
+		else {
+			_configurationPid = configurationPid;
+		}
+		_applicationName = applicationName;
+		_applicationTypePid = applicationTypePid;
+		
+		_debug.finest("applicationName", _applicationName);
+		_debug.finest("applicationTypePid", _applicationTypePid);
+		
+		_lowLevelCommunication.setRemoteName(_applicationName + " (Typ: " + _applicationTypePid + ")");
+		return initializeConfiguration();
+	}
+
+	/**
+	 * Aktualisiert verschiedene Parameter und legt ein Applikationsobjekt an
+	 * @return true falls erfolgreich, sonst false
+	 * @throws ConfigurationChangeException Problem beim Anlegen des Applikationsobjekts
+	 */
+	private boolean updateParametersAndCreateApplicationObject() throws ConfigurationChangeException {
+		// Pid und Id der Default-Konfiguration aus globalen Einstellungen holen und in lokalen Einstellungen speichern
+		if(_properties.isLocalMode()) {
+			String pid = _lowLevelConnectionsManager.getLocalModeConfigurationPid();
+			long id = _lowLevelConnectionsManager.getLocalModeConfigurationId();
+			_properties.setLocalModeParameter(pid, id);
+		}
+		if(CommunicationConstant.LOCALE_CONFIGURATION_PID_ALIASE.equals(_configurationPid)) {
+			Object[] objects = _properties.getLocalModeParameter();
+			if(objects != null) {
+				_configurationPid = (String)objects[0];
+				_configurationId = (Long) objects[1];
+			}
+			else {
+				_configurationId = _applicationManager.getConfigurationId(_configurationPid);
+			}
+		}
+		else {
+			_configurationId = _applicationManager.getConfigurationId(_configurationPid);
+		}
+
+		if(_configurationId == -1) {
+			terminate(true, "Ungültige Pid der Konfiguration: " + _configurationPid);
+			return false;
+		}
+		
+		if(!createApplicationObject()) return false;
+		
+		_lowLevelConnectionsManager.updateApplicationId(this);
+
+		return true;
+	}
+
+	/**
+	 * Legt ein Applikationsobjekt an (falls es sich nicht um die lokale Konfiguration handelt)
+	 * @return true falls erfolgreich, sonst (z.B. bei unbekanntem Typ) false
+	 * @throws ConfigurationChangeException
+	 */
+	private boolean createApplicationObject() throws ConfigurationChangeException {
+		if(CommunicationConstant.CONFIGURATION_TYPE_PID.equals(_applicationTypePid)) {
+			Object[] objects = _properties.getLocalModeParameter();
+			if(objects == null) {
+				_applicationId = _applicationManager.createNewApplication(this, _applicationTypePid, _applicationName);
+			}
+			else {
+				String configurationPid = (String)objects[0];
+				if(this._configurationPid.equals(configurationPid)) {
+					_applicationId = 0;
+				}
+				else {
+					_applicationId = _applicationManager.createNewApplication(this, _applicationTypePid, _applicationName);
+				}
+			}
+		}
+		else {
+			_applicationId = _applicationManager.createNewApplication(this, _applicationTypePid, _applicationName);
+		}
+
+		if(_applicationId == -1) {
+			terminate(
+					true,
+					"Die Id der Applikation konnte nicht ermittelt werden, ApplikationsTyp: " + _applicationTypePid + ", ApplikationsName: "
+							+ _applicationName
+			);
+			return false;
+		}
+		return true;
+	}
+
+	/** 
+	 * Gibt die prägende ID der Konfiguration zurück
+	 * @return die prägende ID der Konfiguration, oder 0 falls es sich um eine normale Applikation handelt
+	 */
+	private long getFormativeConfigurationId() {
+		long formativeConfigurationId = 0;
+		if("".equals(_configurationPid)) {
+			_configurationPid = CommunicationConstant.LOCALE_CONFIGURATION_PID_ALIASE;
+		}
+		else {
+			String[] strings = _configurationPid.split(":");
+			if(strings.length > 1) {
+				_configurationPid = strings[0];
+				try {
+					// Id des Konfigurationsverantwortlichen wird mit Doppelpunkt getrennt hinter der Pid erwartet,
+					// wenn sich die Konfiguration anmeldet
+					formativeConfigurationId = Long.parseLong(strings[1]);
+				}
+				catch(NumberFormatException e) {
+					_debug.error("Fehler beim Parsen der mit Doppelpunkt getrennten Id an der Pid des Konfigurationsverantwortlichen", e);
+				}
+			}
+		}
+		return formativeConfigurationId;
+	}
+
+	/**
+	 * Diese Methode prüft, ob es schon eine Konfiguration gibt. Falls ja, gibt die Methode true zurück. Falls nein wird geprüft ob es sich bei dieser
+	 * Applikation um die Konfiguration handelt. Falls ja, wird der Datenverteiler mit dieser Konfiguration geprägt. Falls nein wird auf die Konfiguration gewartet.
+	 * @return true: Erfolgreich initialisiert, false: Timeout oder sonstiger Fehler
+	 */
+	private boolean initializeConfiguration() {
+		if(!_waitForConfiguration) {
+			return true;
+		}
+		boolean mustWait = true;
+		if(CommunicationConstant.CONFIGURATION_TYPE_PID.equals(_applicationTypePid) && _properties.isLocalMode()) {
+			// Es handelt sich um eine Konfiguration und der Datenverteiler wartet auf eine
+			final long formativeConfigurationId = getFormativeConfigurationId();
+			if(formativeConfigurationId != 0) {
+				// Die von der Konfiguration vorgegebene Pid und Id des Konfigurationsverantwortlichen wird als Default für die Applikationen
+				// gespeichert
+				_properties.setLocalModeParameter(_configurationPid, formativeConfigurationId);
+				_lowLevelConnectionsManager.setLocalModeParameter(_configurationPid, formativeConfigurationId);
+				_debug.info("Default-Konfiguration " + _configurationPid + ", Id " + formativeConfigurationId);
+				mustWait = false;
+			}
+			else {
+				terminate(true, "Konfiguration hat die Id des Konfigurationsverantwortlichen nicht vorgegeben");
+				return false;
+			}
+		}
+		if(mustWait) {
+			synchronized(_sync) {
+				try {
+					_debug.finest("mustWait", mustWait);
+					while(_waitForConfiguration) {
+						if(_closed) return false;
+						_sync.wait(1000);
+					}
+				}
+				catch(InterruptedException ex) {
+					return false;
+				}
+			}
+		}
+		_waitForConfiguration = false;
+		return true;
 	}
 }
