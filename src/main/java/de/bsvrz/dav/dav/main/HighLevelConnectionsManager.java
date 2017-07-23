@@ -597,9 +597,10 @@ public final class HighLevelConnectionsManager implements HighLevelConnectionsMa
 		}
 	}
 
-	private String getUserAdministrationPassword() {
+	private String getUserAdministrationPassword() throws SrpNotSupportedException {
 		// Passwort zum Einloggen des Datenverteilers bei der Konfiguration
 		ClientCredentials davUserPassword = getStoredClientCredentials(_userName, _dataModel.getConfigurationAuthority().getPid());
+		if(davUserPassword == null) throw new SrpNotSupportedException("Das Passwort zur Authentifizierung bei der Konfiguration für den Benutzer \"" + _userName + "\" ist nicht in der Authentifizierungsdatei enthalten.");
 		return davUserPassword.toString();
 	}
 

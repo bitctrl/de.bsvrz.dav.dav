@@ -334,13 +334,6 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	public void connectToRemoteDrains(final SubscriptionInfo subscriptionInfo, final Set<Long> distributorsToUse) {
 		HashBagMap<TransmitterCommunicationInterface, Long> connections = getCentralDistributorConnections(distributorsToUse);
 		for(Map.Entry<TransmitterCommunicationInterface, Collection<Long>> entry : connections.entrySet()) {
-			UserLogin userLogin = entry.getKey().getUserLogin();
-
-			if(!isActionAllowed(userLogin, subscriptionInfo.getBaseSubscriptionInfo(), UserAction.DRAIN)){
-				// Bei fehlenden Benutzerrechten Anmeldung gar nicht erst versuchen
-				continue;
-			}
-
 			RemoteDrainSubscription subscription = subscriptionInfo.getOrCreateRemoteDrainSubscription(entry.getKey());
 			subscription.setPotentialDistributors(entry.getValue());
 			subscription.subscribe();
@@ -351,13 +344,6 @@ public abstract class AbstractSubscriptionsManager implements SubscriptionsManag
 	public void connectToRemoteSources(final SubscriptionInfo subscriptionInfo, final Set<Long> distributorsToUse) {
 		HashBagMap<TransmitterCommunicationInterface, Long> connections = getCentralDistributorConnections(distributorsToUse);
 		for(Map.Entry<TransmitterCommunicationInterface, Collection<Long>> entry : connections.entrySet()) {
-			UserLogin userLogin = entry.getKey().getUserLogin();
-
-			if(!isActionAllowed(userLogin, subscriptionInfo.getBaseSubscriptionInfo(), UserAction.SOURCE)){
-				// Bei fehlenden Benutzerrechten Anmeldung gar nicht erst versuchen
-				continue;
-			}
-
 			RemoteSourceSubscription subscription = subscriptionInfo.getOrCreateRemoteSourceSubscription(entry.getKey());
 			subscription.setPotentialDistributors(entry.getValue());
 			subscription.subscribe();

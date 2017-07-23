@@ -31,6 +31,9 @@ import de.bsvrz.dav.daf.communication.lowLevel.telegrams.BaseSubscriptionInfo;
 import de.bsvrz.dav.dav.main.ConnectionState;
 import de.bsvrz.dav.dav.main.SubscriptionsManager;
 import de.bsvrz.sys.funclib.debug.Debug;
+import de.bsvrz.sys.funclib.operatingMessage.MessageGrade;
+import de.bsvrz.sys.funclib.operatingMessage.MessageSender;
+import de.bsvrz.sys.funclib.operatingMessage.MessageType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -179,6 +182,11 @@ public class SubscriptionInfo implements Closeable {
 			}
 			else {
 				sendingSubscription.setState(SenderState.INVALID_SUBSCRIPTION, getCentralDistributorId());
+				_debug.warning("Ungültige Anmeldungen.\n"
+						               + sendingSubscription
+						               + "\nwurde erstellt, aber es gibt bereits eine gültige Quelle/Senke:\n"
+						               + _subscriptionList.getDrainOrSource()
+				);
 				return;
 			}
 		}
@@ -210,6 +218,11 @@ public class SubscriptionInfo implements Closeable {
 			else {
 				receivingSubscription.setState(ReceiverState.INVALID_SUBSCRIPTION, getCentralDistributorId());
 				receivingSubscription.sendStateTelegram(ReceiverState.INVALID_SUBSCRIPTION);
+				_debug.warning("Ungültige Anmeldungen.\n"
+						               + receivingSubscription
+						               + "\nwurde erstellt, aber es gibt bereits eine gültige Quelle/Senke:\n"
+						               + _subscriptionList.getDrainOrSource()
+				);
 				return;
 			}
 		}
@@ -1226,12 +1239,14 @@ public class SubscriptionInfo implements Closeable {
 		if(multiRemoteLockActive == _multiRemoteLockActive) return;
 		_multiRemoteLockActive = multiRemoteLockActive;
 		if(multiRemoteLockActive) {
+			final List<RemoteCentralSubscription> listOfIllegalSubscriptions = new ArrayList<>();
 			// Wenn aktiv alle Anmeldungen ungültig machen und entsprechend markieren
 			setDrain(null);
 			setSource(null);
 			for(SendingSubscription sendingSubscription : _subscriptionList.getSendingSubscriptions()) {
 				if(sendingSubscription.getState() == SenderState.NO_REMOTE_SOURCE) continue;
 				if(sendingSubscription instanceof RemoteCentralSubscription) {
+					listOfIllegalSubscriptions.add((RemoteCentralSubscription) sendingSubscription);
 					sendingSubscription.setState(SenderState.MULTIPLE_REMOTE_LOCK, -1);
 				}
 				else {
@@ -1241,6 +1256,7 @@ public class SubscriptionInfo implements Closeable {
 			for(ReceivingSubscription receivingSubscription : _subscriptionList.getReceivingSubscriptions()) {
 				if(receivingSubscription.getState() == ReceiverState.NO_REMOTE_DRAIN) continue;
 				if(receivingSubscription instanceof RemoteCentralSubscription) {
+					listOfIllegalSubscriptions.add((RemoteCentralSubscription) receivingSubscription);
 					receivingSubscription.setState(ReceiverState.MULTIPLE_REMOTE_LOCK, -1);
 				}
 				else {
@@ -1248,11 +1264,31 @@ public class SubscriptionInfo implements Closeable {
 					receivingSubscription.sendStateTelegram(ReceiverState.INVALID_SUBSCRIPTION);
 				}
 			}
+			StringBuilder stringBuilder = new StringBuilder().append("Ungültige Anmeldungen, mehrere Zentraldatenverteiler für die Datenidentifikation ")
+					.append(toString())
+					.append(": ");
+			for(RemoteCentralSubscription subscription : listOfIllegalSubscriptions) {
+				stringBuilder.append(subscription instanceof RemoteSourceSubscription ? "Quelle" : "Senke");
+				stringBuilder.append(" über ");
+				stringBuilder.append(_subscriptionsManager.objectToString(subscription.getCommunication().getId()));
+				stringBuilder.append("; ");
+			}
+			stringBuilder.append("Potenzielle Zentraldatenverteiler: ");
+			for(Iterator<Long> iterator = _subscriptionsManager.getPotentialCentralDistributors(_baseSubscriptionInfo).iterator(); iterator.hasNext(); ) {
+				final Long id = iterator.next();
+				stringBuilder.append(_subscriptionsManager.objectToString(id));
+				if(iterator.hasNext()) {
+					stringBuilder.append(", ");
+				}
+			}
+			String message = stringBuilder.toString();
+			_debug.warning(message);
+			MessageSender.getInstance().sendMessage(MessageType.SYSTEM_DOMAIN, MessageGrade.ERROR, message);
 		}
 		else {
 			// Wenn wieder inaktiv alle lokalen Anmeldungen neu gültig machen
 
-			// Von bisherigen Zentraldatenverteilern abmelden um einen konsitenten Zustand und neue initiale Telegramme zu erhalten
+			// Von bisherigen Zentraldatenverteilern abmelden um einen konsistenten Zustand und neue initiale Telegramme zu erhalten
 			setConnectToRemoteCentralDistributor(false);
 
 			// Alle lokalen Anmeldungen neu initialisieren

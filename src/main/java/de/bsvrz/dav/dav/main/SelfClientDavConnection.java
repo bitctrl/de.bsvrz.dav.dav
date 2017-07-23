@@ -30,6 +30,7 @@ import de.bsvrz.dav.daf.main.*;
 import de.bsvrz.dav.daf.main.impl.CommunicationConstant;
 import de.bsvrz.dav.daf.main.impl.config.DafDataModel;
 import de.bsvrz.sys.funclib.debug.Debug;
+import de.bsvrz.sys.funclib.operatingMessage.MessageSender;
 
 /**
  * @author Kappich Systemberatung
@@ -80,6 +81,7 @@ public class SelfClientDavConnection {
 			if(dataModel == null) throw new IllegalStateException("dataModel ist null");
 			_dataModel = dataModel;
 			_connection.setCloseHandler(new SystemTerminator());
+			MessageSender.getInstance().init(_connection, "Datenverteiler", "Datenverteiler " + parameters.getConfigurationPid());
 		}
 		catch(MissingParameterException e) {
 			throw new DavInitializationException("Fehlender Parameter", e);

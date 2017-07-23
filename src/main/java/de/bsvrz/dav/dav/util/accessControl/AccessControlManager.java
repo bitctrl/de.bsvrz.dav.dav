@@ -31,10 +31,7 @@ import de.bsvrz.dav.daf.main.DataState;
 import de.bsvrz.dav.daf.main.config.SystemObject;
 import de.bsvrz.dav.daf.util.HashBagMap;
 import de.bsvrz.sys.funclib.debug.Debug;
-import de.bsvrz.sys.funclib.operatingMessage.MessageGrade;
-import de.bsvrz.sys.funclib.operatingMessage.MessageSender;
-import de.bsvrz.sys.funclib.operatingMessage.MessageState;
-import de.bsvrz.sys.funclib.operatingMessage.MessageType;
+import de.bsvrz.sys.funclib.operatingMessage.*;
 
 import java.io.Closeable;
 import java.util.*;
@@ -96,6 +93,7 @@ public final class AccessControlManager implements RegionManager, Closeable {
 
 	private final LinkedBlockingQueue<Long> _notifyUserChangedQueue = new LinkedBlockingQueue<Long>();
 	private Timer _parameterTimer;
+	private PersistentOperatingMessage _operatingMessage;
 
 	/**
 	 * Erstellt eine neue Instanz des AccessControlManagers mit impliziter Benutzerverwaltung
@@ -206,29 +204,24 @@ public final class AccessControlManager implements RegionManager, Closeable {
 		objectsWithMissingParameters.addAll(getObjectsWithMissingParameters(_authenticationClassHashMap.values()));
 		objectsWithMissingParameters.addAll(getObjectsWithMissingParameters(_regionHashMap.values()));
 		objectsWithMissingParameters.addAll(getObjectsWithMissingParameters(_roleHashMap.values()));
-		final MessageSender sender = MessageSender.getInstance();
-		final MessageState state;
-		final String message;
 		if(_oldObjectsWithMissingParameters == null || _oldObjectsWithMissingParameters.size() == 0) {
 			if(objectsWithMissingParameters.size() == 0) return;
-			state = MessageState.NEW_MESSAGE;
-			message = "Der Rechteprüfung fehlen Parameterdaten:\n" + formatMap(objectsWithMissingParameters);
+			final String message = "Der Rechteprüfung fehlen Parameterdaten:\n" + formatMap(objectsWithMissingParameters);
+			OperatingMessage operatingMessage = OperatingMessage.warning(MessageType.SYSTEM_DOMAIN, message);
+			_operatingMessage = operatingMessage.newPersistentMessage("Zugriffsrechte");
 		}
 		else {
 			if(objectsWithMissingParameters.size() == 0) {
-				state = MessageState.GOOD_MESSAGE;
-				message = "Alle derzeit berücksichtigten Objekte besitzen jetzt Parameter.";
+				_operatingMessage.setMessage("Alle derzeit berücksichtigten Objekte besitzen jetzt Parameter.");
+				_operatingMessage.sendGoodMessage();
+				_operatingMessage = null;
 			}
 			else {
-				state = MessageState.REPEAT_MESSAGE;
-				message = "Der Rechteprüfung fehlen Parameterdaten:\n" + formatMap(
-						objectsWithMissingParameters
-				);
+				_operatingMessage.setMessage("Der Rechteprüfung fehlen Parameterdaten:\n" + formatMap(objectsWithMissingParameters));
+				_operatingMessage.sendRepeatMessage();
 			}
 		}
 
-		sender.sendMessage("Zugriffsrechte", MessageType.SYSTEM_DOMAIN, "Rechteprüfung", MessageGrade.WARNING, state, message);
-		_debug.warning(message);
 		_oldObjectsWithMissingParameters = objectsWithMissingParameters;
 	}
 

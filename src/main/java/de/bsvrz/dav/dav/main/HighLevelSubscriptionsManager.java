@@ -196,7 +196,7 @@ public class HighLevelSubscriptionsManager extends AbstractSubscriptionsManager 
 
 		if(object == null || usage == null) return baseSubscriptionInfo.toString();
 
-		return "[" + object.getPidOrNameOrId() + ", " + usage.getAttributeGroup().getPidOrNameOrId() + ", " + usage.getAspect().getPidOrNameOrId() + (
+		return "[" + object.getPidOrId() + ", " + usage.getAttributeGroup().getPidOrId() + ", " + usage.getAspect().getPidOrId() + (
 				simulationVariant != 0
 				? (", " + simulationVariant)
 				: "") + "]";

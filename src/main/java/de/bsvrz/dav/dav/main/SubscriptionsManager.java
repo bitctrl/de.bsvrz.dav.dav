@@ -170,7 +170,7 @@ public interface SubscriptionsManager extends UserRightsChangeHandler {
 	long getThisTransmitterId();
 
 	/**
-	 * behandelt eien Anmeldungsquittung von einem anderen Datenverteiler
+	 * behandelt eine Anmeldungsquittung von einem anderen Datenverteiler
 	 *
 	 * @param communication               Verbindung zum anderen Dav
 	 * @param transmitterSubscriptionType Art der Anmeldung (Sender/Empfänger)

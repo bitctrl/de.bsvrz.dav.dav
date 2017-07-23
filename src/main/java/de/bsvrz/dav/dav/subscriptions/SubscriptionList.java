@@ -168,4 +168,14 @@ public class SubscriptionList {
 		}
 		return -1;
 	}
+
+	public Subscription getDrainOrSource() {
+		if(_source != null){
+			return _source;
+		}
+		if(_drain != null){
+			return _drain;
+		}
+		return null;
+	}
 }

@@ -94,7 +94,7 @@ public interface LowLevelConnectionsManagerInterface {
 	LowLevelAuthenticationInterface getLowLevelAuthentication();
 
 	/**
-	 * Setzt die Parameter für eien lokale Konfiguration
+	 * Setzt die Parameter für eine lokale Konfiguration
 	 * @param configurationPid Pid der Konfiguration
 	 * @param configurationId Id der Konfiguration
 	 */
